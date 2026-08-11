@@ -1,4 +1,4 @@
-import { Link } from '@tanstack/react-router'
+import { Link, type LinkProps } from '@tanstack/react-router'
 
 import { cn } from '@/lib/utils'
 
@@ -8,8 +8,8 @@ type LogoProps = {
   asLink?: boolean
   /** Small label under the wordmark. Pass '' to hide. */
   sub?: string
-  /** Link target — '/' for the storefront, '/admin' inside the admin portal. */
-  to?: '/' | '/admin'
+  /** Link target — e.g. '/' for storefront, '/admin' for admin, '/seller' for seller. */
+  to?: string
   className?: string
 }
 
@@ -55,7 +55,7 @@ export function Logo({ size = 'md', onInk = false, asLink = true, sub = 'Marketp
   if (!asLink) return <span className={classes}>{content}</span>
 
   return (
-    <Link to={to} className={classes} aria-label="SafalHub — home">
+    <Link {...({ to } as unknown as LinkProps)} className={classes} aria-label="SafalHub — home">
       {content}
     </Link>
   )
