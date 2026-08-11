@@ -1,0 +1,284 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+/* ==========================================================================
+   SafalHub — Design System
+   Tailwind 4 + shadcn/ui token contract.
+   Brand: "Indigo Ink" — premium, technology-driven, business-friendly.
+   Deliberately distinct from marketplace incumbents: no orange, no primary
+   blue, no commerce-green.
+   ========================================================================== */
+
+:root {
+  --radius: 0.75rem; /* 12px — cards; sm=8px, lg=16px derive from this */
+
+  /* ---- Brand scale (marketing surfaces) ---- */
+  --brand-50: #f1effe;
+  --brand-100: #e4e0fd;
+  --brand-200: #c9c1fa;
+  --brand-300: #a697f5;
+  --brand-400: #8570ec;
+  --brand-500: #6a50e0;
+  --brand-600: #543bcb;
+  --brand-700: #442fa6;
+  --brand-800: #362681;
+  --brand-900: #241a57;
+  --brand-950: #14103a;
+
+  /* ---- Ink scale: neutrals, very slightly warm ---- */
+  --ink-50: #f6f7fa;
+  --ink-100: #eceef3;
+  --ink-200: #dddfe7;
+  --ink-300: #b7bbc9;
+  --ink-400: #8e94a8;
+  --ink-500: #6b7189;
+  --ink-600: #4e5470;
+  --ink-700: #363b57;
+  --ink-800: #22263f;
+  --ink-900: #151830;
+  --ink-950: #0e1020;
+
+  /* ---- Accent: pricing, ratings, discount. Used sparingly ---- */
+  --accent-50: #fff7eb;
+  --accent-100: #fdeccd;
+  --accent-400: #f3b24c;
+  --accent-500: #e2932a;
+  --accent-600: #b9711a;
+
+  /* ---- Support: verification / secure / success ---- */
+  --teal-50: #eaf7f6;
+  --teal-100: #d3ecea;
+  --teal-500: #14827c;
+  --teal-600: #0f6a65;
+
+  /* ---- shadcn semantic tokens ---- */
+  --background: #ffffff;
+  --foreground: var(--ink-800);
+
+  --card: #ffffff;
+  --card-foreground: var(--ink-900);
+  --popover: #ffffff;
+  --popover-foreground: var(--ink-900);
+
+  --primary: var(--brand-600);
+  --primary-foreground: #ffffff;
+
+  --secondary: var(--ink-100);
+  --secondary-foreground: var(--ink-900);
+
+  --muted: var(--ink-50);
+  --muted-foreground: var(--ink-500);
+
+  --accent: var(--brand-50);
+  --accent-foreground: var(--brand-800);
+
+  --destructive: #c9403c;
+  --destructive-foreground: #ffffff;
+
+  --success: #1e7f4d;
+  --success-foreground: #ffffff;
+
+  --border: var(--ink-200);
+  --input: var(--ink-300);
+  --ring: var(--brand-600);
+
+  --chart-1: var(--brand-600);
+  --chart-2: var(--teal-500);
+  --chart-3: var(--accent-400);
+  --chart-4: var(--brand-300);
+  --chart-5: var(--ink-400);
+
+  --sidebar: #ffffff;
+  --sidebar-foreground: var(--ink-700);
+  --sidebar-primary: var(--brand-600);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: var(--brand-50);
+  --sidebar-accent-foreground: var(--brand-800);
+  --sidebar-border: var(--ink-200);
+  --sidebar-ring: var(--brand-600);
+}
+
+.dark {
+  --background: #0b0d19;
+  --foreground: #e7e9f0;
+
+  --card: #14172a;
+  --card-foreground: #f2f3f7;
+  --popover: #14172a;
+  --popover-foreground: #f2f3f7;
+
+  --primary: var(--brand-400);
+  --primary-foreground: #100f26;
+
+  --secondary: #1e2238;
+  --secondary-foreground: #e7e9f0;
+
+  --muted: #171a2c;
+  --muted-foreground: #9298ad;
+
+  --accent: #221f45;
+  --accent-foreground: #cdc4fb;
+
+  --destructive: #e2615d;
+  --destructive-foreground: #1a0c0c;
+
+  --success: #4cae7d;
+
+  --border: #262b45;
+  --input: #333857;
+  --ring: var(--brand-400);
+
+  --sidebar: #101322;
+  --sidebar-foreground: #b9bece;
+  --sidebar-accent: #1d1b3c;
+  --sidebar-accent-foreground: #cdc4fb;
+  --sidebar-border: #262b45;
+}
+
+@theme inline {
+  --font-sans: 'Inter Variable', 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --radius-sm: calc(var(--radius) - 4px); /* 8  */
+  --radius-md: var(--radius); /* 12 */
+  --radius-lg: calc(var(--radius) + 4px); /* 16 */
+  --radius-xl: calc(var(--radius) + 10px); /* 22 */
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-brand-50: var(--brand-50);
+  --color-brand-100: var(--brand-100);
+  --color-brand-200: var(--brand-200);
+  --color-brand-300: var(--brand-300);
+  --color-brand-400: var(--brand-400);
+  --color-brand-500: var(--brand-500);
+  --color-brand-600: var(--brand-600);
+  --color-brand-700: var(--brand-700);
+  --color-brand-800: var(--brand-800);
+  --color-brand-900: var(--brand-900);
+  --color-brand-950: var(--brand-950);
+
+  --color-ink-50: var(--ink-50);
+  --color-ink-100: var(--ink-100);
+  --color-ink-200: var(--ink-200);
+  --color-ink-300: var(--ink-300);
+  --color-ink-400: var(--ink-400);
+  --color-ink-500: var(--ink-500);
+  --color-ink-600: var(--ink-600);
+  --color-ink-700: var(--ink-700);
+  --color-ink-800: var(--ink-800);
+  --color-ink-900: var(--ink-900);
+  --color-ink-950: var(--ink-950);
+
+  --color-gold-50: var(--accent-50);
+  --color-gold-100: var(--accent-100);
+  --color-gold-400: var(--accent-400);
+  --color-gold-500: var(--accent-500);
+  --color-gold-600: var(--accent-600);
+
+  --color-teal-50: var(--teal-50);
+  --color-teal-100: var(--teal-100);
+  --color-teal-500: var(--teal-500);
+  --color-teal-600: var(--teal-600);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Soft, low-contrast elevation — never dramatic */
+  --shadow-xs: 0 1px 2px rgba(20, 24, 48, 0.05);
+  --shadow-sm: 0 1px 3px rgba(20, 24, 48, 0.06), 0 1px 2px rgba(20, 24, 48, 0.04);
+  --shadow-md: 0 4px 14px rgba(20, 24, 48, 0.07), 0 1px 3px rgba(20, 24, 48, 0.04);
+  --shadow-lg: 0 14px 40px rgba(20, 24, 48, 0.1), 0 2px 8px rgba(20, 24, 48, 0.05);
+  --shadow-xl: 0 28px 70px rgba(20, 24, 48, 0.14), 0 4px 12px rgba(20, 24, 48, 0.06);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/40;
+  }
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5.5rem;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-background font-sans text-base text-foreground antialiased sm:text-[17px];
+    line-height: 1.6;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-semibold tracking-[-0.02em] text-ink-950 dark:text-white;
+    line-height: 1.15;
+  }
+  ::selection {
+    @apply bg-brand-100 text-brand-900;
+  }
+}
+
+@utility container-page {
+  @apply mx-auto w-full max-w-[1200px] px-5 md:px-6;
+}
+@utility container-wide {
+  @apply mx-auto w-full max-w-[1320px] px-5 md:px-6;
+}
+/* Faint grid behind hero / dashboard sections */
+@utility bg-grid {
+  background-image:
+    linear-gradient(to right, color-mix(in oklab, var(--brand-600) 7%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklab, var(--brand-600) 7%, transparent) 1px, transparent 1px);
+  background-size: 46px 46px;
+}
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
