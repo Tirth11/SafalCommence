@@ -1,5 +1,5 @@
 import { useNavigate } from '@tanstack/react-router'
-import { ShoppingBag } from 'lucide-react'
+import { Globe, ShoppingBag, Store } from 'lucide-react'
 
 import { AdminLink, adminLinkProps, useAdminSearch } from '@/components/admin/admin-link'
 import { DataTable, type Column } from '@/components/admin/data-table'
@@ -95,7 +95,25 @@ export function SellerOrdersPage() {
       sortBy: (o) => o.productValue,
       cell: (o) => <span className="font-semibold tabular text-ink-900 dark:text-white">{inr(o.productValue)}</span>,
     },
-    { key: 'payment', header: 'Payment', hideBelow: 'md', cell: (o) => <StatusBadge status={o.payment === 'Paid' ? 'Successful' : o.payment} /> },
+    {
+      key: 'source',
+      header: 'Source',
+      sortBy: (o) => o.channel,
+      cell: (o) => (
+        <span
+          className={
+            'inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ' +
+            (o.channel === 'store'
+              ? 'border-teal-100 bg-teal-50 text-teal-600 dark:border-teal-600/40 dark:bg-teal-600/15 dark:text-teal-100'
+              : 'border-brand-100 bg-brand-50 text-brand-700 dark:border-brand-800 dark:bg-brand-950 dark:text-brand-200')
+          }
+        >
+          {o.channel === 'store' ? <Globe className="size-3" /> : <Store className="size-3" />}
+          {o.channel === 'store' ? 'Online Store' : 'SafalMarketHub'}
+        </span>
+      ),
+    },
+    { key: 'payment', header: 'Payment', hideBelow: 'xl', cell: (o) => <StatusBadge status={o.payment === 'Paid' ? 'Successful' : o.payment} /> },
     { key: 'status', header: 'Fulfilment', sortBy: (o) => o.status, cell: (o) => <StatusBadge status={o.status} /> },
     {
       key: 'shipping',
@@ -183,6 +201,7 @@ export function SellerOrdersPage() {
           columns={columns}
           searchKeys={(o) => `${o.id} ${o.parentOrder} ${o.customer} ${o.items.map((i) => `${i.name} ${i.sku}`).join(' ')}`}
           searchPlaceholder="Search order ID, customer or product"
+          filters={[{ key: 'source', label: 'Source', options: ['SafalMarketHub', 'Online Store'] }]}
           rowHref={(o) => ({ to: `/seller/orders/${o.id}` })}
           exportName="Orders"
           empty={{

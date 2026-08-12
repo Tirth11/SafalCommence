@@ -176,6 +176,8 @@ export type SellerOrderStatus = 'New' | 'Processing' | 'Packed' | 'Shipped' | 'D
 export type SellerOrder = {
   id: string
   parentOrder: string
+  /** Which channel produced the sale — decides the fee SafalMarketHub charges. */
+  channel: 'marketplace' | 'store'
   date: string
   customer: string
   city: string
@@ -207,6 +209,7 @@ export const SELLER_ORDERS: SellerOrder[] = [
   {
     id: 'SH-100145-01',
     parentOrder: 'SH-100145',
+    channel: 'marketplace',
     date: '12 Aug 2026, 09:14',
     customer: 'Rahul Sharma',
     city: 'Mumbai',
@@ -226,6 +229,7 @@ export const SELLER_ORDERS: SellerOrder[] = [
   {
     id: 'SH-100142-01',
     parentOrder: 'SH-100142',
+    channel: 'store',
     date: '12 Aug 2026, 08:02',
     customer: 'Ananya Gupta',
     city: 'Gurugram',
@@ -243,6 +247,7 @@ export const SELLER_ORDERS: SellerOrder[] = [
   {
     id: 'SH-100138-01',
     parentOrder: 'SH-100138',
+    channel: 'marketplace',
     date: '11 Aug 2026, 19:41',
     customer: 'Dev Patel',
     city: 'Surat',
@@ -262,6 +267,7 @@ export const SELLER_ORDERS: SellerOrder[] = [
   {
     id: 'SH-100131-01',
     parentOrder: 'SH-100131',
+    channel: 'store',
     date: '11 Aug 2026, 12:20',
     customer: 'Nikita Bose',
     city: 'Kolkata',
@@ -279,6 +285,7 @@ export const SELLER_ORDERS: SellerOrder[] = [
   {
     id: 'SH-100124-01',
     parentOrder: 'SH-100124',
+    channel: 'marketplace',
     date: '10 Aug 2026, 16:35',
     customer: 'Lakshmi Menon',
     city: 'Kochi',
@@ -300,6 +307,7 @@ export const SELLER_ORDERS: SellerOrder[] = [
   {
     id: 'SH-100109-01',
     parentOrder: 'SH-100109',
+    channel: 'store',
     date: '06 Aug 2026, 11:12',
     customer: 'Imran Sheikh',
     city: 'Hyderabad',
@@ -324,6 +332,7 @@ export const SELLER_ORDERS: SellerOrder[] = [
   {
     id: 'SH-100098-01',
     parentOrder: 'SH-100098',
+    channel: 'marketplace',
     date: '03 Aug 2026, 10:04',
     customer: 'Rohit Sharma',
     city: 'Mumbai',
@@ -354,6 +363,7 @@ export const SELLER_ORDERS: SellerOrder[] = [
   {
     id: 'SH-100091-01',
     parentOrder: 'SH-100091',
+    channel: 'marketplace',
     date: '01 Aug 2026, 15:26',
     customer: 'Sana Kapoor',
     city: 'Pune',
@@ -377,6 +387,7 @@ export const ORDER_TABS = ['All', 'New', 'Processing', 'Packed', 'Shipped', 'Del
 export type SellerTransaction = {
   id: string
   order: string
+  channel: 'marketplace' | 'store'
   date: string
   gross: number
   commission: number
@@ -388,13 +399,13 @@ export type SellerTransaction = {
 }
 
 export const SELLER_TRANSACTIONS: SellerTransaction[] = [
-  { id: 'TXN-90211', order: 'SH-100145-01', date: '12 Aug 2026', gross: 4999, commission: 500, refund: 0, otherDeduction: 50, earnings: 4449, status: 'Settlement Pending' },
-  { id: 'TXN-90208', order: 'SH-100142-01', date: '12 Aug 2026', gross: 9499, commission: 950, refund: 0, otherDeduction: 0, earnings: 8549, status: 'Settlement Pending' },
-  { id: 'TXN-90196', order: 'SH-100124-01', date: '10 Aug 2026', gross: 9499, commission: 950, refund: 0, otherDeduction: 0, earnings: 8549, status: 'Settlement Pending' },
-  { id: 'TXN-90180', order: 'SH-100109-01', date: '06 Aug 2026', gross: 2999, commission: 300, refund: 0, otherDeduction: 0, earnings: 2699, status: 'Settlement Eligible', settlementId: 'SET-10021' },
-  { id: 'TXN-90165', order: 'SH-100098-01', date: '03 Aug 2026', gross: 5499, commission: 550, refund: 0, otherDeduction: 0, earnings: 4949, status: 'Settlement Eligible', settlementId: 'SET-10021' },
-  { id: 'TXN-90140', order: 'SH-100072-01', date: '28 Jul 2026', gross: 11999, commission: 1200, refund: 0, otherDeduction: 120, earnings: 10679, status: 'Settled', settlementId: 'SET-09988' },
-  { id: 'TXN-90121', order: 'SH-100064-01', date: '26 Jul 2026', gross: 1899, commission: 190, refund: 1899, otherDeduction: 0, earnings: -190, status: 'Reversed', settlementId: 'SET-09988' },
+  { id: 'TXN-90211', order: 'SH-100145-01', channel: 'marketplace', date: '12 Aug 2026', gross: 4999, commission: 500, refund: 0, otherDeduction: 50, earnings: 4449, status: 'Settlement Pending' },
+  { id: 'TXN-90208', order: 'SH-100142-01', channel: 'store', date: '12 Aug 2026', gross: 9499, commission: 950, refund: 0, otherDeduction: 0, earnings: 8549, status: 'Settlement Pending' },
+  { id: 'TXN-90196', order: 'SH-100124-01', channel: 'marketplace', date: '10 Aug 2026', gross: 9499, commission: 950, refund: 0, otherDeduction: 0, earnings: 8549, status: 'Settlement Pending' },
+  { id: 'TXN-90180', order: 'SH-100109-01', channel: 'store', date: '06 Aug 2026', gross: 2999, commission: 300, refund: 0, otherDeduction: 0, earnings: 2699, status: 'Settlement Eligible', settlementId: 'SET-10021' },
+  { id: 'TXN-90165', order: 'SH-100098-01', channel: 'marketplace', date: '03 Aug 2026', gross: 5499, commission: 550, refund: 0, otherDeduction: 0, earnings: 4949, status: 'Settlement Eligible', settlementId: 'SET-10021' },
+  { id: 'TXN-90140', order: 'SH-100072-01', channel: 'marketplace', date: '28 Jul 2026', gross: 11999, commission: 1200, refund: 0, otherDeduction: 120, earnings: 10679, status: 'Settled', settlementId: 'SET-09988' },
+  { id: 'TXN-90121', order: 'SH-100064-01', channel: 'store', date: '26 Jul 2026', gross: 1899, commission: 190, refund: 1899, otherDeduction: 0, earnings: -190, status: 'Reversed', settlementId: 'SET-09988' },
 ]
 
 /* ---------------------------------------------------------- settlements --- */

@@ -63,6 +63,8 @@ import { SellerOrdersPage } from '@/routes/seller/orders'
 import { SellerOrderDetailPage } from '@/routes/seller/order-detail'
 import { SellerSettlementDetailPage, SellerSettlementsPage, SellerTransactionsPage } from '@/routes/seller/earnings'
 import { SellerProfilePage } from '@/routes/seller/profile'
+import { SellerPlanPage } from '@/routes/seller/plan'
+import { SellerOnlineStorePage } from '@/routes/seller/online-store'
 import { SellerNotificationsPage, SellerSettingsPage, SellerSupportPage } from '@/routes/seller/support'
 import { SellerStatePreview } from '@/components/seller/seller-state-preview'
 
@@ -184,6 +186,8 @@ const sellerRoutes = [
     path: '/seller/settlements/$settlementId',
     component: SellerSettlementDetailPage,
   }),
+  createRoute({ getParentRoute: () => sellerLayoutRoute, path: '/seller/plan', component: SellerPlanPage }),
+  createRoute({ getParentRoute: () => sellerLayoutRoute, path: '/seller/online-store', component: SellerOnlineStorePage }),
   createRoute({ getParentRoute: () => sellerLayoutRoute, path: '/seller/profile', component: SellerProfilePage }),
   createRoute({ getParentRoute: () => sellerLayoutRoute, path: '/seller/notifications', component: SellerNotificationsPage }),
   createRoute({ getParentRoute: () => sellerLayoutRoute, path: '/seller/support', component: SellerSupportPage }),

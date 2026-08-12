@@ -1,5 +1,5 @@
 import { useParams } from '@tanstack/react-router'
-import { Banknote, Download, Landmark, TriangleAlert, Wallet } from 'lucide-react'
+import { Banknote, Download, Globe, Landmark, Store, TriangleAlert, Wallet } from 'lucide-react'
 
 import { AdminLink } from '@/components/admin/admin-link'
 import { DataTable, type Column } from '@/components/admin/data-table'
@@ -16,10 +16,13 @@ import {
   type SellerSettlement,
   type SellerTransaction,
 } from '@/data/seller'
+import { usePlan } from '@/store/storefront-store'
 import { inr } from '@/lib/utils'
 
 /* --------------------------------------------------------- transactions --- */
 export function SellerTransactionsPage() {
+  const plan = usePlan()
+
   const columns: Column<SellerTransaction>[] = [
     {
       key: 'order',
@@ -37,9 +40,39 @@ export function SellerTransactionsPage() {
         </span>
       ),
     },
-    { key: 'date', header: 'Transaction date', hideBelow: 'md', sortBy: (t) => t.date, cell: (t) => <span className="whitespace-nowrap text-ink-500">{t.date}</span> },
+    {
+      key: 'channel',
+      header: 'Source',
+      sortBy: (t) => t.channel,
+      cell: (t) => (
+        <span
+          className={
+            'inline-flex items-center gap-1.5 whitespace-nowrap rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ' +
+            (t.channel === 'store'
+              ? 'border-teal-100 bg-teal-50 text-teal-600 dark:border-teal-600/40 dark:bg-teal-600/15 dark:text-teal-100'
+              : 'border-brand-100 bg-brand-50 text-brand-700 dark:border-brand-800 dark:bg-brand-950 dark:text-brand-200')
+          }
+        >
+          {t.channel === 'store' ? <Globe className="size-3" /> : <Store className="size-3" />}
+          {t.channel === 'store' ? 'Online Store' : 'SafalMarketHub'}
+        </span>
+      ),
+    },
+    { key: 'date', header: 'Date', hideBelow: 'xl', sortBy: (t) => t.date, cell: (t) => <span className="whitespace-nowrap text-ink-500">{t.date}</span> },
     { key: 'gross', header: 'Gross sale', align: 'right', sortBy: (t) => t.gross, cell: (t) => <span className="tabular">{inr(t.gross)}</span> },
-    { key: 'commission', header: 'Commission', align: 'right', cell: (t) => <span className="tabular text-destructive">− {inr(t.commission)}</span> },
+    {
+      key: 'commission',
+      header: 'SafalMarketHub fee',
+      align: 'right',
+      cell: (t) => (
+        <span className="block">
+          <span className="block tabular text-destructive">− {inr(t.commission)}</span>
+          <span className="block text-[11px] text-ink-400">
+            {t.channel === 'store' ? `${plan.ownStoreFee ?? 0}% platform fee` : `${plan.commission}% commission`}
+          </span>
+        </span>
+      ),
+    },
     {
       key: 'refund',
       header: 'Refund',
@@ -105,12 +138,39 @@ export function SellerTransactionsPage() {
 
       <SellerStatusBanner className="mb-5" />
 
+      {/* The fee split, stated where sellers actually check their money */}
+      <div className="mb-4 grid gap-3 sm:grid-cols-2">
+        <div className="rounded-lg border bg-card p-4 shadow-xs">
+          <p className="flex items-center gap-2 text-[12px] font-bold uppercase tracking-[0.08em] text-ink-400">
+            <Store className="size-3.5" />
+            Marketplace sales
+          </p>
+          <p className="mt-2 text-[19px] font-bold tabular text-ink-950 dark:text-white">{plan.commission}% commission</p>
+          <p className="mt-1 text-[12px] text-ink-500">SafalMarketHub brought the customer.</p>
+        </div>
+        <div className="rounded-lg border bg-card p-4 shadow-xs">
+          <p className="flex items-center gap-2 text-[12px] font-bold uppercase tracking-[0.08em] text-ink-400">
+            <Globe className="size-3.5" />
+            Your own store
+          </p>
+          <p className="mt-2 text-[19px] font-bold tabular text-ink-950 dark:text-white">
+            {plan.ownStoreFee === null ? 'Not on this plan' : `${plan.ownStoreFee}% platform fee`}
+          </p>
+          <p className="mt-1 text-[12px] text-ink-500">
+            {plan.ownStoreFee === null ? 'Upgrade to sell on your own storefront.' : 'You brought the customer.'}
+          </p>
+        </div>
+      </div>
+
       <DataTable
         rows={SELLER_TRANSACTIONS}
         columns={columns}
         searchKeys={(t) => `${t.id} ${t.order} ${t.settlementId ?? ''}`}
         searchPlaceholder="Search order or transaction ID"
-        filters={[{ key: 'status', label: 'Status', options: ['Settlement Pending', 'Settlement Eligible', 'Settled', 'Reversed'] }]}
+        filters={[
+          { key: 'status', label: 'Status', options: ['Settlement Pending', 'Settlement Eligible', 'Settled', 'Reversed'] },
+          { key: 'channel', label: 'Source', options: ['SafalMarketHub', 'Online Store'] },
+        ]}
         exportName="Transactions"
         empty={{ title: 'No transactions yet', body: 'Transactions appear once customers start buying your products.' }}
       />

@@ -5,11 +5,15 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-/** Indian-format currency, e.g. 2,45,800 → "₹2,45,800" */
-export function inr(value: number, withDecimals = false) {
-  return new Intl.NumberFormat('en-IN', {
+
+/**
+ * Every amount in the product renders through this one function, so the
+ * display currency is a single decision rather than 180 scattered ones.
+ */
+export function money(value: number, withDecimals = false) {
+  return new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: 'INR',
+    currency: 'USD',
     minimumFractionDigits: withDecimals ? 2 : 0,
     maximumFractionDigits: withDecimals ? 2 : 0,
   }).format(value)
