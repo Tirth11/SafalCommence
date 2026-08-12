@@ -17,7 +17,7 @@ import {
   type SellerTransaction,
 } from '@/data/seller'
 import { usePlan } from '@/store/storefront-store'
-import { inr } from '@/lib/utils'
+import { money } from '@/lib/utils'
 
 /* --------------------------------------------------------- transactions --- */
 export function SellerTransactionsPage() {
@@ -59,14 +59,14 @@ export function SellerTransactionsPage() {
       ),
     },
     { key: 'date', header: 'Date', hideBelow: 'xl', sortBy: (t) => t.date, cell: (t) => <span className="whitespace-nowrap text-ink-500">{t.date}</span> },
-    { key: 'gross', header: 'Gross sale', align: 'right', sortBy: (t) => t.gross, cell: (t) => <span className="tabular">{inr(t.gross)}</span> },
+    { key: 'gross', header: 'Gross sale', align: 'right', sortBy: (t) => t.gross, cell: (t) => <span className="tabular">{money(t.gross)}</span> },
     {
       key: 'commission',
       header: 'SafalMarketHub fee',
       align: 'right',
       cell: (t) => (
         <span className="block">
-          <span className="block tabular text-destructive">− {inr(t.commission)}</span>
+          <span className="block tabular text-destructive">− {money(t.commission)}</span>
           <span className="block text-[11px] text-ink-400">
             {t.channel === 'store' ? `${plan.ownStoreFee ?? 0}% platform fee` : `${plan.commission}% commission`}
           </span>
@@ -78,14 +78,14 @@ export function SellerTransactionsPage() {
       header: 'Refund',
       align: 'right',
       hideBelow: 'lg',
-      cell: (t) => <span className="tabular text-destructive">{t.refund ? `− ${inr(t.refund)}` : '—'}</span>,
+      cell: (t) => <span className="tabular text-destructive">{t.refund ? `− ${money(t.refund)}` : '—'}</span>,
     },
     {
       key: 'other',
       header: 'Other deduction',
       align: 'right',
       hideBelow: 'xl',
-      cell: (t) => <span className="tabular">{t.otherDeduction ? `− ${inr(t.otherDeduction)}` : '—'}</span>,
+      cell: (t) => <span className="tabular">{t.otherDeduction ? `− ${money(t.otherDeduction)}` : '—'}</span>,
     },
     {
       key: 'earnings',
@@ -94,7 +94,7 @@ export function SellerTransactionsPage() {
       sortBy: (t) => t.earnings,
       cell: (t) => (
         <span className={'font-bold tabular ' + (t.earnings < 0 ? 'text-destructive' : 'text-ink-950 dark:text-white')}>
-          {inr(t.earnings)}
+          {money(t.earnings)}
         </span>
       ),
     },
@@ -198,16 +198,16 @@ export function SellerSettlementsPage() {
       ),
     },
     { key: 'period', header: 'Period', hideBelow: 'md', cell: (s) => <span className="whitespace-nowrap text-ink-500">{s.period}</span> },
-    { key: 'gross', header: 'Gross sales', align: 'right', sortBy: (s) => s.gross, cell: (s) => <span className="tabular">{inr(s.gross)}</span> },
-    { key: 'refunds', header: 'Refunds', align: 'right', hideBelow: 'lg', cell: (s) => <span className="tabular text-destructive">{s.refunds ? `− ${inr(s.refunds)}` : '—'}</span> },
-    { key: 'commission', header: 'Commission', align: 'right', hideBelow: 'md', cell: (s) => <span className="tabular text-destructive">− {inr(s.commission)}</span> },
-    { key: 'deductions', header: 'Deductions', align: 'right', hideBelow: 'xl', cell: (s) => <span className="tabular">{s.deductions ? `− ${inr(s.deductions)}` : '—'}</span> },
+    { key: 'gross', header: 'Gross sales', align: 'right', sortBy: (s) => s.gross, cell: (s) => <span className="tabular">{money(s.gross)}</span> },
+    { key: 'refunds', header: 'Refunds', align: 'right', hideBelow: 'lg', cell: (s) => <span className="tabular text-destructive">{s.refunds ? `− ${money(s.refunds)}` : '—'}</span> },
+    { key: 'commission', header: 'Commission', align: 'right', hideBelow: 'md', cell: (s) => <span className="tabular text-destructive">− {money(s.commission)}</span> },
+    { key: 'deductions', header: 'Deductions', align: 'right', hideBelow: 'xl', cell: (s) => <span className="tabular">{s.deductions ? `− ${money(s.deductions)}` : '—'}</span> },
     {
       key: 'net',
       header: 'Net settlement',
       align: 'right',
       sortBy: (s) => s.net,
-      cell: (s) => <span className="font-bold tabular text-ink-950 dark:text-white">{inr(s.net)}</span>,
+      cell: (s) => <span className="font-bold tabular text-ink-950 dark:text-white">{money(s.net)}</span>,
     },
     { key: 'status', header: 'Status', sortBy: (s) => s.status, cell: (s) => <StatusBadge status={s.status} /> },
     { key: 'date', header: 'Settlement date', hideBelow: 'lg', cell: (s) => <span className="whitespace-nowrap text-ink-500">{s.settledOn ?? '—'}</span> },
@@ -235,7 +235,7 @@ export function SellerSettlementsPage() {
           <div key={card.label} className="rounded-lg border bg-card p-4 shadow-xs">
             <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-ink-400">{card.label}</p>
             <p className="mt-2 text-[22px] font-bold leading-none tracking-[-0.03em] tabular text-ink-950 dark:text-white">
-              {inr(card.value)}
+              {money(card.value)}
             </p>
             <p className="mt-2 text-[11px] text-ink-500">{card.hint}</p>
           </div>
@@ -340,12 +340,12 @@ export function SellerSettlementDetailPage() {
         <Panel title="Settlement breakdown">
           <MoneyRows
             rows={[
-              { label: 'Gross sales', value: inr(s.gross), hint: `${s.orders} orders` },
-              { label: 'Refunds', value: s.refunds ? `− ${inr(s.refunds)}` : '—', tone: 'negative' },
-              { label: 'Eligible sales', value: inr(eligibleSales) },
-              { label: 'Platform commission', value: `− ${inr(s.commission)}`, tone: 'negative' },
-              { label: 'Other deductions', value: s.deductions ? `− ${inr(s.deductions)}` : '—', tone: 'negative', hint: 'shipping, adjustments' },
-              { label: 'Net settlement', value: inr(s.net), tone: 'total' },
+              { label: 'Gross sales', value: money(s.gross), hint: `${s.orders} orders` },
+              { label: 'Refunds', value: s.refunds ? `− ${money(s.refunds)}` : '—', tone: 'negative' },
+              { label: 'Eligible sales', value: money(eligibleSales) },
+              { label: 'Platform commission', value: `− ${money(s.commission)}`, tone: 'negative' },
+              { label: 'Other deductions', value: s.deductions ? `− ${money(s.deductions)}` : '—', tone: 'negative', hint: 'shipping, adjustments' },
+              { label: 'Net settlement', value: money(s.net), tone: 'total' },
             ]}
           />
         </Panel>
@@ -389,10 +389,10 @@ export function SellerSettlementDetailPage() {
                 {t.order}
               </AdminLink>
               <span className="min-w-0 flex-1 text-[12px] text-ink-500">{t.date}</span>
-              <span className="text-[13px] tabular text-ink-600 dark:text-ink-300">{inr(t.gross)}</span>
-              <span className="text-[13px] tabular text-destructive">− {inr(t.commission)}</span>
+              <span className="text-[13px] tabular text-ink-600 dark:text-ink-300">{money(t.gross)}</span>
+              <span className="text-[13px] tabular text-destructive">− {money(t.commission)}</span>
               <span className="w-[92px] text-right text-[13px] font-bold tabular text-ink-950 dark:text-white">
-                {inr(t.earnings)}
+                {money(t.earnings)}
               </span>
             </li>
           ))}

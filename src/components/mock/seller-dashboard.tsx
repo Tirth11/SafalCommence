@@ -161,7 +161,7 @@ export function SellerDashboardMock() {
                           fontSize: 12,
                           boxShadow: 'var(--shadow-md)',
                         }}
-                        formatter={(v) => [`₹${Number(v).toLocaleString('en-IN')}`, 'Sales']}
+                        formatter={(v) => [`$${Number(v).toLocaleString('en-US')}`, 'Sales']}
                       />
                       <Area
                         type="monotone"

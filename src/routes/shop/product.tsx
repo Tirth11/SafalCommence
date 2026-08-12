@@ -24,7 +24,7 @@ import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { getProduct, SERVICEABLE_PINS, SHOP_PRODUCTS } from '@/data/shop'
 import { useCartStore } from '@/store/cart-store'
-import { cn, inr } from '@/lib/utils'
+import { cn, money } from '@/lib/utils'
 
 export function ProductDetailPage() {
   const { productId } = useParams({ strict: false }) as { productId?: string }
@@ -366,7 +366,7 @@ export function ProductDetailPage() {
               business days; express delivery in 1–2 business days where available.
             </p>
             <p className="mt-3">
-              Delivery charges are calculated at checkout based on your PIN code. Orders above {inr(999)} qualify for free
+              Delivery charges are calculated at checkout based on your PIN code. Orders above {money(999)} qualify for free
               standard delivery.
             </p>
           </div>
@@ -469,7 +469,7 @@ export function ProductDetailPage() {
         <div className="fixed inset-x-0 bottom-[57px] z-40 flex items-center gap-3 border-t bg-background/95 px-4 py-3 backdrop-blur-xl sm:hidden">
           <div className="min-w-0 flex-1">
             <p className="truncate text-[11px] text-ink-500">{variantLabel || 'Select options'}</p>
-            <p className="text-[15px] font-bold tabular text-ink-950 dark:text-white">{inr(product.price * qty)}</p>
+            <p className="text-[15px] font-bold tabular text-ink-950 dark:text-white">{money(product.price * qty)}</p>
           </div>
           <Button variant="outline" size="sm" onClick={onAddToCart}>
             <ShoppingCart className="size-4" />

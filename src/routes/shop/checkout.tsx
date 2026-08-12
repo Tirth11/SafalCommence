@@ -35,7 +35,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { CUSTOMER_ADDRESSES, isDeliverable, SHIPPING_OPTIONS, type Address } from '@/data/shop'
 import { useAccountStore } from '@/store/account-store'
 import { groupBySeller, totals, useCartStore, useCheckoutLines, type CartItem } from '@/store/cart-store'
-import { cn, inr } from '@/lib/utils'
+import { cn, money } from '@/lib/utils'
 
 type Step = 'account' | 'address' | 'shipping' | 'review' | 'payment' | 'processing' | 'success' | 'failed' | 'pending'
 
@@ -227,7 +227,7 @@ export function CheckoutPage() {
                       {line.variant} · Qty {line.qty}
                     </p>
                   </div>
-                  <p className="shrink-0 text-[13px] font-semibold tabular">{inr(line.price * line.qty)}</p>
+                  <p className="shrink-0 text-[13px] font-semibold tabular">{money(line.price * line.qty)}</p>
                 </li>
               ))}
             </ul>
@@ -680,7 +680,7 @@ function ShippingStep({
                   <span className="block text-[14px] font-semibold text-ink-900 dark:text-white">{option.label}</span>
                   <span className="block text-[12px] text-ink-500">Estimated {option.estimate}</span>
                 </span>
-                <span className="shrink-0 text-[14px] font-bold tabular text-ink-950 dark:text-white">{inr(option.price)}</span>
+                <span className="shrink-0 text-[14px] font-bold tabular text-ink-950 dark:text-white">{money(option.price)}</span>
               </button>
             </li>
           )
@@ -748,7 +748,7 @@ function ReviewStep({
                       {line.variant} · Qty {line.qty}
                     </p>
                   </div>
-                  <p className="text-[13px] font-semibold tabular">{inr(line.price * line.qty)}</p>
+                  <p className="text-[13px] font-semibold tabular">{money(line.price * line.qty)}</p>
                 </li>
               ))}
             </ul>
@@ -767,7 +767,7 @@ function ReviewStep({
           </Button>
         </div>
         <p className="mt-3 text-[13px] text-ink-700 dark:text-ink-200">
-          <span className="font-semibold">{shipping.label}</span> · {shipping.estimate} · {inr(shipping.price)}
+          <span className="font-semibold">{shipping.label}</span> · {shipping.estimate} · {money(shipping.price)}
         </p>
       </section>
 
@@ -886,7 +886,7 @@ function PaymentStep({
         primary={
           <Button size="lg" onClick={() => onResult(outcome)}>
             <Lock className="size-4" />
-            {method === 'cod' ? 'Place Order' : `Pay ${inr(amount)}`}
+            {method === 'cod' ? 'Place Order' : `Pay ${money(amount)}`}
           </Button>
         }
       />
@@ -908,7 +908,7 @@ function ProcessingState({ amount }: { amount: number }) {
       </span>
       <h1 className="mt-6 text-2xl">Processing payment…</h1>
       <p className="mx-auto mt-3 max-w-[380px] text-[15px] text-ink-600 dark:text-ink-300">
-        We're confirming {inr(amount)} with your bank. Please don't refresh or close this page.
+        We're confirming {money(amount)} with your bank. Please don't refresh or close this page.
       </p>
     </div>
   )
@@ -942,7 +942,7 @@ function SuccessState({
         </div>
         <div>
           <dt className="text-[11px] font-bold uppercase tracking-[0.08em] text-ink-400">Amount paid</dt>
-          <dd className="mt-1 text-[15px] font-bold tabular text-ink-950 dark:text-white">{inr(amount)}</dd>
+          <dd className="mt-1 text-[15px] font-bold tabular text-ink-950 dark:text-white">{money(amount)}</dd>
         </div>
         <div>
           <dt className="text-[11px] font-bold uppercase tracking-[0.08em] text-ink-400">Delivery address</dt>
@@ -994,7 +994,7 @@ function FailureState({ amount, onRetry }: { amount: number; onRetry: () => void
       </span>
       <h1 className="mt-6 text-2xl">Payment unsuccessful</h1>
       <p className="mx-auto mt-3 max-w-[400px] text-[15px] text-ink-600 dark:text-ink-300">
-        We couldn't complete your payment of {inr(amount)}. No order has been confirmed and you have not been charged.
+        We couldn't complete your payment of {money(amount)}. No order has been confirmed and you have not been charged.
       </p>
       <div className="mt-7 grid gap-3 sm:grid-cols-3">
         <Button onClick={onRetry}>Try Again</Button>
@@ -1020,7 +1020,7 @@ function PendingState({ amount }: { amount: number }) {
       </span>
       <h1 className="mt-6 text-2xl">We're confirming your payment</h1>
       <p className="mx-auto mt-3 max-w-[400px] text-[15px] text-ink-600 dark:text-ink-300">
-        Your bank hasn't confirmed {inr(amount)} yet. Please do not make another payment while we confirm the transaction.
+        Your bank hasn't confirmed {money(amount)} yet. Please do not make another payment while we confirm the transaction.
       </p>
       <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
         <Button onClick={() => toast.success('Still confirming', { description: 'We will email you as soon as the bank responds.' })}>

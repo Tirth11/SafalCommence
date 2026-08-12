@@ -7,7 +7,7 @@ import { PageHeader } from '@/components/admin/primitives'
 import { StatusBadge } from '@/components/admin/status-badge'
 import { Button } from '@/components/ui/button'
 import { SELLERS, type Seller } from '@/data/admin'
-import { inr } from '@/lib/utils'
+import { money } from '@/lib/utils'
 
 const SELLER_STATUSES = ['Registered', 'Onboarding', 'Pending Review', 'Active', 'Suspended', 'Payout Hold', 'Closed']
 const KYC_STATUSES = ['Not Submitted', 'Submitted', 'Under Review', 'Verified', 'Changes Required', 'Rejected']
@@ -88,7 +88,7 @@ export function SellersPage({ mode = 'sellers' }: { mode?: 'sellers' | 'kyc' }) 
       header: 'Total sales',
       align: 'right',
       sortBy: (s) => s.sales,
-      cell: (s) => <span className="font-semibold tabular text-ink-900 dark:text-white">{s.sales ? inr(s.sales) : '—'}</span>,
+      cell: (s) => <span className="font-semibold tabular text-ink-900 dark:text-white">{s.sales ? money(s.sales) : '—'}</span>,
     },
     { key: 'registered', header: 'Registered', hideBelow: 'xl', sortBy: (s) => s.registered, cell: (s) => <span className="whitespace-nowrap text-ink-500">{s.registered}</span> },
   ]

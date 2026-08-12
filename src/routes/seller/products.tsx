@@ -18,7 +18,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { SELLER_PRODUCTS, type SellerProduct } from '@/data/seller'
-import { discountPercent, inr } from '@/lib/utils'
+import { discountPercent, money } from '@/lib/utils'
 
 const STATUSES = ['Draft', 'Under Review', 'Changes Required', 'Approved', 'Active', 'Paused', 'Rejected', 'Out of Stock', 'Archived']
 const CATEGORIES = ['Electronics', 'Accessories']
@@ -71,7 +71,7 @@ export function SellerProductsPage() {
       sortBy: (p) => p.price,
       cell: (p) => (
         <span className="block">
-          <span className="block font-semibold tabular text-ink-900 dark:text-white">{inr(p.price)}</span>
+          <span className="block font-semibold tabular text-ink-900 dark:text-white">{money(p.price)}</span>
           <span className="block text-[11px] text-ink-400 tabular">{discountPercent(p.mrp, p.price)}% off MRP</span>
         </span>
       ),

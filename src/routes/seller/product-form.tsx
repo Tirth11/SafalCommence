@@ -16,7 +16,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Field, SelectField } from '@/routes/seller/setup'
 import { PRODUCT_CATEGORIES, SELLER_PRODUCTS } from '@/data/seller'
-import { discountPercent, inr } from '@/lib/utils'
+import { discountPercent, money } from '@/lib/utils'
 
 const STEPS = [
   { key: 'basic', label: 'Basic Details' },
@@ -338,11 +338,11 @@ export function SellerProductFormPage() {
       {step === 'pricing' && (
         <Panel title="Set your price" description="Customers see the discount calculated from MRP.">
           <div className="grid gap-5 sm:grid-cols-2">
-            <Field label="MRP (₹)" required>
+            <Field label="MRP ($)" required>
               <Input type="number" value={mrp} onChange={(e) => setMrp(Number(e.target.value))} />
             </Field>
             <Field
-              label="Selling Price (₹)"
+              label="Selling Price ($)"
               required
               error={priceInvalid ? 'Selling Price cannot be greater than MRP.' : undefined}
             >
@@ -364,8 +364,8 @@ export function SellerProductFormPage() {
           <div className="mt-6 rounded-lg border bg-muted/50 p-5">
             <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-ink-400">Customer sees</p>
             <div className="mt-2 flex flex-wrap items-baseline gap-3">
-              <span className="text-[26px] font-bold tabular text-ink-950 dark:text-white">{inr(price)}</span>
-              <span className="text-[15px] text-ink-400 line-through tabular">{inr(mrp)}</span>
+              <span className="text-[26px] font-bold tabular text-ink-950 dark:text-white">{money(price)}</span>
+              <span className="text-[15px] text-ink-400 line-through tabular">{money(mrp)}</span>
               {!priceInvalid && mrp > price && (
                 <span className="rounded-full bg-gold-50 px-2.5 py-0.5 text-[12px] font-bold text-gold-600 dark:bg-gold-600/15 dark:text-gold-400">
                   {discountPercent(mrp, price)}% OFF
@@ -373,8 +373,8 @@ export function SellerProductFormPage() {
               )}
             </div>
             <p className="mt-3 text-[12px] text-ink-500">
-              Platform commission at 10% ≈ {inr(Math.round(price * 0.1))} · your expected earning ≈{' '}
-              {inr(price - Math.round(price * 0.1))} per unit.
+              Platform commission at 10% ≈ {money(Math.round(price * 0.1))} · your expected earning ≈{' '}
+              {money(price - Math.round(price * 0.1))} per unit.
             </p>
           </div>
           <WizardActions onBack={() => prevStep && go(prevStep)} onNext={() => nextStep && go(nextStep)} disabled={priceInvalid} />
@@ -461,7 +461,7 @@ export function SellerProductFormPage() {
                   <li key={c.label} className="flex items-center justify-between gap-3 rounded-sm border px-3.5 py-2.5 text-[13px]">
                     <span className="font-semibold text-ink-900 dark:text-white">{c.label}</span>
                     <span className="text-ink-500 tabular">
-                      {c.sku} · {inr(c.price)} · {c.stock} in stock
+                      {c.sku} · {money(c.price)} · {c.stock} in stock
                     </span>
                   </li>
                 ))}
@@ -471,8 +471,8 @@ export function SellerProductFormPage() {
             <ReviewSection title="Pricing" onEdit={() => go('pricing')}>
               <DefinitionList
                 items={[
-                  { label: 'MRP', value: inr(mrp) },
-                  { label: 'Selling price', value: inr(price), hint: `${discountPercent(mrp, price)}% off` },
+                  { label: 'MRP', value: money(mrp) },
+                  { label: 'Selling price', value: money(price), hint: `${discountPercent(mrp, price)}% off` },
                   { label: 'GST', value: '18%' },
                   { label: 'HSN / SAC', value: '85183000' },
                 ]}

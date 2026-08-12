@@ -6,7 +6,7 @@ import { Logo } from '@/components/brand/logo'
 const CARDS = [
   { icon: ShoppingBag, label: 'Orders', value: '124', note: 'This month' },
   { icon: Package, label: 'Products', value: '128', note: 'Live listings' },
-  { icon: IndianRupee, label: 'Payments', value: '₹84,250', note: 'Received' },
+  { icon: IndianRupee, label: 'Payments', value: '$1,100', note: 'Received' },
   { icon: Boxes, label: 'Shopping Bag', value: '2 items', note: 'Ready to checkout' },
 ]
 

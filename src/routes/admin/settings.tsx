@@ -123,7 +123,7 @@ export function SettingsPage() {
           <Panel title="Logistics">
             <div className="grid gap-5 sm:grid-cols-2">
               <SelectSetting id="courier" label="Default courier partner" value="Delhivery" options={['Delhivery', 'Blue Dart', 'Ecom Express']} />
-              <TextSetting id="free-shipping" label="Free shipping above (₹)" value="999" />
+              <TextSetting id="free-shipping" label="Free shipping above ($)" value="12" />
             </div>
           </Panel>
         </TabsContent>
@@ -132,7 +132,7 @@ export function SettingsPage() {
           <Panel title="Marketplace controls">
             <ToggleList defs={MARKETPLACE_TOGGLES} state={toggles} setState={setToggles} />
             <div className="mt-6 grid gap-5 border-t pt-5 sm:grid-cols-2">
-              <TextSetting id="min-order" label="Minimum order value (₹)" value="199" />
+              <TextSetting id="min-order" label="Minimum order value ($)" value="3" />
             </div>
           </Panel>
         </TabsContent>

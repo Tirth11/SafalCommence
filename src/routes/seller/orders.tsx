@@ -8,7 +8,7 @@ import { StatusBadge } from '@/components/admin/status-badge'
 import { SellerStatusBanner } from '@/components/seller/status-banner'
 import { Button } from '@/components/ui/button'
 import { ORDER_TABS, SELLER_ORDERS, type SellerOrder } from '@/data/seller'
-import { inr } from '@/lib/utils'
+import { money } from '@/lib/utils'
 
 const NEXT_ACTION: Record<SellerOrder['status'], string> = {
   New: 'Accept order',
@@ -93,7 +93,7 @@ export function SellerOrdersPage() {
       header: 'Amount',
       align: 'right',
       sortBy: (o) => o.productValue,
-      cell: (o) => <span className="font-semibold tabular text-ink-900 dark:text-white">{inr(o.productValue)}</span>,
+      cell: (o) => <span className="font-semibold tabular text-ink-900 dark:text-white">{money(o.productValue)}</span>,
     },
     {
       key: 'source',

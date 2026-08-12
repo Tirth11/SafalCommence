@@ -10,7 +10,7 @@ import { OnboardingChecklist } from '@/components/seller/seller-bits'
 import { SellerStatusBanner, SellerStatusPill } from '@/components/seller/status-banner'
 import { Button } from '@/components/ui/button'
 import { SELLER_ORDERS, SELLER_PRODUCTS, SELLER_SALES_7D } from '@/data/seller'
-import { inr } from '@/lib/utils'
+import { money } from '@/lib/utils'
 import { useOnboardingProgress, useSellerStore } from '@/store/seller-store'
 
 const PERIODS = ['7 Days', '30 Days', 'Custom'] as const
@@ -31,7 +31,7 @@ export function SellerDashboardPage() {
   const onboarding = status === 'Onboarding' || (status === 'Pending Review' && !isComplete)
 
   const kpis: Kpi[] = [
-    { label: 'Total Sales', value: '₹2,45,800', hint: 'Last 30 days', delta: { value: '+18.4%', direction: 'up' } },
+    { label: 'Total Sales', value: '$3,100', hint: 'Last 30 days', delta: { value: '+18.4%', direction: 'up' } },
     { label: 'Total Orders', value: '486', hint: 'All time', delta: { value: '+12 this week', direction: 'up' } },
     {
       label: 'Pending Orders',
@@ -48,7 +48,7 @@ export function SellerDashboardPage() {
       attention: lowStock.length + outOfStock.length > 0,
       target: { to: '/seller/inventory', search: { filter: 'Low Stock' } },
     },
-    { label: 'Pending Settlement', value: '₹42,900', hint: 'Eligible on 16 Aug', target: { to: '/seller/settlements' } },
+    { label: 'Pending Settlement', value: '$540', hint: 'Eligible on 16 Aug', target: { to: '/seller/settlements' } },
   ]
 
   return (
@@ -213,7 +213,7 @@ export function SellerDashboardPage() {
                         fontSize: 12,
                         boxShadow: 'var(--shadow-md)',
                       }}
-                      formatter={(value, name) => (name === 'sales' ? [inr(Number(value)), 'Sales'] : [value, 'Orders'])}
+                      formatter={(value, name) => (name === 'sales' ? [money(Number(value)), 'Sales'] : [value, 'Orders'])}
                     />
                     <Area type="monotone" dataKey="sales" stroke="var(--brand-600)" strokeWidth={2} fill="url(#sellerSales)" dot={false} />
                   </AreaChart>
@@ -278,7 +278,7 @@ export function SellerDashboardPage() {
                       <span className="block truncate text-[13px] text-ink-700 dark:text-ink-200">{o.customer}</span>
                       <span className="block text-[11px] text-ink-500">{o.date}</span>
                     </span>
-                    <span className="text-[13px] font-semibold tabular text-ink-900 dark:text-white">{inr(o.productValue)}</span>
+                    <span className="text-[13px] font-semibold tabular text-ink-900 dark:text-white">{money(o.productValue)}</span>
                     <StatusBadge status={o.status} />
                   </AdminLink>
                 </li>

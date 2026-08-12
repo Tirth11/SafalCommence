@@ -5,7 +5,7 @@ import { ArrowRight, Check, Minus, Sparkles, Store, X } from 'lucide-react'
 import { EditorialHeading, Reveal } from '@/components/marketing/reveal'
 import { Button } from '@/components/ui/button'
 import { PLAN_FEATURES, PLANS } from '@/data/plans'
-import { cn, inr } from '@/lib/utils'
+import { cn, money } from '@/lib/utils'
 
 /**
  * Hybrid model, stated plainly: free to join the marketplace, subscribe when
@@ -103,7 +103,7 @@ export function Pricing() {
                 Unlimited products, API access, negotiated rates
               </h3>
               <p className="mt-2.5 max-w-[620px] text-[14px] leading-relaxed text-ink-300">
-                From ₹4,999/month, or custom pricing for multiple storefronts, advanced roles, ERP integration, custom
+                From $62/month, or custom pricing for multiple storefronts, advanced roles, ERP integration, custom
                 checkout and dedicated support — including a negotiated marketplace commission.
               </p>
             </div>
@@ -120,9 +120,9 @@ export function Pricing() {
               title="We bring the customer"
               subtitle="A sale on the SafalMarketHub marketplace"
               rows={[
-                { label: 'Product price', value: inr(10000) },
-                { label: 'Marketplace commission (6% on Pro)', value: `− ${inr(600)}`, negative: true },
-                { label: 'You receive', value: inr(9400), total: true },
+                { label: 'Product price', value: money(10000) },
+                { label: 'Marketplace commission (6% on Pro)', value: `− ${money(600)}`, negative: true },
+                { label: 'You receive', value: money(9400), total: true },
               ]}
               note="Commission covers the customer we introduced, the checkout, support and settlement."
             />
@@ -131,9 +131,9 @@ export function Pricing() {
               subtitle="The same sale on your own storefront"
               accent
               rows={[
-                { label: 'Product price', value: inr(10000) },
-                { label: 'Platform fee (1% on Pro)', value: `− ${inr(100)}`, negative: true },
-                { label: 'You receive', value: inr(9900), total: true },
+                { label: 'Product price', value: money(10000) },
+                { label: 'Platform fee (1% on Pro)', value: `− ${money(100)}`, negative: true },
+                { label: 'You receive', value: money(9900), total: true },
               ]}
               note="You already pay a subscription, so we take a fraction. Payment-gateway charges are separate."
             />

@@ -41,7 +41,7 @@ export function ShopHomePage() {
               </Button>
             </div>
             <ul className="mt-7 flex flex-wrap gap-x-5 gap-y-2">
-              {['Free delivery over ₹999', '7-day returns', 'Verified sellers'].map((item) => (
+              {['Free delivery over $12', '7-day returns', 'Verified sellers'].map((item) => (
                 <li key={item} className="flex items-center gap-1.5 text-[13px] font-medium text-ink-700 dark:text-ink-300">
                   <BadgeCheck className="size-4 shrink-0 text-teal-500" />
                   {item}
@@ -61,7 +61,7 @@ export function ShopHomePage() {
               >
                 <ProductThumb glyph={cat.glyph} tone={cat.tone} className="aspect-4/3" />
                 <p className="mt-2.5 px-0.5 text-[13px] font-semibold text-ink-900 dark:text-white">{cat.label}</p>
-                <p className="px-0.5 text-[11px] text-ink-500 tabular">{cat.count.toLocaleString('en-IN')} products</p>
+                <p className="px-0.5 text-[11px] text-ink-500 tabular">{cat.count.toLocaleString('en-US')} products</p>
               </AdminLink>
             ))}
           </div>
@@ -83,7 +83,7 @@ export function ShopHomePage() {
                   <ProductThumb glyph={cat.glyph} tone={cat.tone} className="aspect-square size-9 shrink-0 rounded-full" />
                   <span className="text-left">
                     <span className="block text-sm font-semibold leading-tight text-ink-900 dark:text-white">{cat.label}</span>
-                    <span className="block text-[11px] text-ink-500 tabular">{cat.count.toLocaleString('en-IN')} products</span>
+                    <span className="block text-[11px] text-ink-500 tabular">{cat.count.toLocaleString('en-US')} products</span>
                   </span>
                 </AdminLink>
               </li>
@@ -179,7 +179,7 @@ export function ShopCategoriesPage() {
                     {cat.label}
                   </AdminLink>
                 </h2>
-                <p className="text-[11px] text-ink-500 tabular">{cat.count.toLocaleString('en-IN')} products</p>
+                <p className="text-[11px] text-ink-500 tabular">{cat.count.toLocaleString('en-US')} products</p>
               </div>
             </div>
 

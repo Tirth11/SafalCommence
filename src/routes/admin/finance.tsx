@@ -18,7 +18,7 @@ import {
   type Settlement,
   type Transaction,
 } from '@/data/admin'
-import { inr } from '@/lib/utils'
+import { money } from '@/lib/utils'
 
 /* --------------------------------------------------------- transactions --- */
 export function AdminPaymentsPage() {
@@ -66,7 +66,7 @@ export function AdminPaymentsPage() {
       header: 'Amount',
       align: 'right',
       sortBy: (t) => t.amount,
-      cell: (t) => <span className="font-semibold tabular text-ink-900 dark:text-white">{inr(t.amount)}</span>,
+      cell: (t) => <span className="font-semibold tabular text-ink-900 dark:text-white">{money(t.amount)}</span>,
     },
     { key: 'date', header: 'Date', hideBelow: 'xl', sortBy: (t) => t.date, cell: (t) => <span className="whitespace-nowrap text-ink-500">{t.date}</span> },
     { key: 'status', header: 'Status', sortBy: (t) => t.status, cell: (t) => <StatusBadge status={t.status} /> },
@@ -159,9 +159,9 @@ export function AdminRefundsPage() {
       sortBy: (r) => r.amount,
       cell: (r) => (
         <span className="block">
-          <span className="block font-semibold tabular text-ink-900 dark:text-white">{inr(r.amount)}</span>
+          <span className="block font-semibold tabular text-ink-900 dark:text-white">{money(r.amount)}</span>
           {r.amount < r.orderValue && (
-            <span className="block text-[11px] text-ink-500 tabular">partial of {inr(r.orderValue)}</span>
+            <span className="block text-[11px] text-ink-500 tabular">partial of {money(r.orderValue)}</span>
           )}
         </span>
       ),
@@ -192,9 +192,9 @@ export function AdminRefundsPage() {
               onClick={() =>
                 ask({
                   title: 'Approve refund',
-                  description: `You are about to refund ${inr(r.amount)} to ${r.buyer}. Commission and the seller's settlement are reversed. Continue?`,
+                  description: `You are about to refund ${money(r.amount)} to ${r.buyer}. Commission and the seller's settlement are reversed. Continue?`,
                   confirmLabel: 'Approve Refund',
-                  extraFields: [{ key: 'amount', label: 'Refund amount (₹)', placeholder: String(r.amount), required: true }],
+                  extraFields: [{ key: 'amount', label: 'Refund amount ($)', placeholder: String(r.amount), required: true }],
                   successMessage: 'Refund approved',
                 })
               }
@@ -241,8 +241,8 @@ export function AdminRefundsPage() {
       <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
         {[
           { label: 'Awaiting review', value: '2', hint: 'Requested + under review' },
-          { label: 'Refund exposure', value: inr(REFUNDS.filter((r) => ['Requested', 'Under Review'].includes(r.status)).reduce((s, r) => s + r.amount, 0)), hint: 'Open requests' },
-          { label: 'Refunded this week', value: inr(2449), hint: '1 refund' },
+          { label: 'Refund exposure', value: money(REFUNDS.filter((r) => ['Requested', 'Under Review'].includes(r.status)).reduce((s, r) => s + r.amount, 0)), hint: 'Open requests' },
+          { label: 'Refunded this week', value: money(2449), hint: '1 refund' },
           { label: 'Rejected this week', value: '1', hint: 'Outside return window' },
         ].map((c) => (
           <div key={c.label} className="rounded-lg border bg-card p-4 shadow-xs">
@@ -394,15 +394,15 @@ export function AdminSettlementsPage() {
       ),
     },
     { key: 'period', header: 'Period', hideBelow: 'md', cell: (s) => <span className="whitespace-nowrap text-ink-500">{s.period}</span> },
-    { key: 'gross', header: 'Gross sales', align: 'right', sortBy: (s) => s.gross, cell: (s) => <span className="tabular">{inr(s.gross)}</span> },
-    { key: 'refunds', header: 'Refunds', align: 'right', hideBelow: 'xl', cell: (s) => <span className="tabular text-destructive">{s.refunds ? `− ${inr(s.refunds)}` : '—'}</span> },
-    { key: 'commission', header: 'Commission', align: 'right', hideBelow: 'lg', cell: (s) => <span className="tabular text-destructive">− {inr(s.commission)}</span> },
+    { key: 'gross', header: 'Gross sales', align: 'right', sortBy: (s) => s.gross, cell: (s) => <span className="tabular">{money(s.gross)}</span> },
+    { key: 'refunds', header: 'Refunds', align: 'right', hideBelow: 'xl', cell: (s) => <span className="tabular text-destructive">{s.refunds ? `− ${money(s.refunds)}` : '—'}</span> },
+    { key: 'commission', header: 'Commission', align: 'right', hideBelow: 'lg', cell: (s) => <span className="tabular text-destructive">− {money(s.commission)}</span> },
     {
       key: 'net',
       header: 'Net payable',
       align: 'right',
       sortBy: (s) => s.net,
-      cell: (s) => <span className="font-bold tabular text-ink-950 dark:text-white">{inr(s.net)}</span>,
+      cell: (s) => <span className="font-bold tabular text-ink-950 dark:text-white">{money(s.net)}</span>,
     },
     { key: 'status', header: 'Status', sortBy: (s) => s.status, cell: (s) => <StatusBadge status={s.status} /> },
     {
@@ -417,7 +417,7 @@ export function AdminSettlementsPage() {
             onClick={() =>
               ask({
                 title: 'Mark settlement paid',
-                description: `Confirm that ${inr(s.net)} has been paid to ${s.seller}.`,
+                description: `Confirm that ${money(s.net)} has been paid to ${s.seller}.`,
                 confirmLabel: 'Confirm Payment',
                 extraFields: [
                   { key: 'date', label: 'Payment date', placeholder: '12 Aug 2026', required: true },
@@ -461,10 +461,10 @@ export function AdminSettlementsPage() {
 
       <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
         {[
-          { label: 'Eligible now', value: inr(totals.eligible), hint: 'Ready to pay' },
-          { label: 'Pending', value: inr(totals.pending), hint: 'Return window open' },
-          { label: 'On hold', value: inr(totals.hold), hint: 'Blocked by review' },
-          { label: 'Paid', value: inr(totals.paid), hint: 'Completed batches' },
+          { label: 'Eligible now', value: money(totals.eligible), hint: 'Ready to pay' },
+          { label: 'Pending', value: money(totals.pending), hint: 'Return window open' },
+          { label: 'On hold', value: money(totals.hold), hint: 'Blocked by review' },
+          { label: 'Paid', value: money(totals.paid), hint: 'Completed batches' },
         ].map((c) => (
           <div key={c.label} className="rounded-lg border bg-card p-4 shadow-xs">
             <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-ink-400">{c.label}</p>
@@ -539,7 +539,7 @@ export function AdminSettlementDetailPage() {
                   onClick={() =>
                     ask({
                       title: 'Mark settlement paid',
-                      description: `Confirm that ${inr(s.net)} has been paid to ${s.seller}.`,
+                      description: `Confirm that ${money(s.net)} has been paid to ${s.seller}.`,
                       confirmLabel: 'Confirm Payment',
                       extraFields: [
                         { key: 'date', label: 'Payment date', placeholder: '12 Aug 2026', required: true },
@@ -590,12 +590,12 @@ export function AdminSettlementDetailPage() {
         <Panel title="Calculation">
           <MoneyRows
             rows={[
-              { label: 'Gross sales', value: inr(s.gross), hint: `${s.orders} orders` },
-              { label: 'Refunds', value: s.refunds ? `− ${inr(s.refunds)}` : '—', tone: 'negative' },
-              { label: 'Eligible sales', value: inr(eligibleSales) },
-              { label: 'Platform commission', value: `− ${inr(s.commission)}`, tone: 'negative' },
-              { label: 'Shipping / deductions', value: s.deductions ? `− ${inr(s.deductions)}` : '—', tone: 'negative' },
-              { label: 'Net settlement', value: inr(s.net), tone: 'total' },
+              { label: 'Gross sales', value: money(s.gross), hint: `${s.orders} orders` },
+              { label: 'Refunds', value: s.refunds ? `− ${money(s.refunds)}` : '—', tone: 'negative' },
+              { label: 'Eligible sales', value: money(eligibleSales) },
+              { label: 'Platform commission', value: `− ${money(s.commission)}`, tone: 'negative' },
+              { label: 'Shipping / deductions', value: s.deductions ? `− ${money(s.deductions)}` : '—', tone: 'negative' },
+              { label: 'Net settlement', value: money(s.net), tone: 'total' },
             ]}
           />
         </Panel>
@@ -707,9 +707,9 @@ export function AdminCommissionPage() {
             <MoneyRows
               className="mt-2"
               rows={[
-                { label: 'Product value', value: inr(10000) },
-                { label: 'Commission at 10%', value: `− ${inr(1000)}`, tone: 'negative' },
-                { label: 'Seller gross receivable', value: inr(9000), tone: 'total' },
+                { label: 'Product value', value: money(10000) },
+                { label: 'Commission at 10%', value: `− ${money(1000)}`, tone: 'negative' },
+                { label: 'Seller gross receivable', value: money(9000), tone: 'total' },
               ]}
             />
             <p className="mt-3 text-[12px] text-ink-500">

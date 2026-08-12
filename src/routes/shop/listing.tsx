@@ -10,7 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { SHOP_CATEGORIES, SHOP_PRODUCTS } from '@/data/shop'
-import { cn, inr } from '@/lib/utils'
+import { cn, money } from '@/lib/utils'
 
 const SORTS = [
   { id: 'relevance', label: 'Relevance' },
@@ -20,10 +20,10 @@ const SORTS = [
 ]
 
 const PRICE_BANDS = [
-  { id: 'under-2000', label: 'Under ₹2,000', test: (p: number) => p < 2000 },
-  { id: '2000-5000', label: '₹2,000 – ₹5,000', test: (p: number) => p >= 2000 && p <= 5000 },
-  { id: '5000-10000', label: '₹5,000 – ₹10,000', test: (p: number) => p > 5000 && p <= 10000 },
-  { id: 'above-10000', label: 'Above ₹10,000', test: (p: number) => p > 10000 },
+  { id: 'under-2000', label: 'Under $25', test: (p: number) => p < 2000 },
+  { id: '2000-5000', label: '$25– $62', test: (p: number) => p >= 2000 && p <= 5000 },
+  { id: '5000-10000', label: '$62– $120', test: (p: number) => p > 5000 && p <= 10000 },
+  { id: 'above-10000', label: 'Above $120', test: (p: number) => p > 10000 },
 ]
 
 /** Category listing and search results share one screen — the filters differ only by what's preset. */
@@ -247,7 +247,7 @@ function FilterPanel({
                 )}
               >
                 {cat.label}
-                <span className="text-[11px] text-ink-400 tabular">{cat.count.toLocaleString('en-IN')}</span>
+                <span className="text-[11px] text-ink-400 tabular">{cat.count.toLocaleString('en-US')}</span>
               </button>
             </li>
           ))}
@@ -293,7 +293,7 @@ function FilterPanel({
 
       <p className="rounded-sm border bg-muted/50 px-3 py-2.5 text-[11px] leading-relaxed text-ink-500">
         Prices shown include taxes. Delivery is calculated at checkout from your PIN code.
-        <span className="mt-1 block tabular">Free delivery on orders above {inr(999)}.</span>
+        <span className="mt-1 block tabular">Free delivery on orders above {money(999)}.</span>
       </p>
     </div>
   )

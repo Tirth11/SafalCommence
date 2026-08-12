@@ -10,7 +10,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { ADMIN_PRODUCTS, SELLERS } from '@/data/admin'
-import { discountPercent, inr } from '@/lib/utils'
+import { discountPercent, money } from '@/lib/utils'
 
 const CHANGE_REASONS = [
   'Improve product description',
@@ -251,18 +251,18 @@ export function ProductReviewPage() {
             <DefinitionList
               columns={1}
               items={[
-                { label: 'MRP', value: <span className="tabular">{inr(product.mrp)}</span> },
+                { label: 'MRP', value: <span className="tabular">{money(product.mrp)}</span> },
                 {
                   label: 'Selling price',
-                  value: <span className="tabular">{inr(product.price)}</span>,
+                  value: <span className="tabular">{money(product.price)}</span>,
                   hint: `${discountPercent(product.mrp, product.price)}% off MRP`,
                 },
                 { label: 'GST', value: `${product.gst}%` },
                 { label: 'HSN / SAC', value: <span className="tabular">{product.hsn}</span> },
                 {
                   label: 'Commission at 10%',
-                  value: <span className="tabular">{inr(Math.round(product.price * 0.1))}</span>,
-                  hint: `Seller receivable ${inr(product.price - Math.round(product.price * 0.1))}`,
+                  value: <span className="tabular">{money(Math.round(product.price * 0.1))}</span>,
+                  hint: `Seller receivable ${money(product.price - Math.round(product.price * 0.1))}`,
                 },
               ]}
             />

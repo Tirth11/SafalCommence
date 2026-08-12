@@ -7,7 +7,7 @@ import { PageHeader } from '@/components/admin/primitives'
 import { StatusBadge } from '@/components/admin/status-badge'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { TRANSACTIONS, type Transaction } from '@/data/admin'
-import { inr } from '@/lib/utils'
+import { money } from '@/lib/utils'
 
 const STATUSES = ['Initiated', 'Pending', 'Successful', 'Failed', 'Partially Refunded', 'Refunded']
 const METHODS = ['UPI', 'Credit Card', 'Netbanking']
@@ -60,7 +60,7 @@ export function PaymentsPage() {
       header: 'Amount',
       align: 'right',
       sortBy: (t) => t.amount,
-      cell: (t) => <span className="font-semibold tabular text-ink-900 dark:text-white">{inr(t.amount)}</span>,
+      cell: (t) => <span className="font-semibold tabular text-ink-900 dark:text-white">{money(t.amount)}</span>,
     },
     { key: 'date', header: 'Date', hideBelow: 'md', sortBy: (t) => t.date, cell: (t) => <span className="whitespace-nowrap text-ink-500">{t.date}</span> },
     { key: 'status', header: 'Status', sortBy: (t) => t.status, cell: (t) => <StatusBadge status={t.status} /> },

@@ -36,7 +36,7 @@ export function CataloguePage() {
       ),
     },
     { key: 'parent', header: 'Parent', hideBelow: 'md', cell: (c) => c.parent ?? '—' },
-    { key: 'products', header: 'Products', align: 'right', sortBy: (c) => c.products, cell: (c) => <span className="tabular">{c.products.toLocaleString('en-IN')}</span> },
+    { key: 'products', header: 'Products', align: 'right', sortBy: (c) => c.products, cell: (c) => <span className="tabular">{c.products.toLocaleString('en-US')}</span> },
     { key: 'order', header: 'Display order', align: 'right', hideBelow: 'lg', sortBy: (c) => c.order, cell: (c) => <span className="tabular">{c.order}</span> },
     { key: 'status', header: 'Status', sortBy: (c) => c.status, cell: (c) => <StatusBadge status={c.status} /> },
     {
@@ -58,7 +58,7 @@ export function CataloguePage() {
                   title: `Deactivate ${c.name}?`,
                   description:
                     c.products > 0
-                      ? `${c.products.toLocaleString('en-IN')} products sit in this category. Deactivating hides it from the storefront; existing products keep their history and may need reassignment.`
+                      ? `${c.products.toLocaleString('en-US')} products sit in this category. Deactivating hides it from the storefront; existing products keep their history and may need reassignment.`
                       : 'The category will be hidden from the storefront. Nothing is deleted.',
                   confirmLabel: 'Deactivate Category',
                   requireNote: true,

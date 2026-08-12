@@ -8,7 +8,7 @@ import { PageHeader } from '@/components/admin/primitives'
 import { StatusBadge } from '@/components/admin/status-badge'
 import { Button } from '@/components/ui/button'
 import { ADMIN_PRODUCTS, type AdminProduct } from '@/data/admin'
-import { discountPercent, inr } from '@/lib/utils'
+import { discountPercent, money } from '@/lib/utils'
 
 const APPROVALS = ['In Review', 'Approved', 'Changes Required', 'Rejected']
 const STATES = ['Active', 'Inactive', 'Disabled', 'Out of Stock', 'Draft']
@@ -86,9 +86,9 @@ export function ProductsPage() {
       sortBy: (p) => p.price,
       cell: (p) => (
         <span className="block">
-          <span className="block font-semibold tabular text-ink-900 dark:text-white">{inr(p.price)}</span>
+          <span className="block font-semibold tabular text-ink-900 dark:text-white">{money(p.price)}</span>
           <span className="block text-[11px] text-ink-400 tabular">
-            MRP {inr(p.mrp)} · {discountPercent(p.mrp, p.price)}% off
+            MRP {money(p.mrp)} · {discountPercent(p.mrp, p.price)}% off
           </span>
         </span>
       ),

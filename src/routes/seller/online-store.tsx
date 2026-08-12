@@ -34,7 +34,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { GENERATED_PAGES, STORE_THEMES } from '@/data/plans'
 import { SELLER_PRODUCTS } from '@/data/seller'
 import { usePlan, useStorefrontStore, useStoreUrl } from '@/store/storefront-store'
-import { cn, inr } from '@/lib/utils'
+import { cn, money } from '@/lib/utils'
 
 const TABS = [
   { value: 'overview', label: 'Overview' },
@@ -73,7 +73,7 @@ export function SellerOnlineStorePage() {
             action={
               <div className="flex flex-wrap justify-center gap-3">
                 <Button asChild>
-                  <AdminLink to="/seller/plan">See plans from ₹999/mo</AdminLink>
+                  <AdminLink to="/seller/plan">See plans from $12/mo</AdminLink>
                 </Button>
                 <Button variant="outline" asChild>
                   <AdminLink to="/seller/products">Back to products</AdminLink>
@@ -244,7 +244,7 @@ function StoreOverview() {
           <dl className="divide-y">
             <div className="flex items-baseline justify-between gap-4 py-2.5 first:pt-0">
               <dt className="text-[13px] text-ink-600 dark:text-ink-300">Subscription</dt>
-              <dd className="text-[13px] font-semibold tabular">{inr(plan.price)}/mo</dd>
+              <dd className="text-[13px] font-semibold tabular">{money(plan.price)}/mo</dd>
             </div>
             <div className="flex items-baseline justify-between gap-4 py-2.5">
               <dt className="text-[13px] text-ink-600 dark:text-ink-300">Fee on own-store sales</dt>
@@ -256,8 +256,8 @@ function StoreOverview() {
             </div>
           </dl>
           <p className="mt-3 border-t pt-3 text-[12px] leading-relaxed text-ink-500">
-            A {inr(10000)} sale on your own store keeps {inr(10000 - (10000 * (plan.ownStoreFee ?? 0)) / 100)} — versus{' '}
-            {inr(10000 - (10000 * plan.commission) / 100)} on the marketplace.
+            A {money(10000)} sale on your own store keeps {money(10000 - (10000 * (plan.ownStoreFee ?? 0)) / 100)} — versus{' '}
+            {money(10000 - (10000 * plan.commission) / 100)} on the marketplace.
           </p>
           <Button variant="outline" size="sm" className="mt-4 w-full" asChild>
             <AdminLink to="/seller/plan">Manage plan</AdminLink>
@@ -503,7 +503,7 @@ function StorePreview() {
                 <ProductScene glyph={p.glyph} tone={p.tone} className="aspect-square rounded-md" grain={false} />
                 <p className="mt-1.5 line-clamp-1 text-[10px] font-semibold text-ink-900 dark:text-white">{p.name}</p>
                 <p className="text-[10px] font-bold tabular" style={{ color: config.brandColor }}>
-                  {inr(p.price)}
+                  {money(p.price)}
                 </p>
               </div>
             ))}

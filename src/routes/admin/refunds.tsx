@@ -8,7 +8,7 @@ import { DefinitionList, MoneyRows, PageHeader, Panel } from '@/components/admin
 import { StatusBadge } from '@/components/admin/status-badge'
 import { Button } from '@/components/ui/button'
 import { REFUNDS, RETURNS, type Refund, type ReturnRequest } from '@/data/admin'
-import { inr } from '@/lib/utils'
+import { money } from '@/lib/utils'
 
 const REFUND_STATUSES = ['Requested', 'Under Review', 'Approved', 'Refund Initiated', 'Refunded', 'Rejected']
 const REJECT_REASONS = [
@@ -44,9 +44,9 @@ export function RefundsPage() {
       sortBy: (r) => r.amount,
       cell: (r) => (
         <span className="block">
-          <span className="block font-semibold tabular text-ink-900 dark:text-white">{inr(r.amount)}</span>
+          <span className="block font-semibold tabular text-ink-900 dark:text-white">{money(r.amount)}</span>
           {r.amount < r.orderValue && (
-            <span className="block text-[11px] text-ink-400 tabular">of {inr(r.orderValue)}</span>
+            <span className="block text-[11px] text-ink-400 tabular">of {money(r.orderValue)}</span>
           )}
         </span>
       ),
@@ -98,7 +98,7 @@ export function RefundsPage() {
                 { label: 'Order', value: <AdminLink to={`/admin/orders/${selected.order}`} className="tabular text-brand-600 hover:underline dark:text-brand-300">{selected.order}</AdminLink> },
                 { label: 'Buyer', value: selected.buyer },
                 { label: 'Seller', value: selected.seller },
-                { label: 'Order value', value: <span className="tabular">{inr(selected.orderValue)}</span> },
+                { label: 'Order value', value: <span className="tabular">{money(selected.orderValue)}</span> },
               ]}
             />
             <div className="mt-6 grid gap-4 border-t pt-5 sm:grid-cols-2">
@@ -118,15 +118,15 @@ export function RefundsPage() {
           <Panel title="Refund amount">
             <MoneyRows
               rows={[
-                { label: 'Order value', value: inr(selected.orderValue) },
-                { label: 'Requested refund', value: inr(selected.amount) },
+                { label: 'Order value', value: money(selected.orderValue) },
+                { label: 'Requested refund', value: money(selected.amount) },
                 {
                   label: 'Commission reversal',
-                  value: `− ${inr(Math.round(selected.amount * 0.1))}`,
+                  value: `− ${money(Math.round(selected.amount * 0.1))}`,
                   tone: 'negative',
                   hint: 'from seller settlement',
                 },
-                { label: 'Payable to buyer', value: inr(selected.amount), tone: 'total' },
+                { label: 'Payable to buyer', value: money(selected.amount), tone: 'total' },
               ]}
             />
             {openDecision ? (
@@ -136,9 +136,9 @@ export function RefundsPage() {
                   onClick={() =>
                     ask({
                       title: 'Approve refund',
-                      description: `You are about to refund ${inr(selected.amount)} to ${selected.buyer}. Continue?`,
+                      description: `You are about to refund ${money(selected.amount)} to ${selected.buyer}. Continue?`,
                       confirmLabel: 'Approve Refund',
-                      successMessage: `Refund of ${inr(selected.amount)} approved`,
+                      successMessage: `Refund of ${money(selected.amount)} approved`,
                     })
                   }
                 >
@@ -153,7 +153,7 @@ export function RefundsPage() {
                       title: 'Modify refund amount',
                       description: 'Enter the amount to refund. The original order value stays recorded separately.',
                       confirmLabel: 'Approve Modified Refund',
-                      extraFields: [{ key: 'amount', label: 'Refund amount (₹)', placeholder: String(selected.amount), required: true }],
+                      extraFields: [{ key: 'amount', label: 'Refund amount ($)', placeholder: String(selected.amount), required: true }],
                       requireNote: true,
                       successMessage: 'Partial refund approved',
                     })

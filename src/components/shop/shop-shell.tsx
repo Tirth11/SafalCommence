@@ -94,7 +94,7 @@ function ShopHeader({ menuOpen, setMenuOpen }: { menuOpen: boolean; setMenuOpen:
                   className="flex items-center justify-between py-2.5 text-[14px] text-ink-700 dark:text-ink-200"
                 >
                   {cat.label}
-                  <span className="text-[11px] text-ink-400 tabular">{cat.count.toLocaleString('en-IN')}</span>
+                  <span className="text-[11px] text-ink-400 tabular">{cat.count.toLocaleString('en-US')}</span>
                 </AdminLink>
               ))}
             </nav>
@@ -244,7 +244,7 @@ function SearchBox({ className }: { className?: string }) {
                 <Suggestion
                   key={c.id}
                   label={c.label}
-                  meta={`${c.count.toLocaleString('en-IN')} products`}
+                  meta={`${c.count.toLocaleString('en-US')} products`}
                   onSelect={() => navigate(adminLinkProps({ to: '/shop/all', search: { category: c.label } }))}
                 />
               ))}

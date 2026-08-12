@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { PLAN_FEATURES, PLANS, type PlanId } from '@/data/plans'
 import { SELLER_PRODUCTS } from '@/data/seller'
 import { usePlan, useStorefrontStore } from '@/store/storefront-store'
-import { cn, inr } from '@/lib/utils'
+import { cn, money } from '@/lib/utils'
 
 /** Plan & billing: what the seller is on, what they'd gain, and what it costs. */
 export function SellerPlanPage() {
@@ -48,7 +48,7 @@ export function SellerPlanPage() {
                 {plan.name}
               </span>
               <span className="text-[15px] text-ink-500 tabular">
-                {plan.price === 0 ? 'Free' : `${inr(plan.price)}/month`}
+                {plan.price === 0 ? 'Free' : `${money(plan.price)}/month`}
               </span>
             </p>
             <p className="mt-2 text-[13px] text-ink-600 dark:text-ink-300">{plan.tagline}</p>
@@ -156,7 +156,7 @@ export function SellerPlanPage() {
                     ask({
                       title: isUpgrade ? `Upgrade to ${option.name}?` : `Switch to ${option.name}?`,
                       description: isUpgrade
-                        ? `${inr(option.price)}/month, billed monthly. Your commission drops to ${option.commission}% and ${
+                        ? `${money(option.price)}/month, billed monthly. Your commission drops to ${option.commission}% and ${
                             option.whiteLabel ? 'your online store unlocks immediately.' : 'your product limit rises.'
                           }`
                         : `Your plan will change to ${option.name}. ${
@@ -186,13 +186,13 @@ export function SellerPlanPage() {
             <p className="text-[13px] font-semibold text-ink-900 dark:text-white">
               SafalMarketHub brings the customer
             </p>
-            <p className="mt-1.5 text-[12px] text-ink-500">A marketplace sale of {inr(10000)}</p>
+            <p className="mt-1.5 text-[12px] text-ink-500">A marketplace sale of {money(10000)}</p>
             <p className="mt-3 text-[13px] tabular text-ink-700 dark:text-ink-200">
               Commission {plan.commission}% ={' '}
-              <span className="font-bold text-destructive">− {inr((10000 * plan.commission) / 100)}</span>
+              <span className="font-bold text-destructive">− {money((10000 * plan.commission) / 100)}</span>
             </p>
             <p className="mt-1 text-[15px] font-bold tabular text-ink-950 dark:text-white">
-              You get {inr(10000 - (10000 * plan.commission) / 100)}
+              You get {money(10000 - (10000 * plan.commission) / 100)}
             </p>
           </div>
           <div className="rounded-lg border border-teal-200 p-4 dark:border-teal-600/40">
@@ -204,10 +204,10 @@ export function SellerPlanPage() {
               <>
                 <p className="mt-3 text-[13px] tabular text-ink-700 dark:text-ink-200">
                   Platform fee {plan.ownStoreFee}% ={' '}
-                  <span className="font-bold text-destructive">− {inr((10000 * plan.ownStoreFee) / 100)}</span>
+                  <span className="font-bold text-destructive">− {money((10000 * plan.ownStoreFee) / 100)}</span>
                 </p>
                 <p className="mt-1 text-[15px] font-bold tabular text-ink-950 dark:text-white">
-                  You get {inr(10000 - (10000 * plan.ownStoreFee) / 100)}
+                  You get {money(10000 - (10000 * plan.ownStoreFee) / 100)}
                 </p>
               </>
             )}

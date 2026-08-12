@@ -9,7 +9,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { ADMIN_ORDERS, ORDER_TIMELINE } from '@/data/admin'
-import { inr } from '@/lib/utils'
+import { money } from '@/lib/utils'
 
 const CANCEL_REASONS = [
   'Seller unable to fulfil',
@@ -68,7 +68,7 @@ export function AdminOrderDetailPage() {
                 onClick={() =>
                   ask({
                     title: 'Initiate refund',
-                    description: `You are about to refund ${inr(order.value)} to ${order.buyer}. Commission and seller receivable are reversed automatically. Continue?`,
+                    description: `You are about to refund ${money(order.value)} to ${order.buyer}. Commission and seller receivable are reversed automatically. Continue?`,
                     confirmLabel: 'Approve Refund',
                     reasons: ['Order cancelled', 'Return approved', 'Service failure', 'Goodwill adjustment'],
                     requireNote: true,
@@ -153,16 +153,16 @@ export function AdminOrderDetailPage() {
                       <TableCell className="font-semibold text-ink-900 dark:text-white">{item.name}</TableCell>
                       <TableCell className="tabular text-ink-500">{item.sku}</TableCell>
                       <TableCell className="text-right tabular">{item.qty}</TableCell>
-                      <TableCell className="text-right tabular">{inr(item.price)}</TableCell>
-                      <TableCell className="text-right font-semibold tabular">{inr(item.price * item.qty)}</TableCell>
+                      <TableCell className="text-right tabular">{money(item.price)}</TableCell>
+                      <TableCell className="text-right font-semibold tabular">{money(item.price * item.qty)}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
               <div className="grid gap-x-8 gap-y-3 border-t bg-muted/40 px-5 py-3.5 sm:grid-cols-3">
-                <MiniStat label="Sub-order value" value={inr(sub.value)} />
-                <MiniStat label="Platform commission" value={`− ${inr(sub.commission)}`} />
-                <MiniStat label="Seller receivable" value={inr(sub.receivable)} strong />
+                <MiniStat label="Sub-order value" value={money(sub.value)} />
+                <MiniStat label="Platform commission" value={`− ${money(sub.commission)}`} />
+                <MiniStat label="Seller receivable" value={money(sub.receivable)} strong />
               </div>
               {sub.awb && (
                 <div className="flex flex-wrap items-center gap-x-6 gap-y-2 border-t px-5 py-3 text-[12px] text-ink-500">
@@ -213,11 +213,11 @@ export function AdminOrderDetailPage() {
           <Panel title="Financial breakdown">
             <MoneyRows
               rows={[
-                { label: 'Gross value', value: inr(order.value) },
-                { label: 'Tax included', value: inr(order.tax), hint: 'GST' },
-                { label: 'Shipping', value: order.shipping ? inr(order.shipping) : 'Free' },
-                { label: 'Platform commission', value: `− ${inr(commission)}`, tone: 'negative' },
-                { label: 'Total seller receivable', value: inr(receivable), tone: 'total' },
+                { label: 'Gross value', value: money(order.value) },
+                { label: 'Tax included', value: money(order.tax), hint: 'GST' },
+                { label: 'Shipping', value: order.shipping ? money(order.shipping) : 'Free' },
+                { label: 'Platform commission', value: `− ${money(commission)}`, tone: 'negative' },
+                { label: 'Total seller receivable', value: money(receivable), tone: 'total' },
               ]}
             />
           </Panel>

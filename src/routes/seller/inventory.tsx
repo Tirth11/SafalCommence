@@ -20,7 +20,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { SELLER_PRODUCTS, type SellerProduct } from '@/data/seller'
-import { inr } from '@/lib/utils'
+import { money } from '@/lib/utils'
 
 const FILTERS = ['In Stock', 'Low Stock', 'Out of Stock']
 
@@ -59,7 +59,7 @@ export function SellerInventoryPage() {
       ),
     },
     { key: 'sku', header: 'SKU', sortBy: (p) => p.sku, cell: (p) => <span className="tabular text-ink-600 dark:text-ink-300">{p.sku}</span> },
-    { key: 'price', header: 'Price', align: 'right', sortBy: (p) => p.price, cell: (p) => <span className="tabular">{inr(p.price)}</span> },
+    { key: 'price', header: 'Price', align: 'right', sortBy: (p) => p.price, cell: (p) => <span className="tabular">{money(p.price)}</span> },
     {
       key: 'available',
       header: 'Available',

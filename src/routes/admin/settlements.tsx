@@ -9,7 +9,7 @@ import { StatusBadge } from '@/components/admin/status-badge'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { SELLERS, SETTLEMENTS, type Settlement } from '@/data/admin'
-import { inr } from '@/lib/utils'
+import { money } from '@/lib/utils'
 
 const STATUSES = ['Pending', 'Eligible', 'Processing', 'Paid', 'On Hold']
 const HOLD_REASONS = ['Return risk', 'Dispute', 'Fraud investigation', 'KYC issue', 'Bank account issue']
@@ -56,16 +56,16 @@ export function SettlementsPage() {
       ),
     },
     { key: 'period', header: 'Period', hideBelow: 'md', cell: (s) => <span className="whitespace-nowrap text-ink-500">{s.period}</span> },
-    { key: 'gross', header: 'Gross sales', align: 'right', sortBy: (s) => s.gross, cell: (s) => <span className="tabular">{inr(s.gross)}</span> },
-    { key: 'refunds', header: 'Refunds', align: 'right', hideBelow: 'lg', cell: (s) => <span className="tabular text-destructive">{s.refunds ? `− ${inr(s.refunds)}` : '—'}</span> },
-    { key: 'commission', header: 'Commission', align: 'right', hideBelow: 'md', cell: (s) => <span className="tabular text-destructive">− {inr(s.commission)}</span> },
-    { key: 'deductions', header: 'Other', align: 'right', hideBelow: 'xl', cell: (s) => <span className="tabular">{s.deductions ? `− ${inr(s.deductions)}` : '—'}</span> },
+    { key: 'gross', header: 'Gross sales', align: 'right', sortBy: (s) => s.gross, cell: (s) => <span className="tabular">{money(s.gross)}</span> },
+    { key: 'refunds', header: 'Refunds', align: 'right', hideBelow: 'lg', cell: (s) => <span className="tabular text-destructive">{s.refunds ? `− ${money(s.refunds)}` : '—'}</span> },
+    { key: 'commission', header: 'Commission', align: 'right', hideBelow: 'md', cell: (s) => <span className="tabular text-destructive">− {money(s.commission)}</span> },
+    { key: 'deductions', header: 'Other', align: 'right', hideBelow: 'xl', cell: (s) => <span className="tabular">{s.deductions ? `− ${money(s.deductions)}` : '—'}</span> },
     {
       key: 'net',
       header: 'Net payable',
       align: 'right',
       sortBy: (s) => s.net,
-      cell: (s) => <span className="font-bold tabular text-ink-950 dark:text-white">{inr(s.net)}</span>,
+      cell: (s) => <span className="font-bold tabular text-ink-950 dark:text-white">{money(s.net)}</span>,
     },
     { key: 'status', header: 'Status', sortBy: (s) => s.status, cell: (s) => <StatusBadge status={s.status} /> },
     { key: 'date', header: 'Settled', hideBelow: 'xl', cell: (s) => <span className="whitespace-nowrap text-ink-500">{s.date ?? '—'}</span> },
@@ -98,7 +98,7 @@ export function SettlementsPage() {
       {eligibleTotal > 0 && (
         <Alert variant="info" className="mb-4">
           <Banknote />
-          <AlertTitle>{inr(eligibleTotal)} ready to pay</AlertTitle>
+          <AlertTitle>{money(eligibleTotal)} ready to pay</AlertTitle>
           <AlertDescription>
             Verify each settlement, pay through your bank, then record the payment reference to mark it paid. Bulk payment is
             intentionally not available.
@@ -191,7 +191,7 @@ export function SettlementDetailPage() {
                 onClick={() =>
                   ask({
                     title: 'Confirm settlement payment',
-                    description: `Confirm that ${inr(settlement.net)} has been paid to ${settlement.seller}.`,
+                    description: `Confirm that ${money(settlement.net)} has been paid to ${settlement.seller}.`,
                     confirmLabel: 'Confirm Payment',
                     extraFields: [
                       { key: 'date', label: 'Payment date', placeholder: 'DD MMM YYYY', required: true },
@@ -222,12 +222,12 @@ export function SettlementDetailPage() {
         <Panel title="Settlement calculation">
           <MoneyRows
             rows={[
-              { label: 'Gross sales', value: inr(settlement.gross), hint: `${settlement.orders} orders` },
-              { label: 'Refunds', value: `− ${inr(settlement.refunds)}`, tone: 'negative' },
-              { label: 'Eligible sales', value: inr(eligibleSales) },
-              { label: 'Platform commission', value: `− ${inr(settlement.commission)}`, tone: 'negative', hint: '10% default' },
-              { label: 'Shipping & other deductions', value: `− ${inr(settlement.deductions)}`, tone: 'negative' },
-              { label: 'Net settlement', value: inr(settlement.net), tone: 'total' },
+              { label: 'Gross sales', value: money(settlement.gross), hint: `${settlement.orders} orders` },
+              { label: 'Refunds', value: `− ${money(settlement.refunds)}`, tone: 'negative' },
+              { label: 'Eligible sales', value: money(eligibleSales) },
+              { label: 'Platform commission', value: `− ${money(settlement.commission)}`, tone: 'negative', hint: '10% default' },
+              { label: 'Shipping & other deductions', value: `− ${money(settlement.deductions)}`, tone: 'negative' },
+              { label: 'Net settlement', value: money(settlement.net), tone: 'total' },
             ]}
           />
           <div className="mt-5 flex items-center justify-between gap-3 rounded-sm border bg-muted/60 px-4 py-3">

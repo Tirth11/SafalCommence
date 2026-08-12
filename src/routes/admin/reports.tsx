@@ -10,12 +10,12 @@ const REPORTS = [
   {
     name: 'Sales report',
     body: 'Orders, gross merchandise value and net sales by day, seller or category.',
-    metrics: ['Orders: 4,286', 'GMV: ₹24,50,000', 'Net sales: ₹22,86,400'],
+    metrics: ['Orders: 4,286', 'GMV: $30,600', 'Net sales: $28,600'],
   },
   {
     name: 'Seller report',
     body: 'Registered, active and suspended sellers with sales contribution.',
-    metrics: ['Registered: 612', 'Active: 485', 'Seller sales: ₹22,86,400'],
+    metrics: ['Registered: 612', 'Active: 485', 'Seller sales: $28,600'],
   },
   {
     name: 'Product report',
@@ -25,17 +25,17 @@ const REPORTS = [
   {
     name: 'Commission report',
     body: 'Platform commission by seller and by category for the selected period.',
-    metrics: ['Total commission: ₹2,14,500', 'Avg rate: 9.2%', 'Top: Electronics'],
+    metrics: ['Total commission: $2,700', 'Avg rate: 9.2%', 'Top: Electronics'],
   },
   {
     name: 'Settlement report',
     body: 'Eligible, paid and on-hold settlements with net payable values.',
-    metrics: ['Eligible: ₹1,24,600', 'Paid: ₹26,436', 'On hold: ₹61,140'],
+    metrics: ['Eligible: $1,600', 'Paid: $330', 'On hold: $760'],
   },
   {
     name: 'Refund report',
     body: 'Refund count and value, split by reason and seller.',
-    metrics: ['Refunds: 18', 'Value: ₹42,180', 'Rejected: 4'],
+    metrics: ['Refunds: 18', 'Value: $530', 'Rejected: 4'],
   },
 ]
 

@@ -51,8 +51,7 @@ export function HeroCollage() {
           <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-ink-400">Sales this month</p>
           <div className="mt-1.5 flex items-end justify-between gap-3">
             <p className="text-[32px] font-bold leading-none tracking-[-0.03em] text-ink-950 tabular dark:text-white">
-              ₹84,250
-            </p>
+              $1,100</p>
             <span className="mb-1 inline-flex items-center gap-1 rounded-full bg-teal-50 px-2 py-0.5 text-xs font-bold text-teal-600 dark:bg-teal-600/15 dark:text-teal-100">
               <TrendingUp className="size-3.5" />
               +18.4%
@@ -64,7 +63,7 @@ export function HeroCollage() {
         <div className="mt-4 grid grid-cols-3 gap-3">
           <MiniStat icon={ShoppingBag} label="Orders" value="124" />
           <MiniStat icon={Package} label="Products" value="128" />
-          <MiniStat icon={IndianRupee} label="Payouts" value="₹42.9k" />
+          <MiniStat icon={IndianRupee} label="Payouts" value="$1k" />
         </div>
       </motion.div>
 
@@ -77,7 +76,7 @@ export function HeroCollage() {
           <ProductThumb glyph="headphones" tone="brand" className="aspect-square size-14 shrink-0 rounded-sm" />
           <div className="min-w-0">
             <p className="truncate text-[13px] font-semibold text-ink-900 dark:text-white">Wireless Headphones</p>
-            <p className="text-sm font-bold text-ink-950 tabular dark:text-white">₹4,999</p>
+            <p className="text-sm font-bold text-ink-950 tabular dark:text-white">$62</p>
             <p className="mt-0.5 flex items-center gap-1 text-[11px] font-semibold text-teal-600 dark:text-teal-100">
               <Boxes className="size-3" />
               42 in stock

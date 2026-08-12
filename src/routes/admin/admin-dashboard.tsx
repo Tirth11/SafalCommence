@@ -26,13 +26,13 @@ import { PageHeader, Panel } from '@/components/admin/primitives'
 import { StatusBadge } from '@/components/admin/status-badge'
 import { Button } from '@/components/ui/button'
 import { ADMIN_ORDERS, BUYER_GROWTH, ORDER_MIX, SALES_TREND, SELLER_GROWTH, SELLERS } from '@/data/admin'
-import { inr } from '@/lib/utils'
+import { money } from '@/lib/utils'
 
 const PERIODS = ['Today', '7 Days', '30 Days', 'Custom'] as const
 
 const PRIMARY_KPIS: Kpi[] = [
-  { label: 'Gross Merchandise Value', value: '₹24,50,000', hint: 'Total order value', delta: { value: '+12.4%', direction: 'up' } },
-  { label: 'Platform Revenue', value: '₹2,14,500', hint: 'Commission + fees', delta: { value: '+9.1%', direction: 'up' } },
+  { label: 'Gross Merchandise Value', value: '$30,600', hint: 'Total order value', delta: { value: '+12.4%', direction: 'up' } },
+  { label: 'Platform Revenue', value: '$2,700', hint: 'Commission + fees', delta: { value: '+9.1%', direction: 'up' } },
   { label: 'Total Orders', value: '4,286', hint: 'All time', delta: { value: '+128 today', direction: 'up' } },
   { label: 'Active Sellers', value: '485', hint: '9 suspended', delta: { value: '+39 this month', direction: 'up' } },
 ]
@@ -40,8 +40,8 @@ const PRIMARY_KPIS: Kpi[] = [
 const QUEUE_KPIS: Kpi[] = [
   { label: 'Pending Seller Approvals', value: '24', hint: 'Oldest waiting 3 days', attention: true, target: { to: '/admin/sellers', search: { status: 'Pending Review' } } },
   { label: 'Pending Product Approvals', value: '52', hint: '12 submitted today', attention: true, target: { to: '/admin/products', search: { status: 'In Review' } } },
-  { label: 'Refund Requests', value: '18', hint: '₹42,180 exposure', attention: true, target: { to: '/admin/refunds' } },
-  { label: 'Pending Settlements', value: '₹7,45,000', hint: '2 batches eligible', attention: true, target: { to: '/admin/settlements', search: { status: 'Eligible' } } },
+  { label: 'Refund Requests', value: '18', hint: '$530exposure', attention: true, target: { to: '/admin/refunds' } },
+  { label: 'Pending Settlements', value: '$9,300', hint: '2 batches eligible', attention: true, target: { to: '/admin/settlements', search: { status: 'Eligible' } } },
 ]
 
 const SECONDARY_KPIS: Kpi[] = [
@@ -54,8 +54,8 @@ const SECONDARY_KPIS: Kpi[] = [
 const ATTENTION = [
   { icon: Store, count: '24', label: 'Sellers awaiting approval', detail: 'Urban Threads, HomeCraft Studio, SoundPro India + 21 more', tone: 'gold' as const, target: { to: '/admin/sellers', search: { status: 'Pending Review' } } },
   { icon: Package, count: '52', label: 'Products awaiting approval', detail: '1 flagged for counterfeit concern', tone: 'gold' as const, target: { to: '/admin/products', search: { status: 'In Review' } } },
-  { icon: Undo2, count: '18', label: 'Refund requests', detail: '3 above ₹5,000 need Super Admin sign-off', tone: 'danger' as const, target: { to: '/admin/refunds' } },
-  { icon: Banknote, count: '₹7.45L', label: 'Settlement pending', detail: '2 eligible batches · 1 on hold', tone: 'brand' as const, target: { to: '/admin/settlements', search: { status: 'Eligible' } } },
+  { icon: Undo2, count: '18', label: 'Refund requests', detail: '3 above $62need Super Admin sign-off', tone: 'danger' as const, target: { to: '/admin/refunds' } },
+  { icon: Banknote, count: '$9,300', label: 'Settlement pending', detail: '2 eligible batches · 1 on hold', tone: 'brand' as const, target: { to: '/admin/settlements', search: { status: 'Eligible' } } },
   { icon: CreditCard, count: '6', label: 'Failed payment cases', detail: 'Awaiting gateway reconciliation', tone: 'danger' as const, target: { to: '/admin/payments', search: { status: 'Failed' } } },
   { icon: RotateCcw, count: '12', label: 'Return requests', detail: '4 in quality check', tone: 'gold' as const, target: { to: '/admin/returns' } },
 ]
@@ -127,7 +127,7 @@ export function AdminDashboardPage() {
                 <CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="3 3" />
                 <XAxis dataKey="day" {...chartAxis} dy={6} />
                 <YAxis {...chartAxis} tickFormatter={(v: number) => `${v / 1000}k`} />
-                <Tooltip contentStyle={tooltipStyle} formatter={(v) => inr(Number(v))} />
+                <Tooltip contentStyle={tooltipStyle} formatter={(v) => money(Number(v))} />
                 <Legend wrapperStyle={{ fontSize: 12, paddingTop: 8 }} iconType="plainline" />
                 <Line type="monotone" name="Gross sales" dataKey="gross" stroke="var(--chart-1)" strokeWidth={2} dot={false} />
                 <Line type="monotone" name="Net sales" dataKey="net" stroke="var(--chart-2)" strokeWidth={2} dot={false} />
@@ -225,7 +225,7 @@ export function AdminDashboardPage() {
                       {order.subOrders.length} seller{order.subOrders.length > 1 ? 's' : ''} · {order.date}
                     </span>
                   </span>
-                  <span className="text-[13px] font-semibold tabular text-ink-900 dark:text-white">{inr(order.value)}</span>
+                  <span className="text-[13px] font-semibold tabular text-ink-900 dark:text-white">{money(order.value)}</span>
                   <StatusBadge status={order.fulfilment} />
                 </AdminLink>
               </li>

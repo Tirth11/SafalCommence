@@ -9,7 +9,7 @@ import { Breadcrumbs, PriceDetails, QuantityStepper, SellerLine } from '@/compon
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { groupBySeller, totals, useCartStore } from '@/store/cart-store'
-import { inr } from '@/lib/utils'
+import { money } from '@/lib/utils'
 
 export function CartPage() {
   const items = useCartStore((s) => s.items)
@@ -127,11 +127,11 @@ export function CartPage() {
                     </div>
 
                     <div className="shrink-0 text-right">
-                      <p className="text-[15px] font-bold tabular text-ink-950 dark:text-white">{inr(line.price * line.qty)}</p>
+                      <p className="text-[15px] font-bold tabular text-ink-950 dark:text-white">{money(line.price * line.qty)}</p>
                       {line.mrp > line.price && (
-                        <p className="text-[12px] text-ink-400 line-through tabular">{inr(line.mrp * line.qty)}</p>
+                        <p className="text-[12px] text-ink-400 line-through tabular">{money(line.mrp * line.qty)}</p>
                       )}
-                      <p className="mt-1 text-[11px] text-ink-500 tabular">{inr(line.price)} each</p>
+                      <p className="mt-1 text-[11px] text-ink-500 tabular">{money(line.price)} each</p>
                     </div>
                   </li>
                 ))}
@@ -152,7 +152,7 @@ export function CartPage() {
 
             {sums.discount > 0 && (
               <p className="mt-3 rounded-sm bg-teal-50 px-3 py-2 text-[12px] font-semibold text-teal-600 dark:bg-teal-600/10 dark:text-teal-100">
-                You save {inr(sums.discount)} on this order.
+                You save {money(sums.discount)} on this order.
               </p>
             )}
 
@@ -179,7 +179,7 @@ export function CartPage() {
       <div className="fixed inset-x-0 bottom-[57px] z-40 flex items-center gap-3 border-t bg-background/95 px-4 py-3 backdrop-blur-xl sm:hidden">
         <div className="min-w-0 flex-1">
           <p className="text-[11px] text-ink-500">Total</p>
-          <p className="text-[17px] font-bold tabular text-ink-950 dark:text-white">{inr(sums.total)}</p>
+          <p className="text-[17px] font-bold tabular text-ink-950 dark:text-white">{money(sums.total)}</p>
         </div>
         <Button
           onClick={() => {

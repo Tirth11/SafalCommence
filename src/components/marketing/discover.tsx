@@ -8,7 +8,7 @@ import { EditorialHeading, Reveal } from '@/components/marketing/reveal'
 import { CategoryTile, ProductScene, type SceneTone } from '@/components/marketing/scene'
 import { Button } from '@/components/ui/button'
 import { SHOP_CATEGORIES, SHOP_PRODUCTS } from '@/data/shop'
-import { cn, discountPercent, inr } from '@/lib/utils'
+import { cn, discountPercent, money } from '@/lib/utils'
 
 /** Categories + a swipeable product rail — the shopper's half of the page. */
 export function Discover() {
@@ -46,7 +46,7 @@ export function Discover() {
               <AdminLink key={cat.id} to="/shop/all" search={{ category: cat.label }}>
                 <CategoryTile
                   label={cat.label}
-                  meta={`${cat.count.toLocaleString('en-IN')} products`}
+                  meta={`${cat.count.toLocaleString('en-US')} products`}
                   glyph={cat.glyph}
                   tone={(cat.tone === 'ink' ? 'ink' : cat.tone) as SceneTone}
                 />
@@ -123,9 +123,9 @@ export function Discover() {
                         </p>
                         <p className="mt-2 flex flex-wrap items-baseline gap-x-2">
                           <span className="text-[16px] font-bold tabular text-ink-950 dark:text-white">
-                            {inr(product.price)}
+                            {money(product.price)}
                           </span>
-                          <span className="text-[12px] text-ink-400 line-through tabular">{inr(product.mrp)}</span>
+                          <span className="text-[12px] text-ink-400 line-through tabular">{money(product.mrp)}</span>
                           <span className="text-[11px] font-bold text-teal-600 dark:text-teal-100">
                             {discountPercent(product.mrp, product.price)}% off
                           </span>
@@ -152,7 +152,7 @@ export function Discover() {
 /** Full-bleed editorial band — a seller story, told simply. */
 export function SellerStory() {
   const stats = [
-    { value: '₹84,250', label: 'Sales in their first full month' },
+    { value: '$1,100', label: 'Sales in their first full month' },
     { value: '124', label: 'Orders fulfilled' },
     { value: '4.6★', label: 'Average customer rating' },
   ]

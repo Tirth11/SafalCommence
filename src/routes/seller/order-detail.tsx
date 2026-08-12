@@ -27,7 +27,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { SELLER_ORDERS, type SellerOrderStatus } from '@/data/seller'
-import { inr } from '@/lib/utils'
+import { money } from '@/lib/utils'
 
 const CANCEL_REASONS = ['Product Out of Stock', 'Damaged Product', 'Pricing Error', 'Unable to Fulfil', 'Other']
 
@@ -260,7 +260,7 @@ export function SellerOrderDetailPage() {
                       { label: 'AWB number', value: <span className="tabular">DLV12345678</span> },
                       { label: 'Estimated pickup', value: 'Today, before 6:00 pm' },
                       { label: 'Estimated delivery', value: '16 Aug 2026' },
-                      { label: 'Shipping charge', value: inr(order.shipping || 65), hint: 'Deducted at settlement' },
+                      { label: 'Shipping charge', value: money(order.shipping || 65), hint: 'Deducted at settlement' },
                     ]}
                   />
                   <div className="mt-5 flex flex-wrap gap-2">
@@ -328,11 +328,11 @@ export function SellerOrderDetailPage() {
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-[13px] font-semibold tabular text-ink-900 dark:text-white">{inr(item.price)}</p>
+                    <p className="text-[13px] font-semibold tabular text-ink-900 dark:text-white">{money(item.price)}</p>
                     <p className="text-[12px] text-ink-500 tabular">× {item.qty}</p>
                   </div>
                   <p className="w-[92px] text-right text-[14px] font-bold tabular text-ink-950 dark:text-white">
-                    {inr(item.price * item.qty)}
+                    {money(item.price * item.qty)}
                   </p>
                 </li>
               ))}
@@ -382,11 +382,11 @@ export function SellerOrderDetailPage() {
           <Panel title="Your earnings from this order">
             <MoneyRows
               rows={[
-                { label: 'Product value', value: inr(order.productValue) },
-                { label: 'Shipping', value: order.shipping ? inr(order.shipping) : 'Free' },
-                { label: 'Platform commission', value: `− ${inr(order.commission)}`, tone: 'negative' },
-                { label: 'Other applicable charges', value: order.otherCharges ? `− ${inr(order.otherCharges)}` : '—', tone: 'negative' },
-                { label: 'Expected settlement', value: inr(order.settlement), tone: 'total' },
+                { label: 'Product value', value: money(order.productValue) },
+                { label: 'Shipping', value: order.shipping ? money(order.shipping) : 'Free' },
+                { label: 'Platform commission', value: `− ${money(order.commission)}`, tone: 'negative' },
+                { label: 'Other applicable charges', value: order.otherCharges ? `− ${money(order.otherCharges)}` : '—', tone: 'negative' },
+                { label: 'Expected settlement', value: money(order.settlement), tone: 'total' },
               ]}
             />
             <p className="mt-4 border-t pt-3.5 text-[12px] text-ink-500">

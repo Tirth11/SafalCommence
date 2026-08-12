@@ -5,7 +5,7 @@ import { ProductThumb } from '@/components/commerce/product-thumb'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import type { Product } from '@/data/catalog'
-import { cn, discountPercent, inr } from '@/lib/utils'
+import { cn, discountPercent, money } from '@/lib/utils'
 
 export function ProductCard({ product, className }: { product: Product; className?: string }) {
   const off = discountPercent(product.mrp, product.price)
@@ -58,8 +58,8 @@ export function ProductCard({ product, className }: { product: Product; classNam
         </div>
 
         <div className="mt-3 flex flex-wrap items-baseline gap-x-2 gap-y-1">
-          <span className="text-lg font-bold text-ink-950 tabular dark:text-white">{inr(product.price)}</span>
-          <span className="text-sm text-ink-400 line-through tabular">{inr(product.mrp)}</span>
+          <span className="text-lg font-bold text-ink-950 tabular dark:text-white">{money(product.price)}</span>
+          <span className="text-sm text-ink-400 line-through tabular">{money(product.mrp)}</span>
           <Badge variant="discount">{off}% OFF</Badge>
         </div>
 

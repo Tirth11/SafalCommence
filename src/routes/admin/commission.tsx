@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { COMMISSION_RULES, type CommissionRule } from '@/data/admin'
-import { inr } from '@/lib/utils'
+import { money } from '@/lib/utils'
 
 export function CommissionPage() {
   const [example, setExample] = useState(10000)
@@ -152,7 +152,7 @@ export function CommissionPage() {
 
         <Panel title="Commission calculator" description="Check what a seller receives before changing a rate.">
           <div className="grid gap-[7px]">
-            <Label htmlFor="calc-value">Product value (₹)</Label>
+            <Label htmlFor="calc-value">Product value ($)</Label>
             <Input
               id="calc-value"
               type="number"
@@ -164,9 +164,9 @@ export function CommissionPage() {
           <MoneyRows
             className="mt-4"
             rows={[
-              { label: 'Product value', value: inr(example) },
-              { label: `Commission at ${rate}%`, value: `− ${inr(commission)}`, tone: 'negative' },
-              { label: 'Seller gross receivable', value: inr(example - commission), tone: 'total' },
+              { label: 'Product value', value: money(example) },
+              { label: `Commission at ${rate}%`, value: `− ${money(commission)}`, tone: 'negative' },
+              { label: 'Seller gross receivable', value: money(example - commission), tone: 'total' },
             ]}
           />
           <p className="mt-4 text-[12px] leading-relaxed text-ink-500">

@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ADMIN_ORDERS, ADMIN_PRODUCTS, SELLERS, SETTLEMENTS, TRANSACTIONS } from '@/data/admin'
-import { inr } from '@/lib/utils'
+import { money } from '@/lib/utils'
 
 const CHANGE_REASONS = [
   'GST document unclear',
@@ -221,7 +221,7 @@ export function SellerDetailPage() {
         <Field label="KYC" value={<StatusBadge status={seller.kyc} />} />
         <Field label="Products" value={<span className="tabular">{seller.products}</span>} />
         <Field label="Orders" value={<span className="tabular">{seller.orders}</span>} />
-        <Field label="Total sales" value={<span className="tabular">{seller.sales ? inr(seller.sales) : '—'}</span>} />
+        <Field label="Total sales" value={<span className="tabular">{seller.sales ? money(seller.sales) : '—'}</span>} />
         <Field label="Category" value={seller.category} />
       </div>
 
@@ -498,7 +498,7 @@ export function SellerDetailPage() {
                       <TableCell>
                         <StatusBadge status={p.state} />
                       </TableCell>
-                      <TableCell className="text-right tabular">{inr(p.price)}</TableCell>
+                      <TableCell className="text-right tabular">{money(p.price)}</TableCell>
                       <TableCell className="text-right tabular">{p.stock}</TableCell>
                     </TableRow>
                   ))}
@@ -537,8 +537,8 @@ export function SellerDetailPage() {
                       <TableCell>
                         <StatusBadge status={so.fulfilment} />
                       </TableCell>
-                      <TableCell className="text-right tabular">{inr(so.value)}</TableCell>
-                      <TableCell className="text-right tabular">{inr(so.receivable)}</TableCell>
+                      <TableCell className="text-right tabular">{money(so.value)}</TableCell>
+                      <TableCell className="text-right tabular">{money(so.receivable)}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -568,7 +568,7 @@ export function SellerDetailPage() {
                     <TableCell>
                       <StatusBadge status={t.status} />
                     </TableCell>
-                    <TableCell className="text-right tabular">{inr(t.amount)}</TableCell>
+                    <TableCell className="text-right tabular">{money(t.amount)}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -601,9 +601,9 @@ export function SellerDetailPage() {
                         </AdminLink>
                       </TableCell>
                       <TableCell className="whitespace-nowrap text-ink-500">{s.period}</TableCell>
-                      <TableCell className="text-right tabular">{inr(s.gross)}</TableCell>
-                      <TableCell className="text-right tabular">{inr(s.commission)}</TableCell>
-                      <TableCell className="text-right font-semibold tabular text-ink-900 dark:text-white">{inr(s.net)}</TableCell>
+                      <TableCell className="text-right tabular">{money(s.gross)}</TableCell>
+                      <TableCell className="text-right tabular">{money(s.commission)}</TableCell>
+                      <TableCell className="text-right font-semibold tabular text-ink-900 dark:text-white">{money(s.net)}</TableCell>
                       <TableCell>
                         <StatusBadge status={s.status} />
                       </TableCell>

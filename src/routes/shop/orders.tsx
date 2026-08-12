@@ -39,7 +39,7 @@ import {
   trackingSteps,
   type CustomerOrder,
 } from '@/data/shop'
-import { cn, inr } from '@/lib/utils'
+import { cn, money } from '@/lib/utils'
 
 /* ----------------------------------------------------------- orders list --- */
 export function MyOrdersPage() {
@@ -118,7 +118,7 @@ function OrderCard({ order }: { order: CustomerOrder }) {
           </div>
           <div>
             <p className="text-[10px] font-bold uppercase tracking-[0.08em] text-ink-400">Total</p>
-            <p className="text-[13px] font-semibold tabular text-ink-900 dark:text-white">{inr(order.total)}</p>
+            <p className="text-[13px] font-semibold tabular text-ink-900 dark:text-white">{money(order.total)}</p>
           </div>
         </div>
         <StatusBadge status={order.status} />
@@ -149,7 +149,7 @@ function OrderCard({ order }: { order: CustomerOrder }) {
                   {order.shipments.length === 1 && <p className="mt-1 text-[12px] text-ink-500">{shipment.estimate}</p>}
                   {order.shipments.length > 1 && <SellerLine seller={shipment.seller} className="mt-1.5" />}
                 </div>
-                <p className="shrink-0 text-[14px] font-semibold tabular">{inr(item.price * item.qty)}</p>
+                <p className="shrink-0 text-[14px] font-semibold tabular">{money(item.price * item.qty)}</p>
               </li>
             ))}
           </ul>
@@ -263,7 +263,7 @@ export function OrderDetailPage() {
             <div className="min-w-0">
               <p className="text-[14px] font-semibold text-ink-900 dark:text-white">{item.name}</p>
               <p className="mt-0.5 text-[12px] text-ink-500">
-                {item.variant} · Qty {item.qty} · {inr(item.price)}
+                {item.variant} · Qty {item.qty} · {money(item.price)}
               </p>
               <SellerLine seller={shipment.seller} className="mt-1.5" />
             </div>
@@ -352,7 +352,7 @@ export function OrderDetailPage() {
                 onClick={() =>
                   ask({
                     title: 'Cancel this order?',
-                    description: `${order.id} · ${inr(order.total)}. If you have paid, your refund will be initiated according to the applicable refund policy.`,
+                    description: `${order.id} · ${money(order.total)}. If you have paid, your refund will be initiated according to the applicable refund policy.`,
                     confirmLabel: 'Confirm Cancellation',
                     destructive: true,
                     reasons: CANCEL_REASONS,
@@ -375,7 +375,7 @@ export function OrderDetailPage() {
           <AlertDescription>
             {order.cancelReason ? `Reason: ${order.cancelReason}. ` : ''}
             {order.paymentStatus === 'Refunded'
-              ? `A refund of ${inr(order.total)} has been issued to your original payment method.`
+              ? `A refund of ${money(order.total)} has been issued to your original payment method.`
               : 'Your refund will be initiated according to the applicable refund policy.'}
           </AlertDescription>
         </Alert>
@@ -465,7 +465,7 @@ export function OrderDetailPage() {
                           </div>
                         )}
                       </div>
-                      <p className="shrink-0 text-[14px] font-semibold tabular">{inr(item.price * item.qty)}</p>
+                      <p className="shrink-0 text-[14px] font-semibold tabular">{money(item.price * item.qty)}</p>
                     </li>
                   ))}
                 </ul>
@@ -656,7 +656,7 @@ export function ReturnsPage() {
                   </div>
                   <div className="text-right">
                     <p className="text-[10px] font-bold uppercase tracking-[0.08em] text-ink-400">Refund amount</p>
-                    <p className="text-[19px] font-bold tabular text-ink-950 dark:text-white">{inr(request.amount)}</p>
+                    <p className="text-[19px] font-bold tabular text-ink-950 dark:text-white">{money(request.amount)}</p>
                     <p className="mt-0.5 text-[11px] text-ink-500">to {request.refundTo}</p>
                   </div>
                 </div>
@@ -696,7 +696,7 @@ export function ReturnsPage() {
                     <dl className="mt-3 grid gap-3 sm:grid-cols-3">
                       <div>
                         <dt className="text-[10px] font-bold uppercase tracking-[0.08em] text-teal-600/70 dark:text-teal-100/70">Amount</dt>
-                        <dd className="text-[13px] font-bold tabular text-teal-700 dark:text-teal-100">{inr(request.amount)}</dd>
+                        <dd className="text-[13px] font-bold tabular text-teal-700 dark:text-teal-100">{money(request.amount)}</dd>
                       </div>
                       <div>
                         <dt className="text-[10px] font-bold uppercase tracking-[0.08em] text-teal-600/70 dark:text-teal-100/70">Reference</dt>

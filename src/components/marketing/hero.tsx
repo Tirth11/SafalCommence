@@ -6,7 +6,7 @@ import { motion } from 'motion/react'
 import { Reveal } from '@/components/marketing/reveal'
 import { AmbientWash, ProductScene } from '@/components/marketing/scene'
 import { Button } from '@/components/ui/button'
-import { inr } from '@/lib/utils'
+import { money } from '@/lib/utils'
 
 export function Hero() {
   return (
@@ -86,8 +86,8 @@ export function Hero() {
                   <span className="text-[11px] font-semibold text-ink-600 tabular dark:text-ink-300">4.6 (214)</span>
                 </div>
                 <div className="mt-2.5 flex flex-wrap items-baseline gap-x-2">
-                  <span className="text-[19px] font-bold tabular text-ink-950 dark:text-white">{inr(4999)}</span>
-                  <span className="text-[13px] text-ink-400 line-through tabular">{inr(6999)}</span>
+                  <span className="text-[19px] font-bold tabular text-ink-950 dark:text-white">{money(4999)}</span>
+                  <span className="text-[13px] text-ink-400 line-through tabular">{money(6999)}</span>
                   <span className="rounded-full bg-gold-50 px-2 py-0.5 text-[11px] font-bold text-gold-600 dark:bg-gold-600/15 dark:text-gold-400">
                     29% OFF
                   </span>
@@ -127,7 +127,7 @@ export function Hero() {
                 <div className="mt-6">
                   <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-ink-400">Sales this month</p>
                   <div className="mt-2 flex items-end justify-between gap-3">
-                    <p className="text-[40px] font-bold leading-none tracking-[-0.04em] text-white tabular">₹84,250</p>
+                    <p className="text-[40px] font-bold leading-none tracking-[-0.04em] text-white tabular">$1,100</p>
                     <span className="mb-1.5 inline-flex items-center gap-1 rounded-full bg-teal-500/15 px-2 py-0.5 text-[12px] font-bold text-teal-100">
                       <TrendingUp className="size-3.5" />
                       +18.4%
@@ -161,7 +161,7 @@ export function Hero() {
                 <div className="mt-5 grid grid-cols-3 gap-2.5">
                   {[
                     { icon: ShoppingBag, label: 'Orders', value: '124' },
-                    { icon: IndianRupee, label: 'Payouts', value: '₹42.9k' },
+                    { icon: IndianRupee, label: 'Payouts', value: '$1k' },
                     { icon: Bell, label: 'New', value: '4' },
                   ].map((stat) => (
                     <div key={stat.label} className="rounded-xl border border-white/10 bg-white/6 p-3">

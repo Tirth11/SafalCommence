@@ -48,7 +48,7 @@ import {
 } from '@/data/shop'
 import { useAccountStore } from '@/store/account-store'
 import { useCartStore } from '@/store/cart-store'
-import { cn, inr } from '@/lib/utils'
+import { cn, money } from '@/lib/utils'
 
 const ACCOUNT_NAV = [
   { label: 'Overview', to: '/account', icon: User },
@@ -221,7 +221,7 @@ export function AccountDashboardPage() {
                     {order.placedOn} · {order.shipments.length} {order.shipments.length === 1 ? 'delivery' : 'deliveries'}
                   </p>
                 </div>
-                <p className="text-[13px] font-semibold tabular">{inr(order.total)}</p>
+                <p className="text-[13px] font-semibold tabular">{money(order.total)}</p>
                 <StatusBadge status={order.status} />
               </AdminLink>
             </li>

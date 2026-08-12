@@ -5,7 +5,7 @@ import { DataTable, type Column } from '@/components/admin/data-table'
 import { PageHeader } from '@/components/admin/primitives'
 import { StatusBadge } from '@/components/admin/status-badge'
 import { ADMIN_ORDERS, type AdminOrder } from '@/data/admin'
-import { inr } from '@/lib/utils'
+import { money } from '@/lib/utils'
 
 const FULFILMENT = ['Confirmed', 'Processing', 'Packed', 'Shipped', 'Delivered', 'Cancelled', 'Returned']
 const PAYMENTS = ['Initiated', 'Pending', 'Successful', 'Failed', 'Partially Refunded', 'Refunded']
@@ -75,7 +75,7 @@ export function OrdersPage() {
       header: 'Order value',
       align: 'right',
       sortBy: (o) => o.value,
-      cell: (o) => <span className="font-semibold tabular text-ink-900 dark:text-white">{inr(o.value)}</span>,
+      cell: (o) => <span className="font-semibold tabular text-ink-900 dark:text-white">{money(o.value)}</span>,
     },
     { key: 'payment', header: 'Payment', sortBy: (o) => o.payment, cell: (o) => <StatusBadge status={o.payment} /> },
     { key: 'fulfilment', header: 'Fulfilment', sortBy: (o) => o.fulfilment, cell: (o) => <StatusBadge status={o.fulfilment} /> },

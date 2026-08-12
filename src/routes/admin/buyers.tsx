@@ -9,7 +9,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { BUYERS, type Buyer } from '@/data/admin'
-import { inr } from '@/lib/utils'
+import { money } from '@/lib/utils'
 
 const SUSPEND_REASONS = [
   'Fraudulent order activity',
@@ -46,7 +46,7 @@ export function BuyersPage() {
       header: 'Total spend',
       align: 'right',
       sortBy: (b) => b.spend,
-      cell: (b) => <span className="font-semibold tabular text-ink-900 dark:text-white">{inr(b.spend)}</span>,
+      cell: (b) => <span className="font-semibold tabular text-ink-900 dark:text-white">{money(b.spend)}</span>,
     },
     { key: 'registered', header: 'Registered', hideBelow: 'lg', sortBy: (b) => b.registered, cell: (b) => <span className="whitespace-nowrap text-ink-500">{b.registered}</span> },
     { key: 'status', header: 'Account', sortBy: (b) => b.status, cell: (b) => <StatusBadge status={b.status} /> },
@@ -145,7 +145,7 @@ export function BuyersPage() {
                   { label: 'Phone', value: <span className="tabular">{selected.phone}</span> },
                   { label: 'Registered', value: selected.registered },
                   { label: 'Total orders', value: <span className="tabular">{selected.orders}</span> },
-                  { label: 'Total spend', value: <span className="tabular">{inr(selected.spend)}</span> },
+                  { label: 'Total spend', value: <span className="tabular">{money(selected.spend)}</span> },
                 ]}
               />
             </TabsContent>
@@ -165,7 +165,7 @@ export function BuyersPage() {
 
             <TabsContent value="orders">
               <p className="text-[13px] text-ink-500">
-                {selected.orders} orders totalling {inr(selected.spend)}. Open the Orders module filtered by this buyer for
+                {selected.orders} orders totalling {money(selected.spend)}. Open the Orders module filtered by this buyer for
                 the full history.
               </p>
             </TabsContent>

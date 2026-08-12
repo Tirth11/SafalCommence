@@ -38,7 +38,7 @@ import {
   type Buyer,
   type Ticket,
 } from '@/data/admin'
-import { inr } from '@/lib/utils'
+import { money } from '@/lib/utils'
 
 /* --------------------------------------------------------------- buyers --- */
 export function AdminBuyersPage() {
@@ -82,7 +82,7 @@ export function AdminBuyersPage() {
       header: 'Total spend',
       align: 'right',
       sortBy: (b) => b.spend,
-      cell: (b) => <span className="font-semibold tabular text-ink-900 dark:text-white">{inr(b.spend)}</span>,
+      cell: (b) => <span className="font-semibold tabular text-ink-900 dark:text-white">{money(b.spend)}</span>,
     },
     { key: 'registered', header: 'Registered', hideBelow: 'xl', sortBy: (b) => b.registered, cell: (b) => <span className="whitespace-nowrap text-ink-500">{b.registered}</span> },
     { key: 'status', header: 'Account', sortBy: (b) => b.status, cell: (b) => <StatusBadge status={b.status} /> },
@@ -276,7 +276,7 @@ export function AdminCataloguePage() {
                       </span>
                     </TableCell>
                     <TableCell className="hidden md:table-cell tabular text-ink-500">{c.id}</TableCell>
-                    <TableCell className="text-right tabular">{c.products.toLocaleString('en-IN')}</TableCell>
+                    <TableCell className="text-right tabular">{c.products.toLocaleString('en-US')}</TableCell>
                     <TableCell className="hidden lg:table-cell text-right tabular text-ink-500">{c.order}</TableCell>
                     <TableCell>
                       <StatusBadge status={c.status} />
@@ -448,12 +448,12 @@ export function AdminSupportPage() {
 
 /* -------------------------------------------------------------- reports --- */
 const REPORTS = [
-  { title: 'Sales Report', body: 'Orders, GMV and net sales by period.', metrics: ['4,286 orders', '₹24.5L GMV', '₹22.9L net'] },
-  { title: 'Seller Report', body: 'Registered, active sellers and seller-wise sales.', metrics: ['524 registered', '485 active', '₹24.5L sales'] },
+  { title: 'Sales Report', body: 'Orders, GMV and net sales by period.', metrics: ['4,286 orders', '$30,600 GMV', '$28,600 net'] },
+  { title: 'Seller Report', body: 'Registered, active sellers and seller-wise sales.', metrics: ['524 registered', '485 active', '$30,600 sales'] },
   { title: 'Product Report', body: 'Total, active and out-of-stock products.', metrics: ['12,450 active', '312 out of stock', '52 in review'] },
-  { title: 'Commission Report', body: 'Commission by seller and total platform commission.', metrics: ['₹2.14L total', '9.2% effective rate'] },
-  { title: 'Settlement Report', body: 'Eligible, paid and on-hold settlements.', metrics: ['₹1.24L eligible', '₹61k on hold', '₹6.45L paid'] },
-  { title: 'Refund Report', body: 'Refund count and refund value by period.', metrics: ['18 open', '₹42,180 exposure'] },
+  { title: 'Commission Report', body: 'Commission by seller and total platform commission.', metrics: ['$2,700 total', '9.2% effective rate'] },
+  { title: 'Settlement Report', body: 'Eligible, paid and on-hold settlements.', metrics: ['$1,600 eligible', '$1k on hold', '$8,100 paid'] },
+  { title: 'Refund Report', body: 'Refund count and refund value by period.', metrics: ['18 open', '$530exposure'] },
 ]
 
 export function AdminReportsPage() {
@@ -774,7 +774,7 @@ export function AdminSettingsPage() {
               <SettingInput label="Platform Name" value="SafalMarketHub" />
               <SettingInput label="Support Email" value="support@safalmarkethub.com" />
               <SettingInput label="Support Phone" value="+91 22 4000 1200" />
-              <SettingInput label="Currency" value="INR (₹)" />
+              <SettingInput label="Currency" value="USD ($)" />
               <SettingInput label="Time Zone" value="Asia/Kolkata (IST)" />
             </div>
           </Panel>
@@ -834,7 +834,7 @@ export function AdminSettingsPage() {
             <div className="grid gap-5 sm:grid-cols-2">
               <SettingInput label="Settlement waiting period" value="Delivery + 7 days" hint="When a delivered order becomes eligible." />
               <SettingInput label="Settlement cycle" value="Weekly (Monday)" />
-              <SettingInput label="Minimum settlement amount (₹)" value="500" />
+              <SettingInput label="Minimum settlement amount ($)" value="10" />
             </div>
             <p className="mt-5 text-[12px] text-ink-500">Seller-specific overrides can be introduced after Phase 1.</p>
           </Panel>
@@ -850,7 +850,7 @@ export function AdminSettingsPage() {
               ]}
             />
             <div className="mt-6 grid gap-5 border-t pt-6 sm:grid-cols-2">
-              <SettingInput label="Minimum order value (₹)" value="0" hint="0 disables the minimum." />
+              <SettingInput label="Minimum order value ($)" value="0" hint="0 disables the minimum." />
             </div>
           </Panel>
         </TabsContent>

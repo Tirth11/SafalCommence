@@ -6,7 +6,7 @@ import { ProductThumb } from '@/components/commerce/product-thumb'
 import { Button } from '@/components/ui/button'
 import type { ShopProduct } from '@/data/shop'
 import { useCartStore } from '@/store/cart-store'
-import { cn, discountPercent, inr } from '@/lib/utils'
+import { cn, discountPercent, money } from '@/lib/utils'
 
 /* ----------------------------------------------------------------- price --- */
 export function Price({
@@ -29,10 +29,10 @@ export function Price({
 
   return (
     <span className={cn('flex flex-wrap items-baseline gap-x-2 gap-y-1', className)}>
-      <span className={cn('font-bold tabular text-ink-950 dark:text-white', sizes.now)}>{inr(price)}</span>
+      <span className={cn('font-bold tabular text-ink-950 dark:text-white', sizes.now)}>{money(price)}</span>
       {mrp > price && (
         <>
-          <span className={cn('text-ink-400 line-through tabular', sizes.was)}>{inr(mrp)}</span>
+          <span className={cn('text-ink-400 line-through tabular', sizes.was)}>{money(mrp)}</span>
           <span
             className={cn(
               'rounded-full bg-gold-50 px-2 py-0.5 font-bold text-gold-600 dark:bg-gold-600/15 dark:text-gold-400',
@@ -208,13 +208,13 @@ export function PriceDetails({
 }) {
   return (
     <dl className={cn('divide-y', className)}>
-      <Row label={`Subtotal`} value={inr(subtotal + discount)} />
-      {discount > 0 && <Row label="Discount" value={`− ${inr(discount)}`} tone="save" />}
-      <Row label="Shipping" value={shipping === 0 ? 'Free' : inr(shipping)} />
-      <Row label="Taxes" value={inr(tax)} hint="included" />
+      <Row label={`Subtotal`} value={money(subtotal + discount)} />
+      {discount > 0 && <Row label="Discount" value={`− ${money(discount)}`} tone="save" />}
+      <Row label="Shipping" value={shipping === 0 ? 'Free' : money(shipping)} />
+      <Row label="Taxes" value={money(tax)} hint="included" />
       <div className="flex items-baseline justify-between gap-4 pt-3.5">
         <dt className="text-[15px] font-semibold text-ink-900 dark:text-white">Total</dt>
-        <dd className="text-xl font-bold tabular text-ink-950 dark:text-white">{inr(total)}</dd>
+        <dd className="text-xl font-bold tabular text-ink-950 dark:text-white">{money(total)}</dd>
       </div>
     </dl>
   )
