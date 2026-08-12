@@ -63,7 +63,7 @@ export function SellerProfilePage() {
         </TabsList>
 
         <TabsContent value="store">
-          <Panel title="Store information" description="What customers see about your store on SafalHub.">
+          <Panel title="Store information" description="What customers see about your store on SafalMarketHub.">
             <div className="flex flex-wrap items-center gap-5 border-b pb-6">
               <LogoMark className="size-16 rounded-lg" />
               <div>
@@ -221,7 +221,7 @@ export function SellerProfilePage() {
             <Panel title="How pickup works">
               <ul className="grid gap-3">
                 {[
-                  { icon: MapPin, text: 'Couriers collect from this address for every order you ship through SafalHub logistics.' },
+                  { icon: MapPin, text: 'Couriers collect from this address for every order you ship through SafalMarketHub logistics.' },
                   { icon: Store, text: 'Phase 1 supports one primary pickup location — additional locations come later.' },
                   { icon: TriangleAlert, text: 'Keep the contact number reachable during pickup hours to avoid missed pickups.' },
                 ].map((item, i) => (
@@ -237,7 +237,7 @@ export function SellerProfilePage() {
 
         <TabsContent value="bank">
           <div className="grid gap-4 lg:grid-cols-[1.2fr_1fr]">
-            <Panel title="Settlement account" description="Where SafalHub sends your earnings.">
+            <Panel title="Settlement account" description="Where SafalMarketHub sends your earnings.">
               <DefinitionList
                 items={[
                   { label: 'Account holder', value: b.bank.holder },

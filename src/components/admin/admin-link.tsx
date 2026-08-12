@@ -6,7 +6,7 @@ import type * as React from 'react'
  * plain strings rather than literal route ids. This is the single, contained
  * place where that widening is reconciled with TanStack Router's typed Link.
  */
-export type AdminTarget = { to: string; search?: Record<string, string> }
+export type AdminTarget = { to: string; search?: Record<string, string | undefined> }
 
 export function adminLinkProps({ to, search }: AdminTarget): LinkProps {
   return { to, search } as unknown as LinkProps

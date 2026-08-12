@@ -1,35 +1,46 @@
-import { BadgeCheck, Headset, Lock, PackageSearch } from 'lucide-react'
+import { BadgeCheck, Headset, Lock, PackageSearch, RotateCcw, Truck } from 'lucide-react'
 
-import { Section, SectionHead } from '@/components/marketing/section'
+import { EditorialHeading, Reveal } from '@/components/marketing/reveal'
 
-/** No fabricated numerical claims during MVP — capability statements only. */
+/** Capability statements only — no invented seller or customer counts. */
 const INDICATORS = [
-  { icon: BadgeCheck, title: 'Verified Sellers', body: 'Seller verification before marketplace activation.' },
-  { icon: Lock, title: 'Secure Payments', body: 'Safe and reliable payment processing.' },
-  { icon: PackageSearch, title: 'Transparent Orders', body: 'Clear tracking throughout the purchase journey.' },
-  { icon: Headset, title: 'Seller Support', body: 'Simple onboarding and commerce management.' },
+  { icon: BadgeCheck, title: 'Verified sellers', body: 'Every business is checked — documents, GST and bank account — before their products go live.' },
+  { icon: Lock, title: 'Secure payments', body: 'Payments run through a certified gateway. We never see or store your card details.' },
+  { icon: PackageSearch, title: 'Transparent orders', body: 'Clear status at every step, from confirmation to the courier at your door.' },
+  { icon: RotateCcw, title: 'Straightforward returns', body: 'Eligible products can be returned within 7 days, with the refund tracked end to end.' },
+  { icon: Truck, title: 'Reliable delivery', body: 'Serviceability is checked against your PIN code before you pay, not after.' },
+  { icon: Headset, title: 'Real support', body: 'One place to raise an issue about any order, from any seller.' },
 ]
 
 export function Trust() {
   return (
-    <Section tone="muted" className="border-y">
+    <section className="py-16 sm:py-24">
       <div className="container-page">
-        <SectionHead center title="Built for trustworthy commerce" />
+        <Reveal>
+          <EditorialHeading
+            center
+            eyebrow="Built on trust"
+            title="Confidence on both sides of the sale."
+            sub="Buyers need to know the product is real. Sellers need to know the money arrives. Both are designed in, not added later."
+          />
+        </Reveal>
 
-        <div className="mt-12 grid gap-x-6 gap-y-9 sm:grid-cols-2 lg:grid-cols-4">
-          {INDICATORS.map(({ icon: Icon, title, body }) => (
-            <div key={title} className="flex gap-4">
-              <span className="grid size-11 shrink-0 place-items-center rounded-md bg-background text-teal-600 shadow-xs dark:text-teal-100">
-                <Icon className="size-[22px]" />
-              </span>
+        <div className="mt-14 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+          {INDICATORS.map((item, i) => (
+            <Reveal key={item.title} delay={(i % 3) * 0.06}>
               <div>
-                <h3 className="text-[15px]">{title}</h3>
-                <p className="mt-1.5 text-sm leading-relaxed text-ink-600 dark:text-ink-300">{body}</p>
+                <span className="grid size-11 place-items-center rounded-2xl bg-teal-50 text-teal-600 dark:bg-teal-600/15 dark:text-teal-100">
+                  <item.icon className="size-[22px]" />
+                </span>
+                <h3 className="mt-4 text-[17px] tracking-[-0.01em]">{item.title}</h3>
+                <p className="mt-2 max-w-[320px] text-[14px] leading-relaxed text-ink-600 dark:text-ink-300">
+                  {item.body}
+                </p>
               </div>
-            </div>
+            </Reveal>
           ))}
         </div>
       </div>
-    </Section>
+    </section>
   )
 }

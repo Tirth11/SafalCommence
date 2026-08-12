@@ -2,15 +2,17 @@ import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { ChevronRight, Menu, Search, ShoppingCart } from 'lucide-react'
 
+import { AdminLink } from '@/components/admin/admin-link'
 import { Logo } from '@/components/brand/logo'
+import { useAccountStore, useStartSellingTarget } from '@/store/account-store'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 
 const NAV = [
-  { label: 'Shop', href: '/#marketplace' },
-  { label: 'Categories', href: '/#categories' },
-  { label: 'Sell on SafalHub', href: '/#sellers' },
+  { label: 'Shop', href: '/shop/all' },
+  { label: 'Categories', href: '/shop/categories' },
+  { label: 'Sell on SafalMarketHub', href: '/#sellers' },
   { label: 'How It Works', href: '/#how-it-works' },
   { label: 'Pricing', href: '/#pricing' },
 ]
@@ -18,6 +20,8 @@ const NAV = [
 export function SiteHeader() {
   const [searchOpen, setSearchOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const user = useAccountStore((s) => s.user)
+  const sell = useStartSellingTarget()
 
   return (
     <header className="sticky top-0 z-50 border-b bg-background/85 backdrop-blur-xl backdrop-saturate-150">
@@ -58,19 +62,23 @@ export function SiteHeader() {
             )}
           </div>
 
-          <Button variant="ghost" size="sm" className="hidden lg:inline-flex" asChild>
-            <Link to="/login">Sign In</Link>
-          </Button>
+          {!user && (
+            <Button variant="ghost" size="sm" className="hidden lg:inline-flex" asChild>
+              <Link to="/login">Sign In</Link>
+            </Button>
+          )}
 
-          <Button variant="ghost" size="icon" aria-label="Cart, 2 items" className="relative">
+          <Button variant="ghost" size="icon" aria-label="Cart, 2 items" className="relative" asChild>
+            <Link to="/cart">
             <ShoppingCart className="size-5" />
             <span className="absolute right-1 top-1 grid h-[17px] min-w-[17px] place-items-center rounded-full border-2 border-background bg-brand-600 px-1 text-[10px] font-bold leading-none text-white">
               2
             </span>
+            </Link>
           </Button>
 
           <Button size="sm" className="hidden lg:inline-flex" asChild>
-            <Link to="/register">Start Selling</Link>
+            <AdminLink to={sell.to}>{sell.label}</AdminLink>
           </Button>
 
           <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
@@ -103,15 +111,17 @@ export function SiteHeader() {
                 </nav>
                 <div className="grid gap-3">
                   <Button asChild className="w-full">
-                    <Link to="/register" onClick={() => setMenuOpen(false)}>
-                      Start Selling
-                    </Link>
+                    <AdminLink to={sell.to} onClick={() => setMenuOpen(false)}>
+                      {sell.label}
+                    </AdminLink>
                   </Button>
-                  <Button variant="outline" asChild className="w-full">
-                    <Link to="/login" onClick={() => setMenuOpen(false)}>
-                      Sign In
-                    </Link>
-                  </Button>
+                  {!user && (
+                    <Button variant="outline" asChild className="w-full">
+                      <Link to="/login" onClick={() => setMenuOpen(false)}>
+                        Sign In
+                      </Link>
+                    </Button>
+                  )}
                 </div>
               </div>
             </SheetContent>

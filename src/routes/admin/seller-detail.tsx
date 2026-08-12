@@ -616,7 +616,7 @@ export function SellerDetailPage() {
         </TabsContent>
 
         <TabsContent value="activity">
-          <Panel title="Administrative activity" description="Actions performed by the SafalHub team against this seller account." padded={false}>
+          <Panel title="Administrative activity" description="Actions performed by the SafalMarketHub team against this seller account." padded={false}>
             <ul className="divide-y">
               {[
                 { action: 'KYC documents received', by: 'System', at: seller.submittedOn ?? seller.registered },

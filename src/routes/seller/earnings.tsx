@@ -159,7 +159,7 @@ export function SellerSettlementsPage() {
     <>
       <PageHeader
         title="Settlements"
-        description="What SafalHub owes you, what's on the way, and what has been paid."
+        description="What SafalMarketHub owes you, what's on the way, and what has been paid."
         breadcrumb={[{ label: 'Dashboard', to: '/seller' }, { label: 'Settlements', to: '/seller/settlements' }]}
       />
 

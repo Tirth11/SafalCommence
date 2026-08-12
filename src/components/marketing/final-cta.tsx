@@ -16,7 +16,7 @@ export function FinalCta() {
       <div className="container-page relative text-center">
         <h2 className="text-3xl text-white sm:text-4xl md:text-[44px]">Ready to start?</h2>
         <p className="mx-auto mt-5 max-w-[620px] text-base text-ink-300 sm:text-[17px]">
-          Whether you're here to discover your next purchase or grow your business, SafalHub gives you one
+          Whether you're here to discover your next purchase or grow your business, SafalMarketHub gives you one
           place to get started.
         </p>
         <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
@@ -24,7 +24,7 @@ export function FinalCta() {
             <Link to="/register">Start Selling</Link>
           </Button>
           <Button size="lg" variant="onInkOutline" asChild className="w-full sm:w-auto">
-            <a href="#marketplace">Explore Marketplace</a>
+            <Link to="/shop">Explore Marketplace</Link>
           </Button>
         </div>
         <p className="mt-6 text-sm text-ink-400">

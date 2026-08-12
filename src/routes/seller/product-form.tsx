@@ -79,7 +79,7 @@ export function SellerProductFormPage() {
     <>
       <PageHeader
         title={existing ? existing.name : 'Add Product'}
-        description={existing ? `${existing.sku} · last updated ${existing.updated}` : 'List a new product on SafalHub.'}
+        description={existing ? `${existing.sku} · last updated ${existing.updated}` : 'List a new product on SafalMarketHub.'}
         breadcrumb={[
           { label: 'Dashboard', to: '/seller' },
           { label: 'Products', to: '/seller/products' },
@@ -92,7 +92,7 @@ export function SellerProductFormPage() {
       {existing?.status === 'Changes Required' && existing.adminComment && (
         <Alert variant="warning" className="mb-5">
           <TriangleAlert />
-          <AlertTitle>Changes required by SafalHub</AlertTitle>
+          <AlertTitle>Changes required by SafalMarketHub</AlertTitle>
           <AlertDescription>{existing.adminComment}</AlertDescription>
         </Alert>
       )}
@@ -503,7 +503,7 @@ export function SellerProductFormPage() {
           <div className="grid content-start gap-4">
             <Panel title="Submit for approval">
               <p className="text-[13px] leading-relaxed text-ink-600 dark:text-ink-300">
-                SafalHub reviews every new listing before it becomes available to customers. You'll be notified as soon as
+                SafalMarketHub reviews every new listing before it becomes available to customers. You'll be notified as soon as
                 there's a decision.
               </p>
               <div className="mt-5 grid gap-2">
@@ -585,7 +585,7 @@ function ProductSubmitted({ productId }: { productId: string }) {
         </span>
         <h1 className="mt-6 text-2xl">Product submitted for review</h1>
         <p className="mx-auto mt-3 max-w-[420px] text-[15px] text-ink-600 dark:text-ink-300">
-          Our team will review your product before it becomes available on SafalHub.
+          Our team will review your product before it becomes available on SafalMarketHub.
         </p>
         <div className="mt-8 grid gap-3 sm:grid-cols-3">
           <Button variant="outline" asChild>

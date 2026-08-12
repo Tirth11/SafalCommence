@@ -18,12 +18,13 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { ADMIN_NOTIFICATIONS } from '@/data/admin'
+import { useAccountStore } from '@/store/account-store'
 import { cn } from '@/lib/utils'
 
 /** Signed-in admin — swap for the session once auth is wired. */
 export const CURRENT_ADMIN = {
   name: 'Tirth Thaker',
-  email: 'tirth.thaker@safalhub.com',
+  email: 'tirth.thaker@safalmarkethub.com',
   role: 'Super Admin' as const,
   initials: 'TT',
 }
@@ -32,6 +33,12 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
   const [searchOpen, setSearchOpen] = useState(false)
   const [mobileNav, setMobileNav] = useState(false)
   const location = useLocation()
+  const user = useAccountStore((s) => s.user)
+  const signOut = useAccountStore((s) => s.signOut)
+  // Staff identity comes from the signed-in account when available.
+  const admin = user
+    ? { name: `${user.firstName} ${user.lastName}`, email: user.email, role: CURRENT_ADMIN.role, initials: `${user.firstName[0]}${user.lastName[0]}` }
+    : CURRENT_ADMIN
 
   useEffect(() => setMobileNav(false), [location.pathname])
 
@@ -111,19 +118,19 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                   className="flex items-center gap-2 rounded-sm py-1 pl-1 pr-2 transition-colors hover:bg-ink-100 dark:hover:bg-secondary"
                 >
                   <span className="grid size-8 place-items-center rounded-full bg-brand-600 text-[12px] font-bold text-white">
-                    {CURRENT_ADMIN.initials}
+                    {admin.initials}
                   </span>
                   <span className="hidden text-left sm:block">
                     <span className="block text-[13px] font-semibold leading-tight text-ink-900 dark:text-white">
-                      {CURRENT_ADMIN.name}
+                      {admin.name}
                     </span>
-                    <span className="block text-[11px] leading-tight text-ink-500">{CURRENT_ADMIN.role}</span>
+                    <span className="block text-[11px] leading-tight text-ink-500">{admin.role}</span>
                   </span>
                   <ChevronDown className="size-4 text-ink-400" />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-[240px]">
-                <DropdownMenuLabel>{CURRENT_ADMIN.email}</DropdownMenuLabel>
+                <DropdownMenuLabel>{admin.email}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem>
                   <User />
@@ -138,7 +145,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                   Log out all sessions
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem variant="destructive" asChild>
+                <DropdownMenuItem variant="destructive" asChild onSelect={() => signOut()}>
                   <Link to="/admin/login">
                     <LogOut />
                     Sign out

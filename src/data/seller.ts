@@ -1,5 +1,5 @@
 /* ==========================================================================
-   SafalHub — Seller Portal mock data (single seller: ABC Electronics)
+   SafalMarketHub — Seller Portal mock data (single seller: ABC Electronics)
    Shapes mirror the seller-scoped API. Nothing here crosses organisations —
    a seller never sees another seller's data.
    ========================================================================== */

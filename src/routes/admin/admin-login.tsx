@@ -64,7 +64,7 @@ export function AdminLoginPage() {
           </ul>
         </div>
 
-        <p className="relative text-xs text-ink-500">© 2026 SafalHub · Internal use only</p>
+        <p className="relative text-xs text-ink-500">© 2026 SafalMarketHub · Internal use only</p>
       </div>
 
       {/* Right: form */}
@@ -80,7 +80,7 @@ export function AdminLoginPage() {
 
           <p className="mt-10 flex items-center gap-2 rounded-sm border bg-muted/60 px-3.5 py-3 text-[12px] leading-relaxed text-ink-500">
             <Lock className="size-4 shrink-0" />
-            Access is restricted to authorised SafalHub staff. Sessions expire after 30 minutes of inactivity.
+            Access is restricted to authorised SafalMarketHub staff. Sessions expire after 30 minutes of inactivity.
           </p>
 
           <div className="mt-6 text-center">
@@ -101,7 +101,7 @@ export function AdminLoginPage() {
           { label: 'Forgot password', onSelect: () => setView('forgot') },
           { label: 'Reset link sent', onSelect: () => setView('sent') },
         ]}
-        note="admin@safalhub.com signs in. inactive@safalhub.com returns the inactive-account error. Anything else returns incorrect credentials."
+        note="admin@safalmarkethub.com signs in. inactive@safalmarkethub.com returns the inactive-account error. Anything else returns incorrect credentials."
       />
     </div>
   )
@@ -120,17 +120,17 @@ function SignInForm({ onForgot }: { onForgot: () => void }) {
     setServerError(null)
     await new Promise((r) => setTimeout(r, 800))
     const key = values.email.trim().toLowerCase()
-    if (key === 'admin@safalhub.com') {
+    if (key === 'admin@safalmarkethub.com') {
       navigate({ to: '/admin' })
       return
     }
-    setServerError(key === 'inactive@safalhub.com' ? ERRORS.inactive : ERRORS.invalid)
+    setServerError(key === 'inactive@safalmarkethub.com' ? ERRORS.inactive : ERRORS.invalid)
   }
 
   return (
     <>
       <h1 className="text-2xl sm:text-[28px]">Sign in to Admin Portal</h1>
-      <p className="mt-2 text-[15px] text-ink-600 dark:text-ink-300">Use your SafalHub staff account.</p>
+      <p className="mt-2 text-[15px] text-ink-600 dark:text-ink-300">Use your SafalMarketHub staff account.</p>
 
       {serverError && (
         <Alert variant="destructive" className="mt-6">
@@ -148,7 +148,7 @@ function SignInForm({ onForgot }: { onForgot: () => void }) {
               <FormItem>
                 <FormLabel>Email Address</FormLabel>
                 <FormControl>
-                  <Input type="email" autoComplete="email" placeholder="you@safalhub.com" {...field} />
+                  <Input type="email" autoComplete="email" placeholder="you@safalmarkethub.com" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -209,7 +209,7 @@ function ForgotForm({ onBack, onSent }: { onBack: () => void; onSent: () => void
               <FormItem>
                 <FormLabel>Email Address</FormLabel>
                 <FormControl>
-                  <Input type="email" placeholder="you@safalhub.com" {...field} />
+                  <Input type="email" placeholder="you@safalmarkethub.com" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

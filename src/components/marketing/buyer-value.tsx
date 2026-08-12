@@ -1,3 +1,4 @@
+import { Link } from '@tanstack/react-router'
 import { Compass, ShieldCheck, Truck } from 'lucide-react'
 
 import { Section, SectionHead } from '@/components/marketing/section'
@@ -29,7 +30,7 @@ export function BuyerValue() {
 
         <div className="mt-12 flex justify-center">
           <Button size="lg" variant="outline" asChild className="w-full sm:w-auto">
-            <a href="#marketplace">Start Shopping</a>
+            <Link to="/shop">Start Shopping</Link>
           </Button>
         </div>
       </div>

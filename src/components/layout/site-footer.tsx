@@ -6,9 +6,9 @@ const COLUMNS = [
   {
     title: 'Shop',
     links: [
-      { label: 'Marketplace', to: '/#marketplace' },
-      { label: 'Categories', to: '/#categories' },
-      { label: 'New Products', to: '/#marketplace' },
+      { label: 'Marketplace', to: '/shop' },
+      { label: 'Categories', to: '/shop/categories' },
+      { label: 'New Products', to: '/shop/all' },
     ],
   },
   {
@@ -39,9 +39,9 @@ const COLUMNS = [
 ]
 
 const SOCIAL = [
-  { label: 'SafalHub on X', Icon: XMark },
-  { label: 'SafalHub on LinkedIn', Icon: LinkedInMark },
-  { label: 'SafalHub on Instagram', Icon: InstagramMark },
+  { label: 'SafalMarketHub on X', Icon: XMark },
+  { label: 'SafalMarketHub on LinkedIn', Icon: LinkedInMark },
+  { label: 'SafalMarketHub on Instagram', Icon: InstagramMark },
 ]
 
 export function SiteFooter() {
@@ -79,7 +79,7 @@ export function SiteFooter() {
         </div>
 
         <div className="mt-14 flex flex-col items-start justify-between gap-5 border-t border-white/10 pt-6 text-sm sm:flex-row sm:items-center">
-          <p>© 2026 SafalHub. All rights reserved.</p>
+          <p>© 2026 SafalMarketHub. All rights reserved.</p>
           <ul className="flex gap-1">
             {SOCIAL.map(({ label, Icon }) => (
               <li key={label}>

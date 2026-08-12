@@ -49,7 +49,7 @@ export function SellerStatusBanner({ className }: { className?: string }) {
       return {
         tone: 'info' as const,
         icon: Hourglass,
-        title: 'Your seller profile is with SafalHub for approval',
+        title: 'Your seller profile is with SafalMarketHub for approval',
         body: 'You can keep adding products while we review. Selling starts once your account is approved.',
         cta: { label: 'View setup', to: '/seller/setup' },
       }
@@ -73,7 +73,7 @@ export function SellerStatusBanner({ className }: { className?: string }) {
       tone: 'success' as const,
       icon: BadgeCheck,
       title: 'Your store is active',
-      body: 'Approved products are available to customers on SafalHub.',
+      body: 'Approved products are available to customers on SafalMarketHub.',
       cta: undefined,
     }
   })()

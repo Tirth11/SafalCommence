@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link, useLocation, useNavigate } from '@tanstack/react-router'
-import { Bell, ChevronDown, LogOut, Menu, Plus, Search, Store, User } from 'lucide-react'
+import { useLocation, useNavigate } from '@tanstack/react-router'
+import { Bell, ChevronDown, Menu, Plus, Search, ShoppingBag, Store } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { AdminLink, adminLinkProps } from '@/components/admin/admin-link'
@@ -11,7 +11,6 @@ import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
@@ -19,6 +18,8 @@ import {
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { SELLER_NOTIFICATIONS, SELLER_ORDERS, SELLER_PRODUCTS } from '@/data/seller'
+import { AccountMenuSections, ContextSwitcher } from '@/components/account/context-switcher'
+import { useAccountStore } from '@/store/account-store'
 import { useSellerStore } from '@/store/seller-store'
 import { cn } from '@/lib/utils'
 
@@ -27,6 +28,7 @@ export function SellerShell({ children }: { children: React.ReactNode }) {
   const [searchOpen, setSearchOpen] = useState(false)
   const location = useLocation()
   const storeName = useSellerStore((s) => s.storeName)
+  const switchContext = useAccountStore((s) => s.switchContext)
 
   useEffect(() => setMenuOpen(false), [location.pathname])
 
@@ -67,6 +69,11 @@ export function SellerShell({ children }: { children: React.ReactNode }) {
 
           <Logo size="sm" sub="Seller" to="/seller" className="lg:hidden" />
 
+          {/* Which business you're operating — switching never signs you out */}
+          <div className="hidden lg:block">
+            <ContextSwitcher />
+          </div>
+
           <button
             type="button"
             onClick={() => setSearchOpen(true)}
@@ -77,7 +84,14 @@ export function SellerShell({ children }: { children: React.ReactNode }) {
           </button>
 
           <div className="ml-auto flex items-center gap-1">
-            <Button size="sm" className="hidden lg:inline-flex" asChild>
+            {/* Same account, other side of the marketplace */}
+            <Button variant="ghost" size="sm" className="hidden md:inline-flex" asChild>
+              <AdminLink to="/shop" onClick={() => switchContext('personal')}>
+                <ShoppingBag className="size-4" />
+                Shop SafalMarketHub
+              </AdminLink>
+            </Button>
+            <Button size="sm" className="hidden xl:inline-flex" asChild>
               <AdminLink to="/seller/products/new">
                 <Plus className="size-4" />
                 Add Product
@@ -255,7 +269,12 @@ function SellerNotificationBell() {
 }
 
 function SellerAccountMenu() {
-  const { storeName, ownerName, email } = useSellerStore()
+  const user = useAccountStore((state) => state.user)
+  const signOut = useAccountStore((state) => state.signOut)
+  const storeName = useSellerStore((state) => state.storeName)
+
+  if (!user) return null
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -264,39 +283,31 @@ function SellerAccountMenu() {
           className="flex items-center gap-2 rounded-sm py-1 pl-1 pr-2 transition-colors hover:bg-ink-100 dark:hover:bg-secondary"
         >
           <span className="grid size-8 shrink-0 place-items-center rounded-full bg-brand-600 text-[12px] font-bold text-white">
-            {storeName.slice(0, 2).toUpperCase()}
+            {user.firstName.slice(0, 1).toUpperCase()}
           </span>
           <span className="hidden text-left sm:block">
-            <span className="block max-w-[140px] truncate text-[13px] font-semibold leading-tight text-ink-900 dark:text-white">
-              {storeName}
+            <span className="block text-[13px] font-semibold leading-tight text-ink-900 dark:text-white">
+              {user.firstName} {user.lastName}
             </span>
-            <span className="block text-[11px] leading-tight text-ink-500">{ownerName}</span>
+            <span className="block max-w-[140px] truncate text-[11px] leading-tight text-ink-500">{storeName}</span>
           </span>
           <ChevronDown className="size-4 text-ink-400" />
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-[230px]">
-        <DropdownMenuLabel>{email}</DropdownMenuLabel>
+      <DropdownMenuContent align="end" className="w-[250px]">
+        <DropdownMenuLabel className="normal-case tracking-normal">
+          <span className="block text-[13px] font-semibold text-ink-900 dark:text-white">
+            {user.firstName} {user.lastName}
+          </span>
+          <span className="block text-[11px] font-normal text-ink-500">{user.email}</span>
+        </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <AdminLink to="/seller/profile">
-            <Store />
-            Business profile
-          </AdminLink>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <AdminLink to="/seller/settings">
-            <User />
-            Account settings
-          </AdminLink>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem variant="destructive" asChild>
-          <Link to="/login" onClick={() => toast.success('Signed out')}>
-            <LogOut />
-            Sign out
-          </Link>
-        </DropdownMenuItem>
+        <AccountMenuSections
+          onSignOut={() => {
+            signOut()
+            toast.success('Signed out')
+          }}
+        />
       </DropdownMenuContent>
     </DropdownMenu>
   )

@@ -132,7 +132,7 @@ export function AdminUsersPage() {
     <>
       <PageHeader
         title="Admin users"
-        description="Internal SafalHub staff accounts and what each role is allowed to do."
+        description="Internal SafalMarketHub staff accounts and what each role is allowed to do."
         breadcrumb={[{ label: 'Dashboard', to: '/admin' }, { label: 'Admin Users', to: '/admin/admin-users' }]}
         actions={
           <Button
@@ -147,7 +147,7 @@ export function AdminUsersPage() {
                 extraFields: [
                   { key: 'firstName', label: 'First name', placeholder: 'Enter first name', required: true },
                   { key: 'lastName', label: 'Last name', placeholder: 'Enter last name', required: true },
-                  { key: 'email', label: 'Work email', placeholder: 'name@safalhub.com', required: true },
+                  { key: 'email', label: 'Work email', placeholder: 'name@safalmarkethub.com', required: true },
                 ],
                 successMessage: 'Invitation sent',
               })

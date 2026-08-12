@@ -51,7 +51,7 @@ export function SellerDashboardMock() {
           </span>
           <div className="mx-auto hidden w-[300px] items-center gap-2 rounded-full border bg-background px-3 py-1.5 text-[11px] text-ink-400 sm:flex">
             <Search className="size-3" />
-            seller.safalhub.com/dashboard
+            seller.safalmarkethub.com/dashboard
           </div>
           <Bell className="ml-auto size-4 text-ink-400 sm:ml-0" />
         </div>

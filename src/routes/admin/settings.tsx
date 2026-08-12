@@ -34,7 +34,7 @@ export function SettingsPage() {
     <>
       <PageHeader
         title="Platform settings"
-        description="Global configuration for SafalHub. Changes apply marketplace-wide and are written to the audit log."
+        description="Global configuration for SafalMarketHub. Changes apply marketplace-wide and are written to the audit log."
         breadcrumb={[{ label: 'Dashboard', to: '/admin' }, { label: 'Settings', to: '/admin/settings' }]}
         actions={
           <Button size="sm" onClick={() => toast.success('Settings saved')}>
@@ -65,8 +65,8 @@ export function SettingsPage() {
         <TabsContent value="general">
           <Panel title="General">
             <div className="grid gap-5 sm:grid-cols-2">
-              <TextSetting id="platform-name" label="Platform name" value="SafalHub" />
-              <TextSetting id="support-email" label="Support email" value="support@safalhub.com" />
+              <TextSetting id="platform-name" label="Platform name" value="SafalMarketHub" />
+              <TextSetting id="support-email" label="Support email" value="support@safalmarkethub.com" />
               <TextSetting id="support-phone" label="Support phone" value="+91 22 4000 1200" />
               <SelectSetting id="currency" label="Currency" value="INR" options={['INR']} />
               <SelectSetting id="timezone" label="Time zone" value="Asia/Kolkata (IST)" options={['Asia/Kolkata (IST)', 'UTC']} />
@@ -98,7 +98,7 @@ export function SettingsPage() {
           <Panel title="Payment gateway">
             <div className="grid gap-5 sm:grid-cols-2">
               <SelectSetting id="gateway" label="Primary gateway" value="Razorpay" options={['Razorpay', 'PayU', 'Cashfree']} />
-              <TextSetting id="webhook" label="Webhook endpoint" value="https://api.safalhub.com/webhooks/payments" />
+              <TextSetting id="webhook" label="Webhook endpoint" value="https://api.safalmarkethub.com/webhooks/payments" />
             </div>
             <p className="mt-5 rounded-sm border bg-muted/60 px-4 py-3 text-[12px] leading-relaxed text-ink-500">
               Gateway API keys are stored in the secret manager, never in this portal. Webhook signatures are verified on

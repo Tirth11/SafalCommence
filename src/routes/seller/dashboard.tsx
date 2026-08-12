@@ -59,6 +59,10 @@ export function SellerDashboardPage() {
         actions={
           <>
             <SellerStatusPill className="hidden sm:inline-flex" />
+            {/* Same account — buying doesn't need a different login */}
+            <Button variant="outline" size="sm" asChild>
+              <AdminLink to="/shop">Shop SafalMarketHub</AdminLink>
+            </Button>
             <Button size="sm" asChild>
               <AdminLink to="/seller/products/new">Add Product</AdminLink>
             </Button>
@@ -99,7 +103,7 @@ export function SellerDashboardPage() {
             <Panel title="Selling status">
               <p className="text-[13px] leading-relaxed text-ink-600 dark:text-ink-300">
                 Your store is <span className="font-semibold">{percent}%</span> set up. Customers can buy from you once
-                SafalHub approves your profile and your products.
+                SafalMarketHub approves your profile and your products.
               </p>
             </Panel>
           </div>
@@ -117,7 +121,7 @@ export function SellerDashboardPage() {
                 <AttentionCard
                   icon={Boxes}
                   count={String(lowStock.length + outOfStock.length)}
-                  label="Low stock products"
+                  label={lowStock.length + outOfStock.length === 1 ? 'Low stock product' : 'Low stock products'}
                   detail={lowStock[0] ? `${lowStock[0].name} · ${lowStock[0].available} left` : 'Restock to stay listed'}
                   tone="gold"
                   target={{ to: '/seller/inventory', search: { filter: 'Low Stock' } }}
@@ -127,7 +131,7 @@ export function SellerDashboardPage() {
                 <AttentionCard
                   icon={ShoppingBag}
                   count={String(newOrders.length)}
-                  label="New orders"
+                  label={newOrders.length === 1 ? 'New order' : 'New orders'}
                   detail="Accept them to start fulfilment"
                   tone="brand"
                   target={{ to: '/seller/orders', search: { tab: 'New' } }}
@@ -137,7 +141,7 @@ export function SellerDashboardPage() {
                 <AttentionCard
                   icon={TriangleAlert}
                   count={String(changesRequired.length)}
-                  label="Products require changes"
+                  label={changesRequired.length === 1 ? 'Product requires changes' : 'Products require changes'}
                   detail={changesRequired[0].name}
                   tone="danger"
                   target={{ to: `/seller/products/${changesRequired[0].id}` }}
@@ -285,7 +289,7 @@ export function SellerDashboardPage() {
           {status === 'Active' && kyc === 'Approved' && (
             <p className="mt-6 flex items-center gap-2 text-[12px] text-ink-500">
               <PartyPopper className="size-4 shrink-0 text-brand-600 dark:text-brand-300" />
-              Your store is active and approved products are live on SafalHub.
+              Your store is active and approved products are live on SafalMarketHub.
             </p>
           )}
         </>

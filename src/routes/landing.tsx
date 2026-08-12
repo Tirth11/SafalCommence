@@ -1,15 +1,20 @@
 import { SiteFooter } from '@/components/layout/site-footer'
 import { SiteHeader } from '@/components/layout/site-header'
-import { BuyerValue } from '@/components/marketing/buyer-value'
-import { DashboardPreview } from '@/components/marketing/dashboard-preview'
+import { AudienceJourneys, TwoDoors } from '@/components/marketing/audience-journeys'
+import { Discover, SellerStory } from '@/components/marketing/discover'
 import { FinalCta } from '@/components/marketing/final-cta'
 import { Hero } from '@/components/marketing/hero'
-import { HowItWorks } from '@/components/marketing/how-it-works'
-import { MarketplacePreview } from '@/components/marketing/marketplace-preview'
 import { Pricing } from '@/components/marketing/pricing'
-import { SellerValue } from '@/components/marketing/seller-value'
 import { Trust } from '@/components/marketing/trust'
 
+/**
+ * One landing page for two audiences.
+ *
+ * Order matters: the hero states both propositions, discovery proves there is
+ * something to buy, the audience switch lets each visitor read only their own
+ * path, the seller band goes deep for businesses, and the closing split sends
+ * everyone to the right door.
+ */
 export function LandingPage() {
   return (
     <>
@@ -22,13 +27,12 @@ export function LandingPage() {
       <SiteHeader />
       <main id="main">
         <Hero />
-        <MarketplacePreview />
-        <SellerValue />
-        <HowItWorks />
-        <BuyerValue />
-        <DashboardPreview />
+        <Discover />
+        <AudienceJourneys />
+        <SellerStory />
         <Trust />
         <Pricing />
+        <TwoDoors />
         <FinalCta />
       </main>
       <SiteFooter />

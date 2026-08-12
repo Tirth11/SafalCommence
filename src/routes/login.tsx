@@ -1,12 +1,12 @@
 import { useState } from 'react'
-import { Link } from '@tanstack/react-router'
+import { Link, useNavigate } from '@tanstack/react-router'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { CircleAlert, ArrowLeft, MailCheck } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { AuthBrandPanel } from '@/components/auth/auth-brand-panel'
-import { AuthFormHeading, GoogleButton, OrDivider, PasswordInput, SellerNudge } from '@/components/auth/auth-bits'
+import { AuthFormHeading, GoogleButton, OrDivider, PasswordInput } from '@/components/auth/auth-bits'
 import { Logo } from '@/components/brand/logo'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
@@ -15,6 +15,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { StatePreview } from '@/components/dev/state-preview'
+import { useAccountStore } from '@/store/account-store'
 import {
   forgotPasswordSchema,
   LOGIN_ERRORS,
@@ -29,7 +30,6 @@ type View = 'signin' | 'forgot' | 'sent'
 export function LoginPage() {
   const [view, setView] = useState<View>('signin')
   const [resetEmail, setResetEmail] = useState('')
-
   return (
     <div className="flex min-h-dvh">
       <AuthBrandPanel />
@@ -71,7 +71,7 @@ export function LoginPage() {
           { label: 'Forgot password', onSelect: () => setView('forgot') },
           { label: 'Reset link sent', onSelect: () => { setResetEmail('rahul@example.com'); setView('sent') } },
         ]}
-        note="Server states: sign in with unverified@example.com, suspended@example.com, or demo@safalhub.com (success). Any other email returns invalid credentials."
+        note="One account, many capabilities. rahul@gmail.com is buyer + seller (ABC Electronics) → seller portal. demo@safalmarkethub.com is buyer only → marketplace. admin@safalmarkethub.com is staff → admin portal. unverified@example.com and suspended@example.com show those errors."
       />
     </div>
   )
@@ -80,6 +80,8 @@ export function LoginPage() {
 /* ------------------------------------------------------------------ sign in */
 function SignInForm({ onForgot }: { onForgot: () => void }) {
   const [serverError, setServerError] = useState<string | null>(null)
+  const navigate = useNavigate()
+  const signIn = useAccountStore((s) => s.signIn)
 
   const form = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
@@ -89,12 +91,20 @@ function SignInForm({ onForgot }: { onForgot: () => void }) {
 
   async function onSubmit(values: LoginValues) {
     setServerError(null)
-    const outcome = await mockSignIn(values)
-    if (outcome === 'success') {
-      toast.success('Signed in', { description: 'Taking you to your dashboard…' })
+
+    // No portal picker: the account's capabilities decide where it lands.
+    const { outcome, portal, portalLabel, account } = await mockSignIn(values)
+    if (outcome === 'success' && account) {
+      // One identity carrying both buyer access and any seller memberships.
+      signIn(
+        account.user,
+        account.organizations.map((org) => ({ ...org, status: 'Active' as const }))
+      )
+      toast.success('Signed in', { description: `Taking you to ${portalLabel}…` })
+      navigate({ to: portal })
       return
     }
-    setServerError(LOGIN_ERRORS[outcome])
+    if (outcome !== 'success') setServerError(LOGIN_ERRORS[outcome])
   }
 
   return (
@@ -180,8 +190,6 @@ function SignInForm({ onForgot }: { onForgot: () => void }) {
           Create Account
         </Link>
       </p>
-
-      <SellerNudge className="mt-7" />
     </>
   )
 }

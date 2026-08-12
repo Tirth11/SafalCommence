@@ -43,7 +43,7 @@ export function Logo({ size = 'md', onInk = false, asLink = true, sub = 'Marketp
       <LogoMark className={mark} />
       <span className="flex flex-col leading-[1.05]">
         <span className={cn('font-bold tracking-[-0.025em]', name, onInk ? 'text-white' : 'text-ink-950 dark:text-white')}>
-          Safal<span className={cn(onInk ? 'text-brand-300' : 'text-brand-600 dark:text-brand-300')}>Hub</span>
+          Safal<span className={cn(onInk ? 'text-brand-300' : 'text-brand-600 dark:text-brand-300')}>MarketHub</span>
         </span>
         {sub && <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-ink-400">{sub}</span>}
       </span>
@@ -55,7 +55,7 @@ export function Logo({ size = 'md', onInk = false, asLink = true, sub = 'Marketp
   if (!asLink) return <span className={classes}>{content}</span>
 
   return (
-    <Link {...({ to } as unknown as LinkProps)} className={classes} aria-label="SafalHub — home">
+    <Link {...({ to } as unknown as LinkProps)} className={classes} aria-label="SafalMarketHub — home">
       {content}
     </Link>
   )

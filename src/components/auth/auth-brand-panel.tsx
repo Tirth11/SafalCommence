@@ -16,7 +16,7 @@ const CARDS = [
  */
 export function AuthBrandPanel({
   title = 'Welcome back',
-  body = 'Manage your business or continue shopping with your SafalHub account.',
+  body = 'Manage your business or continue shopping with your SafalMarketHub account.',
 }: {
   title?: string
   body?: string
@@ -58,7 +58,7 @@ export function AuthBrandPanel({
           </div>
         </div>
 
-        <p className="mt-auto pt-12 text-xs text-ink-500">© 2026 SafalHub</p>
+        <p className="mt-auto pt-12 text-xs text-ink-500">© 2026 SafalMarketHub</p>
       </div>
     </div>
   )

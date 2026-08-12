@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { ArrowRight, BadgeCheck, Check, CircleAlert, Hourglass, Landmark, Lock, PartyPopper, Rocket, ShieldCheck, Store } from 'lucide-react'
 import { toast } from 'sonner'
@@ -16,6 +16,7 @@ import { Progress } from '@/components/ui/progress'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { BUSINESS_TYPES, INDIAN_STATES, PRODUCT_CATEGORIES, SELLER_BUSINESS } from '@/data/seller'
+import { useAccountStore } from '@/store/account-store'
 import { ONBOARDING_STEPS, useOnboardingProgress, useSellerStore } from '@/store/seller-store'
 
 const STEPS = [
@@ -32,8 +33,22 @@ export function SellerSetupPage() {
   const navigate = useNavigate()
   const { completed, completeStep, setStatus } = useSellerStore()
   const { percent, done, total, isComplete } = useOnboardingProgress()
+  const accountEmail = useAccountStore((s) => s.user?.email)
+  const memberships = useAccountStore((s) => s.memberships)
+  const createOrganization = useAccountStore((s) => s.createOrganization)
+  const updateOrganization = useAccountStore((s) => s.updateOrganization)
+  const resetSteps = useSellerStore((s) => s.resetSteps)
 
-  const step = search.step ?? (done === 0 ? 'welcome' : 'business')
+  /**
+   * An account with no seller organisation is starting from zero, whatever the
+   * demo seller state happens to hold — so clear the checklist on arrival.
+   */
+  const isNewSeller = memberships.length === 0
+  useEffect(() => {
+    if (isNewSeller && done > 0) resetSteps()
+  }, [isNewSeller, done, resetSteps])
+
+  const step = search.step ?? (isNewSeller || done === 0 ? 'welcome' : 'business')
 
   function go(next: string) {
     navigate(adminLinkProps({ to: '/seller/setup', search: next === 'welcome' ? {} : { step: next } }))
@@ -47,9 +62,12 @@ export function SellerSetupPage() {
           <span className="mx-auto grid size-16 place-items-center rounded-full bg-brand-50 text-brand-600 dark:bg-brand-950 dark:text-brand-200">
             <Store className="size-8" />
           </span>
-          <h1 className="mt-6 text-2xl sm:text-[30px]">Welcome to SafalHub</h1>
-          <p className="mx-auto mt-3 max-w-[440px] text-[15px] text-ink-600 dark:text-ink-300">
-            Let's set up your business so you can start selling.
+          <h1 className="mt-6 text-2xl sm:text-[30px]">Start selling on SafalMarketHub</h1>
+          {/* Seller access is added to the account the user already has — no second registration */}
+          <p className="mx-auto mt-3 max-w-[470px] text-[15px] text-ink-600 dark:text-ink-300">
+            {accountEmail
+              ? `Use your existing SafalMarketHub account (${accountEmail}) to set up your business. Your shopping account, orders and addresses stay exactly as they are.`
+              : "Let's set up your business so you can start selling."}
           </p>
 
           <div className="mt-8 rounded-lg border bg-muted/50 p-5 text-left">
@@ -88,7 +106,7 @@ export function SellerSetupPage() {
           </div>
           <p className="mt-5 flex items-center justify-center gap-2 text-[12px] text-ink-500">
             <Lock className="size-3.5" />
-            You can explore the dashboard now — selling activates once setup is approved.
+            Your buyer account stays intact — selling activates once setup is approved.
           </p>
         </div>
       </div>
@@ -109,7 +127,16 @@ export function SellerSetupPage() {
         <Stepper steps={STEPS} current={step} onSelect={go} />
       </div>
 
-      {step === 'business' && <BusinessDetailsStep onDone={() => { completeStep('business'); go('kyc') }} />}
+      {step === 'business' && (
+        <BusinessDetailsStep
+          onDone={(storeName) => {
+            // Seller access = a new organisation on this account, not a new login.
+            if (memberships.length === 0) createOrganization(storeName || 'My business')
+            completeStep('business')
+            go('kyc')
+          }}
+        />
+      )}
       {step === 'kyc' && <KycStep onDone={() => { completeStep('kyc'); go('bank') }} />}
       {step === 'bank' && <BankStep onDone={() => { completeStep('bank'); go('pickup') }} />}
       {step === 'pickup' && <PickupStep onDone={() => { completeStep('pickup'); go('product') }} />}
@@ -119,6 +146,8 @@ export function SellerSetupPage() {
           onSubmit={() => {
             completeStep('submitted')
             setStatus('Pending Review')
+            const org = memberships[memberships.length - 1]
+            if (org) updateOrganization(org.id, { status: 'Pending Review' })
             go('done')
           }}
         />
@@ -129,23 +158,24 @@ export function SellerSetupPage() {
 }
 
 /* ------------------------------------------------------- 1. business ------ */
-function BusinessDetailsStep({ onDone }: { onDone: () => void }) {
+function BusinessDetailsStep({ onDone }: { onDone: (storeName: string) => void }) {
   const [noGst, setNoGst] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [storeName, setStoreName] = useState(SELLER_BUSINESS.storeName)
 
   async function save() {
     setSaving(true)
     await new Promise((r) => setTimeout(r, 700))
     setSaving(false)
     toast.success('Business information updated successfully.')
-    onDone()
+    onDone(storeName)
   }
 
   return (
-    <Panel title="Tell us about your business" description="This information will be used to create and verify your SafalHub seller profile.">
+    <Panel title="Tell us about your business" description="This information will be used to create and verify your SafalMarketHub seller profile.">
       <FormSection title="Store information">
-        <Field label="Store Name" hint="This is the name customers may see on SafalHub." required>
-          <Input placeholder="ABC Electronics" defaultValue={SELLER_BUSINESS.storeName} />
+        <Field label="Store Name" hint="This is the name customers may see on SafalMarketHub." required>
+          <Input placeholder="ABC Electronics" value={storeName} onChange={(e) => setStoreName(e.target.value)} />
         </Field>
         <Field label="Legal Business Name" required>
           <Input placeholder="ABC Electronics Private Limited" defaultValue={SELLER_BUSINESS.legalName} />
@@ -241,7 +271,7 @@ function KycStep({ onDone }: { onDone: () => void }) {
 
   return (
     <div className="grid gap-4 lg:grid-cols-[1.5fr_1fr]">
-      <Panel title="Verify your business" description="Upload the required documents so SafalHub can verify your seller account.">
+      <Panel title="Verify your business" description="Upload the required documents so SafalMarketHub can verify your seller account.">
         <div className="grid gap-3">
           <DocumentUploadCard title="PAN Card" hint="Business or proprietor PAN." initialState={kyc === 'Approved' ? 'Verified' : 'Not Uploaded'} initialFile="pan-card.pdf" />
           <DocumentUploadCard
@@ -336,7 +366,7 @@ function BankStep({ onDone }: { onDone: () => void }) {
   }
 
   return (
-    <Panel title="Where should we send your earnings?" description="Add the bank account where you want to receive SafalHub settlements.">
+    <Panel title="Where should we send your earnings?" description="Add the bank account where you want to receive SafalMarketHub settlements.">
       {saved ? (
         <div className="rounded-lg border border-teal-100 bg-teal-50 p-5 dark:border-teal-600/40 dark:bg-teal-600/10">
           <p className="flex items-center gap-2 text-[14px] font-semibold text-teal-600 dark:text-teal-100">
@@ -491,7 +521,7 @@ function FirstProductStep({ onDone }: { onDone: () => void }) {
         </span>
         <h2 className="mt-6 text-xl sm:text-2xl">Add your first product</h2>
         <p className="mx-auto mt-3 max-w-[460px] text-[14px] leading-relaxed text-ink-600 dark:text-ink-300">
-          You're almost ready to start selling. Add the first product you'd like to list on SafalHub.
+          You're almost ready to start selling. Add the first product you'd like to list on SafalMarketHub.
         </p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <Button size="lg" asChild>
@@ -577,7 +607,7 @@ function ReviewStep({ onSubmit }: { onSubmit: () => void }) {
         <Panel title="What happens next">
           <ol className="grid gap-3.5">
             {[
-              { icon: Hourglass, label: 'SafalHub reviews your profile', body: 'Business details, documents, bank account and your first product.' },
+              { icon: Hourglass, label: 'SafalMarketHub reviews your profile', body: 'Business details, documents, bank account and your first product.' },
               { icon: CircleAlert, label: 'Changes may be requested', body: "If something needs fixing you'll see it here with the reason." },
               { icon: BadgeCheck, label: 'Account approved', body: 'Approved products go live and customers can start buying.' },
               { icon: Landmark, label: 'Settlements begin', body: 'Earnings are settled after the return window closes.' },
@@ -612,7 +642,7 @@ function SetupComplete() {
         </span>
         <h1 className="mt-6 text-2xl sm:text-[28px]">Setup complete!</h1>
         <p className="mx-auto mt-3 max-w-[420px] text-[15px] text-ink-600 dark:text-ink-300">
-          Your seller profile has been submitted to SafalHub for approval.
+          Your seller profile has been submitted to SafalMarketHub for approval.
         </p>
         <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
           <Button size="lg" asChild>
@@ -637,7 +667,7 @@ export function SellerApprovedPage() {
         </span>
         <h1 className="mt-6 text-2xl sm:text-[30px]">You're ready to sell!</h1>
         <p className="mx-auto mt-3 max-w-[440px] text-[15px] text-ink-600 dark:text-ink-300">
-          Your SafalHub seller account is now active. Approved products can now be purchased by customers.
+          Your SafalMarketHub seller account is now active. Approved products can now be purchased by customers.
         </p>
         <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
           <Button size="lg" asChild>

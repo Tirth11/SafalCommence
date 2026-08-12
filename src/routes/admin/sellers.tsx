@@ -134,7 +134,7 @@ export function SellersPage({ mode = 'sellers' }: { mode?: 'sellers' | 'kyc' }) 
     ? { title: 'KYC review queue', description: 'Sellers who have submitted verification documents and are waiting on a decision.' }
     : {
         title: activeFilters.status ? `${activeFilters.status} sellers` : 'All sellers',
-        description: 'Every seller organisation on SafalHub, with onboarding and payout state.',
+        description: 'Every seller organisation on SafalMarketHub, with onboarding and payout state.',
       }
 
   return (

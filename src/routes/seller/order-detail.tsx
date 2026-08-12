@@ -167,6 +167,11 @@ export function SellerOrderDetailPage() {
                   toast.error('Enter courier name and tracking number')
                   return
                 }
+                // Label flow: the courier and AWB come back from logistics.
+                if (shipMode === 'label') {
+                  setCourier('Delhivery')
+                  setAwb('DLV12345678')
+                }
                 setStatus('Shipped')
                 toast.success('Shipment details updated successfully.')
               }}
@@ -191,7 +196,7 @@ export function SellerOrderDetailPage() {
             Return requested · {order.returnCase.id} · <StatusBadge status={order.returnCase.status} className="ml-1" />
           </AlertTitle>
           <AlertDescription>
-            {order.returnCase.reason} — requested {order.returnCase.requested}. SafalHub makes the final decision; add your
+            {order.returnCase.reason} — requested {order.returnCase.requested}. SafalMarketHub makes the final decision; add your
             response below.
           </AlertDescription>
         </Alert>
@@ -224,11 +229,11 @@ export function SellerOrderDetailPage() {
 
           {/* Shipping */}
           {order.status === 'Packed' && (
-            <Panel title="Ship this order" description="Use SafalHub logistics or your own courier.">
+            <Panel title="Ship this order" description="Use SafalMarketHub logistics or your own courier.">
               <div className="flex rounded-sm border p-0.5">
                 {(
                   [
-                    { key: 'label' as const, label: 'SafalHub logistics' },
+                    { key: 'label' as const, label: 'SafalMarketHub logistics' },
                     { key: 'manual' as const, label: 'My own courier' },
                   ]
                 ).map((m) => (
@@ -336,7 +341,7 @@ export function SellerOrderDetailPage() {
 
           {/* Return response */}
           {order.returnCase && (
-            <Panel title="Your response to the return" description="Add a comment or evidence. SafalHub makes the final decision.">
+            <Panel title="Your response to the return" description="Add a comment or evidence. SafalMarketHub makes the final decision.">
               <Textarea
                 value={returnResponse}
                 onChange={(e) => setReturnResponse(e.target.value)}
@@ -348,7 +353,7 @@ export function SellerOrderDetailPage() {
                   disabled={!returnResponse.trim()}
                   onClick={() => {
                     setReturnResponse('')
-                    toast.success('Response submitted to SafalHub')
+                    toast.success('Response submitted to SafalMarketHub')
                   }}
                 >
                   Submit response
@@ -416,7 +421,7 @@ export function SellerOrderDetailPage() {
               columns={1}
               items={[
                 { label: 'Payment status', value: <StatusBadge status={order.payment === 'Paid' ? 'Successful' : order.payment} /> },
-                { label: 'Collected by', value: 'SafalHub · settled to you' },
+                { label: 'Collected by', value: 'SafalMarketHub · settled to you' },
                 { label: 'Customer order', value: <span className="tabular">{order.parentOrder}</span> },
               ]}
             />

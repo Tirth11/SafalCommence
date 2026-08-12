@@ -21,6 +21,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useAccountStore } from '@/store/account-store'
 import { registerSchema, type RegisterValues } from '@/lib/validation'
 
 type Step = 'form' | 'verify' | 'welcome'
@@ -65,7 +66,7 @@ export function RegisterPage() {
                 onVerified={() => setStep('welcome')}
               />
             )}
-            {step === 'welcome' && <WelcomeChoice />}
+            {step === 'welcome' && <WelcomeChoice email={email} />}
           </div>
         </div>
       </main>
@@ -109,7 +110,7 @@ function RegisterForm({ onCreated }: { onCreated: (email: string) => void }) {
     <>
       <AuthFormHeading
         title="Create your account"
-        sub="Shop products or start your business journey with SafalHub."
+        sub="Shop products or start your business journey with SafalMarketHub."
       />
 
       <Form {...form}>
@@ -300,7 +301,13 @@ function VerifyEmail({
 }
 
 /* -------------------------------------------- 3. Verified — shop or sell next */
-function WelcomeChoice() {
+function WelcomeChoice({ email }: { email: string }) {
+  const signIn = useAccountStore((s) => s.signIn)
+
+  /** The account already exists at this point — both cards continue into it. */
+  const enterAccount = () =>
+    signIn({ id: 'USR-NEW', firstName: 'Rahul', lastName: 'Sharma', email }, [])
+
   return (
     <div>
       <div className="text-center">
@@ -321,9 +328,9 @@ function WelcomeChoice() {
 
         <h1 className="mt-6 text-2xl sm:text-[30px]">You're all set!</h1>
         <p className="mx-auto mt-3 max-w-[440px] text-[15px] text-ink-600 dark:text-ink-300">
-          Your SafalHub account has been created successfully.
+          Your SafalMarketHub account has been created successfully.
         </p>
-        <p className="mt-8 text-sm font-semibold text-ink-800 dark:text-ink-200">What would you like to do?</p>
+        <p className="mt-8 text-sm font-semibold text-ink-800 dark:text-ink-200">What would you like to do first?</p>
       </div>
 
       <div className="mt-5 grid gap-4 sm:grid-cols-2">
@@ -334,10 +341,10 @@ function WelcomeChoice() {
           </span>
           <h2 className="mt-5 text-lg">Shop Products</h2>
           <p className="mt-2 flex-1 text-sm leading-relaxed text-ink-600 dark:text-ink-300">
-            Explore products from sellers across SafalHub.
+            Explore products from sellers across SafalMarketHub.
           </p>
-          <Button variant="outline" className="mt-6 w-full" asChild>
-            <Link to="/">Start Shopping</Link>
+          <Button variant="outline" className="mt-6 w-full" asChild onClick={enterAccount}>
+            <Link to="/shop">Start Shopping</Link>
           </Button>
         </div>
 
@@ -353,14 +360,15 @@ function WelcomeChoice() {
           <p className="mt-2 flex-1 text-sm leading-relaxed text-ink-600 dark:text-ink-300">
             Create your business profile, list products and start selling.
           </p>
-          <Button className="mt-6 w-full" asChild>
-            <Link to="/seller/onboarding">Set Up My Business</Link>
+          <Button className="mt-6 w-full" asChild onClick={enterAccount}>
+            <Link to="/seller/setup">Set Up My Business</Link>
           </Button>
         </div>
       </div>
 
       <p className="mt-7 text-center text-sm text-ink-500">
-        You can do both later — one account works for shopping and selling.
+        This is only what you'd like to do next — not an account type. One SafalMarketHub account covers both shopping
+        and selling, and you can add selling whenever you're ready.
       </p>
       <div className="mt-4 flex justify-center">
         <Button variant="ghost" size="sm" asChild>

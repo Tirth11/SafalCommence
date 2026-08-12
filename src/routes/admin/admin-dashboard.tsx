@@ -79,7 +79,7 @@ export function AdminDashboardPage() {
     <>
       <PageHeader
         title="Platform dashboard"
-        description="Marketplace health and everything waiting on the SafalHub team, as of 12 Aug 2026."
+        description="Marketplace health and everything waiting on the SafalMarketHub team, as of 12 Aug 2026."
         actions={
           <Button variant="outline" size="sm" asChild>
             <AdminLink to="/admin/reports">View reports</AdminLink>

@@ -98,7 +98,7 @@ export function PaymentsPage() {
           <AlertTitle>Manual status changes are blocked</AlertTitle>
           <AlertDescription>
             A failed payment cannot be marked successful from the portal. Resolve it through gateway reconciliation, which
-            writes the corrected status back to SafalHub.
+            writes the corrected status back to SafalMarketHub.
           </AlertDescription>
         </Alert>
       )}

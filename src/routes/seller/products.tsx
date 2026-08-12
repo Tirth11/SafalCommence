@@ -196,7 +196,7 @@ export function SellerProductsPage() {
           <EmptyState
             icon={Package}
             title="You haven't added any products yet"
-            body="Add your first product and start selling on SafalHub."
+            body="Add your first product and start selling on SafalMarketHub."
             action={
               <Button asChild>
                 <AdminLink to="/seller/products/new">Add Product</AdminLink>

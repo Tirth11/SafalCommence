@@ -47,25 +47,86 @@ export type RegisterValues = z.infer<typeof registerSchema>
 
 /**
  * Stand-in for the auth API until the backend lands.
- * Email address selects the response so every state is reviewable:
- *   unverified@example.com → unverified account
- *   suspended@example.com  → suspended account
- *   demo@safalhub.com      → success
- *   anything else          → invalid credentials
+ *
+ * One account, multiple capabilities. The response says who the user is and
+ * which seller organisations they belong to; the UI decides where to land from
+ * that, never from a portal picker:
+ *
+ *   rahul@gmail.com          → buyer + seller (ABC Electronics) → seller portal
+ *   demo@safalmarkethub.com  → buyer only                       → marketplace
+ *   admin@safalmarkethub.com → SafalMarketHub staff             → admin portal
+ *   unverified@example.com   → unverified account
+ *   suspended@example.com    → suspended account
+ *   anything else            → invalid credentials
  */
 export type LoginOutcome = 'success' | 'invalid' | 'unverified' | 'suspended'
+export type AccountPortal = '/' | '/shop' | '/seller' | '/admin'
 
-export function mockSignIn({ email }: { email: string }): Promise<LoginOutcome> {
+export type SignInResult = {
+  outcome: LoginOutcome
+  /** Where a successful sign-in should land. */
+  portal: AccountPortal
+  /** Used in the "Taking you to …" toast. */
+  portalLabel: string
+  account: SignInAccount | null
+}
+
+export type SignInAccount = {
+  portal: AccountPortal
+  portalLabel: string
+  user: { id: string; firstName: string; lastName: string; email: string }
+  /** Seller organisations this user belongs to. Empty = buyer only. */
+  organizations: { id: string; name: string; role: 'Owner' | 'Admin' }[]
+  staff?: boolean
+}
+
+const ACCOUNTS: Record<string, SignInAccount> = {
+  'rahul@gmail.com': {
+    portal: '/seller',
+    portalLabel: 'your seller dashboard',
+    user: { id: 'USR-1', firstName: 'Rahul', lastName: 'Sharma', email: 'rahul@gmail.com' },
+    organizations: [{ id: 'ORG-1', name: 'ABC Electronics', role: 'Owner' }],
+  },
+  'demo@safalmarkethub.com': {
+    portal: '/shop',
+    portalLabel: 'the marketplace',
+    user: { id: 'USR-2', firstName: 'Rohit', lastName: 'Sharma', email: 'demo@safalmarkethub.com' },
+    organizations: [],
+  },
+  'admin@safalmarkethub.com': {
+    portal: '/admin',
+    portalLabel: 'the admin dashboard',
+    user: { id: 'ADM-1', firstName: 'Tirth', lastName: 'Thaker', email: 'admin@safalmarkethub.com' },
+    organizations: [],
+    staff: true,
+  },
+}
+
+export function mockSignIn({ email }: { email: string }): Promise<SignInResult> {
   const key = email.trim().toLowerCase()
+  const account = ACCOUNTS[key]
+
   const outcome: LoginOutcome =
     key === 'unverified@example.com'
       ? 'unverified'
       : key === 'suspended@example.com'
         ? 'suspended'
-        : key === 'demo@safalhub.com'
+        : account
           ? 'success'
           : 'invalid'
-  return new Promise((resolve) => setTimeout(() => resolve(outcome), 900))
+
+  return new Promise((resolve) =>
+    setTimeout(
+      () =>
+        resolve({
+          outcome,
+          portal: account?.portal ?? '/',
+          portalLabel: account?.portalLabel ?? 'the marketplace',
+          account: account ?? null,
+        }),
+      900
+    )
+  )
 }
 
 export const LOGIN_ERRORS: Record<Exclude<LoginOutcome, 'success'>, string> = {

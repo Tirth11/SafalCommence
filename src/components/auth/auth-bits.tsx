@@ -99,7 +99,7 @@ export function SellerNudge({ className }: { className?: string }) {
         <Store className="size-[18px]" />
       </span>
       <span className="text-sm font-semibold text-brand-800 dark:text-brand-200">
-        Want to sell on SafalHub?{' '}
+        Want to sell on SafalMarketHub?{' '}
         <span className="inline-flex items-center gap-1 text-brand-600 dark:text-brand-300">
           Start Selling
           <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />

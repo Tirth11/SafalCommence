@@ -125,7 +125,7 @@ export function ProductReviewPage() {
                 onClick={() =>
                   ask({
                     title: 'Reject product',
-                    description: `${product.name} will be rejected and cannot be sold on SafalHub.`,
+                    description: `${product.name} will be rejected and cannot be sold on SafalMarketHub.`,
                     confirmLabel: 'Reject Product',
                     destructive: true,
                     reasons: REJECT_REASONS,

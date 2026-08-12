@@ -1,5 +1,5 @@
 /* ==========================================================================
-   SafalHub — Super Admin mock data
+   SafalMarketHub — Super Admin mock data
    Stands in for the platform API. Shapes mirror the Phase 1 spec so screens
    can be wired to real endpoints without changing component contracts.
    ========================================================================== */
@@ -882,7 +882,7 @@ export const AUDIT_LOG: AuditEntry[] = [
   { id: 'AUD-99098', admin: 'Priyanka Joshi', role: 'Operations Admin', action: 'Order Cancelled', module: 'Orders', target: 'SH-100476', oldValue: 'Confirmed', newValue: 'Cancelled', reason: 'Payment failed — buyer confirmed re-order', ip: '103.21.58.22', at: '10 Aug 2026, 15:02' },
   { id: 'AUD-99091', admin: 'Tirth Thaker', role: 'Super Admin', action: 'Refund Approved', module: 'Payments', target: 'REF-3301 · ₹2,449', oldValue: 'Under Review', newValue: 'Approved', reason: 'Damage confirmed from unboxing images', ip: '103.21.58.14', at: '10 Aug 2026, 13:47' },
   { id: 'AUD-99085', admin: 'Tirth Thaker', role: 'Super Admin', action: 'Settlement On Hold', module: 'Settlements', target: 'SET-10003 · FitZone Sports', oldValue: 'Eligible', newValue: 'On Hold', reason: 'Return investigation', ip: '103.21.58.14', at: '09 Aug 2026, 18:20' },
-  { id: 'AUD-99080', admin: 'Tirth Thaker', role: 'Super Admin', action: 'Admin User Created', module: 'Admin Users', target: 'priyanka.joshi@safalhub.com', oldValue: '—', newValue: 'Operations Admin · Invited', ip: '103.21.58.14', at: '08 Aug 2026, 10:05' },
+  { id: 'AUD-99080', admin: 'Tirth Thaker', role: 'Super Admin', action: 'Admin User Created', module: 'Admin Users', target: 'priyanka.joshi@safalmarkethub.com', oldValue: '—', newValue: 'Operations Admin · Invited', ip: '103.21.58.14', at: '08 Aug 2026, 10:05' },
 ]
 
 /* --------------------------------------------------------- Admin users --- */
@@ -897,10 +897,10 @@ export type AdminUser = {
 }
 
 export const ADMIN_USERS: AdminUser[] = [
-  { id: 'ADM-001', name: 'Tirth Thaker', email: 'tirth.thaker@safalhub.com', role: 'Super Admin', status: 'Active', lastActive: 'Online now', created: '01 Jan 2026' },
-  { id: 'ADM-004', name: 'Priyanka Joshi', email: 'priyanka.joshi@safalhub.com', role: 'Operations Admin', status: 'Active', lastActive: '2 hours ago', created: '08 Aug 2026' },
-  { id: 'ADM-006', name: 'Rahul Verma', email: 'rahul.verma@safalhub.com', role: 'Operations Admin', status: 'Invited', lastActive: '—', created: '11 Aug 2026' },
-  { id: 'ADM-003', name: 'Sana Qureshi', email: 'sana.qureshi@safalhub.com', role: 'Operations Admin', status: 'Suspended', lastActive: '24 Jul 2026', created: '02 Mar 2026' },
+  { id: 'ADM-001', name: 'Tirth Thaker', email: 'tirth.thaker@safalmarkethub.com', role: 'Super Admin', status: 'Active', lastActive: 'Online now', created: '01 Jan 2026' },
+  { id: 'ADM-004', name: 'Priyanka Joshi', email: 'priyanka.joshi@safalmarkethub.com', role: 'Operations Admin', status: 'Active', lastActive: '2 hours ago', created: '08 Aug 2026' },
+  { id: 'ADM-006', name: 'Rahul Verma', email: 'rahul.verma@safalmarkethub.com', role: 'Operations Admin', status: 'Invited', lastActive: '—', created: '11 Aug 2026' },
+  { id: 'ADM-003', name: 'Sana Qureshi', email: 'sana.qureshi@safalmarkethub.com', role: 'Operations Admin', status: 'Suspended', lastActive: '24 Jul 2026', created: '02 Mar 2026' },
 ]
 
 /* ------------------------------------------------------ Catalogue admin --- */
