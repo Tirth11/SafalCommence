@@ -15,7 +15,7 @@ import { Switch } from '@/components/ui/switch'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ABANDONED_CARTS, type Coupon, type CouponType } from '@/data/marketing'
-import { usePlan, useStorefrontStore } from '@/store/storefront-store'
+import { usePlan, useStorefrontStore, useTrial } from '@/store/storefront-store'
 import { cn, money } from '@/lib/utils'
 
 /* ==========================================================================
@@ -36,12 +36,15 @@ export function SellerMarketingPage() {
   const search = useAdminSearch()
   const navigate = useNavigate()
   const plan = usePlan()
+  const trial = useTrial()
 
   const tab = search.tab ?? 'coupons'
   const setTab = (value: string) => navigate(adminLinkProps({ to: '/seller/marketing', search: { tab: value } }))
 
-  /* --------------------------------------------- locked on the free plan -- */
-  if (!plan.coupons) {
+  /* --------------------------------------------- locked on the free plan --
+     A trial seller can set coupons up alongside the rest of their store; the
+     paywall is publishing, not building. */
+  if (!plan.coupons && !trial.canBuild) {
     return (
       <>
         <PageHeader

@@ -56,7 +56,9 @@ type AccountState = {
 
 export const useAccountStore = create<AccountState>((set, get) => ({
   // Signed in as a buyer+seller by default so both contexts are reviewable.
-  user: { id: 'USR-1', firstName: 'Rahul', lastName: 'Sharma', email: 'rahul@gmail.com' },
+  // Signed out by default: a first-time visitor must land on the pitch, not on
+  // somebody else's personalised homepage. Sign in from /login to see that.
+  user: null,
   guest: null,
   memberships: [{ id: 'ORG-1', name: 'ABC Electronics', role: 'Owner', status: 'Active' }],
   context: 'personal',
