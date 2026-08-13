@@ -1,39 +1,41 @@
-import { Link } from '@tanstack/react-router'
+import { AdminLink } from '@/components/admin/admin-link'
 import { InstagramMark, LinkedInMark, XMark } from '@/components/brand/social-icons'
 import { Logo } from '@/components/brand/logo'
 
+/** Every link here resolves to a real page — see routes/pages.tsx. */
 const COLUMNS = [
   {
     title: 'Shop',
     links: [
       { label: 'Marketplace', to: '/shop' },
       { label: 'Categories', to: '/shop/categories' },
-      { label: 'New Products', to: '/shop/all' },
+      { label: 'Offers', to: '/shop/all', search: { sort: 'price-asc' } },
+      { label: 'Wishlist', to: '/account/wishlist' },
     ],
   },
   {
     title: 'Sell',
     links: [
-      { label: 'Start Selling', to: '/register' },
+      { label: 'Become a Seller', to: '/register' },
       { label: 'Seller Login', to: '/login' },
-      { label: 'How It Works', to: '/#how-it-works' },
-      { label: 'Pricing', to: '/#pricing' },
+      { label: 'Pricing', to: '/pricing' },
     ],
   },
   {
     title: 'Support',
     links: [
-      { label: 'Help Centre', to: '/#' },
-      { label: 'Contact Us', to: '/#' },
-      { label: 'Returns & Refunds', to: '/#' },
+      { label: 'Help Centre', to: '/help' },
+      { label: 'Contact Us', to: '/contact' },
+      { label: 'Track an Order', to: '/account/orders' },
+      { label: 'Returns & Refunds', to: '/returns' },
     ],
   },
   {
     title: 'Company',
     links: [
-      { label: 'About', to: '/#' },
-      { label: 'Privacy Policy', to: '/#' },
-      { label: 'Terms & Conditions', to: '/#' },
+      { label: 'About', to: '/about' },
+      { label: 'Privacy Policy', to: '/privacy' },
+      { label: 'Terms & Conditions', to: '/terms' },
     ],
   },
 ]
@@ -62,15 +64,9 @@ export function SiteFooter() {
               <ul className="space-y-2.5">
                 {col.links.map((link) => (
                   <li key={link.label}>
-                    {link.to.startsWith('/#') ? (
-                      <a href={link.to} className="text-sm transition-colors hover:text-white">
-                        {link.label}
-                      </a>
-                    ) : (
-                      <Link to={link.to} className="text-sm transition-colors hover:text-white">
-                        {link.label}
-                      </Link>
-                    )}
+                    <AdminLink to={link.to} search={link.search} className="text-sm transition-colors hover:text-white">
+                      {link.label}
+                    </AdminLink>
                   </li>
                 ))}
               </ul>
@@ -79,7 +75,7 @@ export function SiteFooter() {
         </div>
 
         <div className="mt-14 flex flex-col items-start justify-between gap-5 border-t border-white/10 pt-6 text-sm sm:flex-row sm:items-center">
-          <p>© 2026 SafalMarketHub. All rights reserved.</p>
+          <p>Copyright © SafalVir, Inc. 2026. All rights reserved.</p>
           <ul className="flex gap-1">
             {SOCIAL.map(({ label, Icon }) => (
               <li key={label}>

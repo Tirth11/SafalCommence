@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 
 import { AdminLink, adminLinkProps } from '@/components/admin/admin-link'
 import { Logo } from '@/components/brand/logo'
+import { SellerAssistantProvider } from '@/components/seller/seller-assistant'
 import { SELLER_MOBILE_NAV, SELLER_NAV } from '@/components/seller/seller-nav'
 import { SellerStatusPill } from '@/components/seller/status-banner'
 import { Button } from '@/components/ui/button'
@@ -33,7 +34,8 @@ export function SellerShell({ children }: { children: React.ReactNode }) {
   useEffect(() => setMenuOpen(false), [location.pathname])
 
   return (
-    <div className="min-h-dvh bg-muted/40">
+    <SellerAssistantProvider>
+      <div className="min-h-dvh bg-muted/40">
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-[248px] flex-col border-r bg-sidebar lg:flex">
         <div className="flex h-16 shrink-0 items-center border-b px-5">
           <Logo size="sm" sub="Seller" to="/seller" />
@@ -112,7 +114,8 @@ export function SellerShell({ children }: { children: React.ReactNode }) {
 
       <SellerMobileNav />
       <SellerSearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
-    </div>
+      </div>
+    </SellerAssistantProvider>
   )
 }
 

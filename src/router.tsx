@@ -65,6 +65,12 @@ import { SellerSettlementDetailPage, SellerSettlementsPage, SellerTransactionsPa
 import { SellerProfilePage } from '@/routes/seller/profile'
 import { SellerPlanPage } from '@/routes/seller/plan'
 import { SellerOnlineStorePage } from '@/routes/seller/online-store'
+import { SellerStoreSetupPage } from '@/routes/seller/store-setup'
+import { SellerProductImportPage } from '@/routes/seller/product-import'
+import { SellerMarketingPage } from '@/routes/seller/marketing'
+import { AboutPage, ContactPage, HelpPage, LegalPage, PricingPage } from '@/routes/pages'
+import { MyOffersPage } from '@/routes/shop/offers'
+import { ShoppingSettingsPage } from '@/routes/shop/shopping-settings'
 import { SellerNotificationsPage, SellerSettingsPage, SellerSupportPage } from '@/routes/seller/support'
 import { SellerStatePreview } from '@/components/seller/seller-state-preview'
 
@@ -81,6 +87,17 @@ const rootRoute = createRootRoute({
 const indexRoute = createRoute({ getParentRoute: () => rootRoute, path: '/', component: LandingPage })
 const loginRoute = createRoute({ getParentRoute: () => rootRoute, path: '/login', component: LoginPage })
 const registerRoute = createRoute({ getParentRoute: () => rootRoute, path: '/register', component: RegisterPage })
+
+/* Everything the header and footer link to — no dead ends in the chrome. */
+const infoRoutes = [
+  createRoute({ getParentRoute: () => rootRoute, path: '/pricing', component: PricingPage }),
+  createRoute({ getParentRoute: () => rootRoute, path: '/contact', component: ContactPage }),
+  createRoute({ getParentRoute: () => rootRoute, path: '/help', component: HelpPage }),
+  createRoute({ getParentRoute: () => rootRoute, path: '/about', component: AboutPage }),
+  createRoute({ getParentRoute: () => rootRoute, path: '/privacy', component: () => <LegalPage kind="privacy" /> }),
+  createRoute({ getParentRoute: () => rootRoute, path: '/terms', component: () => <LegalPage kind="terms" /> }),
+  createRoute({ getParentRoute: () => rootRoute, path: '/returns', component: () => <LegalPage kind="returns" /> }),
+]
 
 /* ---------------------------------------------------------- admin portal --- */
 const adminLoginRoute = createRoute({
@@ -152,6 +169,8 @@ const shopRoutes = [
   createRoute({ getParentRoute: () => shopLayoutRoute, path: '/account/returns', component: ReturnsPage }),
   createRoute({ getParentRoute: () => shopLayoutRoute, path: '/account/addresses', component: AddressesPage }),
   createRoute({ getParentRoute: () => shopLayoutRoute, path: '/account/wishlist', component: WishlistPage }),
+  createRoute({ getParentRoute: () => shopLayoutRoute, path: '/account/offers', component: MyOffersPage }),
+  createRoute({ getParentRoute: () => shopLayoutRoute, path: '/account/shopping', component: ShoppingSettingsPage }),
   createRoute({ getParentRoute: () => shopLayoutRoute, path: '/account/profile', component: ProfilePage }),
   createRoute({ getParentRoute: () => shopLayoutRoute, path: '/account/notifications', component: CustomerNotificationsPage }),
   createRoute({ getParentRoute: () => shopLayoutRoute, path: '/account/support', component: CustomerSupportPage }),
@@ -176,6 +195,7 @@ const sellerRoutes = [
   createRoute({ getParentRoute: () => sellerLayoutRoute, path: '/seller/approved', component: SellerApprovedPage }),
   createRoute({ getParentRoute: () => sellerLayoutRoute, path: '/seller/products', component: SellerProductsPage }),
   createRoute({ getParentRoute: () => sellerLayoutRoute, path: '/seller/products/$productId', component: SellerProductFormPage }),
+  createRoute({ getParentRoute: () => sellerLayoutRoute, path: '/seller/products/import', component: SellerProductImportPage }),
   createRoute({ getParentRoute: () => sellerLayoutRoute, path: '/seller/inventory', component: SellerInventoryPage }),
   createRoute({ getParentRoute: () => sellerLayoutRoute, path: '/seller/orders', component: SellerOrdersPage }),
   createRoute({ getParentRoute: () => sellerLayoutRoute, path: '/seller/orders/$orderId', component: SellerOrderDetailPage }),
@@ -188,6 +208,8 @@ const sellerRoutes = [
   }),
   createRoute({ getParentRoute: () => sellerLayoutRoute, path: '/seller/plan', component: SellerPlanPage }),
   createRoute({ getParentRoute: () => sellerLayoutRoute, path: '/seller/online-store', component: SellerOnlineStorePage }),
+  createRoute({ getParentRoute: () => sellerLayoutRoute, path: '/seller/online-store/setup', component: SellerStoreSetupPage }),
+  createRoute({ getParentRoute: () => sellerLayoutRoute, path: '/seller/marketing', component: SellerMarketingPage }),
   createRoute({ getParentRoute: () => sellerLayoutRoute, path: '/seller/profile', component: SellerProfilePage }),
   createRoute({ getParentRoute: () => sellerLayoutRoute, path: '/seller/notifications', component: SellerNotificationsPage }),
   createRoute({ getParentRoute: () => sellerLayoutRoute, path: '/seller/support', component: SellerSupportPage }),
@@ -198,6 +220,7 @@ const routeTree = rootRoute.addChildren([
   indexRoute,
   loginRoute,
   registerRoute,
+  ...infoRoutes,
   adminLoginRoute,
   adminLayoutRoute.addChildren(adminRoutes),
   sellerLayoutRoute.addChildren(sellerRoutes),

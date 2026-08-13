@@ -3,20 +3,25 @@ import { useNavigate } from '@tanstack/react-router'
 import {
   BadgeCheck,
   Check,
+  ChevronDown,
+  ChevronUp,
   Copy,
   ExternalLink,
   Eye,
   Globe,
+  GripVertical,
   Lock,
   Palette,
+  Pause,
+  Play,
   Rocket,
-  Search,
-  ShoppingCart,
   Sparkles,
   Store,
+  TrendingUp,
   TriangleAlert,
   Upload,
 } from 'lucide-react'
+import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { toast } from 'sonner'
 
 import { ActionDialog, useActionDialog } from '@/components/admin/action-dialog'
@@ -24,22 +29,36 @@ import { AdminLink, adminLinkProps, useAdminSearch } from '@/components/admin/ad
 import { DefinitionList, EmptyState, PageHeader, Panel } from '@/components/admin/primitives'
 import { StatusBadge } from '@/components/admin/status-badge'
 import { ProductScene } from '@/components/marketing/scene'
+import { StorePreview } from '@/components/seller/store-preview'
+import { StoreQr } from '@/components/seller/store-qr'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Switch } from '@/components/ui/switch'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
+import {
+  COLLECTION_RULES,
+  POLICY_TEMPLATES,
+  STORE_ANALYTICS,
+  STORE_TRAFFIC_14D,
+  STORE_TRAFFIC_SOURCES,
+  type Collection,
+} from '@/data/marketing'
 import { GENERATED_PAGES, STORE_THEMES } from '@/data/plans'
 import { SELLER_PRODUCTS } from '@/data/seller'
-import { usePlan, useStorefrontStore, useStoreUrl } from '@/store/storefront-store'
+import { usePlan, usePolicyProgress, useStorefrontStore, useStoreUrl } from '@/store/storefront-store'
 import { cn, money } from '@/lib/utils'
 
 const TABS = [
   { value: 'overview', label: 'Overview' },
   { value: 'customize', label: 'Customise' },
+  { value: 'homepage', label: 'Homepage' },
+  { value: 'collections', label: 'Collections' },
   { value: 'products', label: 'Products' },
+  { value: 'analytics', label: 'Analytics' },
   { value: 'domains', label: 'Domains' },
   { value: 'pages', label: 'Pages' },
 ]
@@ -48,14 +67,16 @@ export function SellerOnlineStorePage() {
   const search = useAdminSearch()
   const navigate = useNavigate()
   const plan = usePlan()
-  const { status, publish, unpublish } = useStorefrontStore()
+  const { status, pauseMessage, publish, unpublish, pauseStore, resumeStore } = useStorefrontStore()
   const storeUrl = useStoreUrl()
   const { config: dialog, open, setOpen, ask } = useActionDialog()
+  // The shared dialog serves both pause and unpublish, so remember which one asked.
+  const [intent, setIntent] = useState<'pause' | 'unpublish'>('unpublish')
 
   const tab = search.tab ?? 'overview'
   const setTab = (value: string) => navigate(adminLinkProps({ to: '/seller/online-store', search: { tab: value } }))
 
-  /* ------------------------------------------------- locked on Starter ---- */
+  /* ---------------------------------------------------- locked on Free ---- */
   if (!plan.whiteLabel) {
     return (
       <>
@@ -69,14 +90,14 @@ export function SellerOnlineStorePage() {
           <EmptyState
             icon={Lock}
             title="Your own store comes with Growth"
-            body="On Starter you sell on the SafalMarketHub marketplace. Upgrade to get a branded storefront on your own address — same products, same stock, lower fees on the customers you bring."
+            body="On the Free plan you sell on the SafalMarketHub marketplace. Upgrade to get a branded storefront on your own address — same products, same stock, lower fees on the customers you bring. You can build it free for 14 days before you subscribe."
             action={
               <div className="flex flex-wrap justify-center gap-3">
                 <Button asChild>
-                  <AdminLink to="/seller/plan">See plans from $12/mo</AdminLink>
+                  <AdminLink to="/seller/online-store/setup">Start free trial</AdminLink>
                 </Button>
                 <Button variant="outline" asChild>
-                  <AdminLink to="/seller/products">Back to products</AdminLink>
+                  <AdminLink to="/seller/plan">See plans from $12/mo</AdminLink>
                 </Button>
               </div>
             }
@@ -109,29 +130,77 @@ export function SellerOnlineStorePage() {
         breadcrumb={[{ label: 'Dashboard', to: '/seller' }, { label: 'Online Store', to: '/seller/online-store' }]}
         actions={
           <>
-            <StatusBadge status={status === 'published' ? 'Active' : status === 'draft' ? 'Draft' : 'Not Submitted'} />
+            <StatusBadge
+              status={
+                status === 'published'
+                  ? 'Published'
+                  : status === 'paused'
+                    ? 'Paused'
+                    : status === 'draft'
+                      ? 'Draft'
+                      : 'Not Started'
+              }
+            />
             <Button variant="outline" size="sm" asChild>
-              <AdminLink to="/seller/online-store" search={{ tab: 'customize' }}>
+              <AdminLink to="/seller/online-store/setup" search={{ step: 'preview' }}>
                 <Eye className="size-4" />
                 Preview
               </AdminLink>
             </Button>
-            {status === 'published' ? (
+            {status === 'paused' ? (
               <Button
-                variant="outline"
                 size="sm"
-                onClick={() =>
-                  ask({
-                    title: 'Take your store offline?',
-                    description: `${storeUrl} will stop accepting orders. Marketplace listings are unaffected.`,
-                    confirmLabel: 'Unpublish store',
-                    destructive: true,
-                    successMessage: 'Store unpublished',
-                  })
-                }
+                onClick={() => {
+                  resumeStore()
+                  toast.success('Store is accepting orders again')
+                }}
               >
-                Unpublish
+                <Play className="size-4" />
+                Resume store
               </Button>
+            ) : status === 'published' ? (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setIntent('pause')
+                    ask({
+                      title: 'Pause your store?',
+                      description:
+                        'Customers can still browse, but checkout is disabled and a notice appears at the top. Your marketplace listings are unaffected.',
+                      confirmLabel: 'Pause store',
+                      reasons: [
+                        'On holiday — back soon',
+                        'Restocking inventory',
+                        'Festival break',
+                        'Temporarily not taking orders',
+                      ],
+                      reasonLabel: 'Message to show customers',
+                      successMessage: 'Store paused',
+                    })
+                  }}
+                >
+                  <Pause className="size-4" />
+                  Pause
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setIntent('unpublish')
+                    ask({
+                      title: 'Take your store offline?',
+                      description: `${storeUrl} will stop accepting orders. Marketplace listings are unaffected.`,
+                      confirmLabel: 'Unpublish store',
+                      destructive: true,
+                      successMessage: 'Store unpublished',
+                    })
+                  }}
+                >
+                  Unpublish
+                </Button>
+              </>
             ) : (
               <Button
                 size="sm"
@@ -148,12 +217,28 @@ export function SellerOnlineStorePage() {
         }
       />
 
-      {status !== 'published' && (
+      {status === 'paused' && (
+        <Alert variant="warning" className="mb-5">
+          <Pause />
+          <AlertTitle>Your store is paused</AlertTitle>
+          <AlertDescription>
+            {pauseMessage || 'Customers can browse but cannot place orders.'} Marketplace orders continue as normal.
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {status !== 'published' && status !== 'paused' && (
         <Alert variant="info" className="mb-5">
           <Rocket />
           <AlertTitle>Your store isn't live yet</AlertTitle>
           <AlertDescription>
-            Set your branding, pick the products to sell, then publish. Nothing is visible to customers until you do.
+            Walk through setup — branding, homepage, products, policies — then preview and publish. Nothing is visible
+            to customers until you do.
+            <span className="mt-3 flex">
+              <Button size="sm" asChild>
+                <AdminLink to="/seller/online-store/setup">Open store setup</AdminLink>
+              </Button>
+            </span>
           </AlertDescription>
         </Alert>
       )}
@@ -173,8 +258,17 @@ export function SellerOnlineStorePage() {
         <TabsContent value="customize">
           <StoreCustomize />
         </TabsContent>
+        <TabsContent value="homepage">
+          <StoreHomepage />
+        </TabsContent>
+        <TabsContent value="collections">
+          <StoreCollections />
+        </TabsContent>
         <TabsContent value="products">
           <StoreProducts />
+        </TabsContent>
+        <TabsContent value="analytics">
+          <StoreAnalytics />
         </TabsContent>
         <TabsContent value="domains">
           <StoreDomains />
@@ -184,7 +278,12 @@ export function SellerOnlineStorePage() {
         </TabsContent>
       </Tabs>
 
-      <ActionDialog config={dialog} open={open} onOpenChange={setOpen} onConfirm={() => unpublish()} />
+      <ActionDialog
+        config={dialog}
+        open={open}
+        onOpenChange={setOpen}
+        onConfirm={(result) => (intent === 'pause' ? pauseStore(result.reason) : unpublish())}
+      />
     </>
   )
 }
@@ -194,10 +293,20 @@ function StoreOverview() {
   const plan = usePlan()
   const { status, config, domainStatus, customDomain } = useStorefrontStore()
   const storeUrl = useStoreUrl()
+  const policyProgress = usePolicyProgress()
   const liveProducts = SELLER_PRODUCTS.filter((p) => p.status === 'Active').length
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
+    <div className="grid gap-4">
+      {/* The four numbers that answer "is this store working?" */}
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <MetricCard label="Visitors" value={STORE_ANALYTICS.visitors.toLocaleString('en-US')} previous={STORE_ANALYTICS.previous.visitors} current={STORE_ANALYTICS.visitors} />
+        <MetricCard label="Orders" value={String(STORE_ANALYTICS.orders)} previous={STORE_ANALYTICS.previous.orders} current={STORE_ANALYTICS.orders} />
+        <MetricCard label="Sales" value={money(STORE_ANALYTICS.sales)} previous={STORE_ANALYTICS.previous.sales} current={STORE_ANALYTICS.sales} />
+        <MetricCard label="Conversion" value={`${STORE_ANALYTICS.conversion}%`} previous={STORE_ANALYTICS.previous.conversion} current={STORE_ANALYTICS.conversion} />
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
       <Panel title="Your storefront">
         <div className="flex flex-wrap items-center gap-3 rounded-lg border bg-muted/50 px-4 py-3">
           <Globe className="size-4 shrink-0 text-ink-400" />
@@ -232,11 +341,39 @@ function StoreOverview() {
             },
             { label: 'Products on this store', value: String(liveProducts) },
             {
+              label: 'Policies',
+              value: policyProgress.complete ? 'All four written' : `${policyProgress.done} of ${policyProgress.total} written`,
+              hint: policyProgress.complete ? undefined : 'Finish these before publishing',
+            },
+            {
               label: 'Branding',
               value: plan.removeBranding ? 'No SafalMarketHub badge' : '"Powered by SafalMarketHub" in footer',
             },
           ]}
         />
+
+        {/* Print it, stick it on the counter, put it in a story. */}
+        <div className="mt-5 flex flex-wrap items-center gap-5 border-t pt-5">
+          <div className="rounded-lg border bg-white p-2">
+            <StoreQr url={storeUrl} size={116} />
+          </div>
+          <div className="min-w-[200px] flex-1">
+            <p className="text-[13px] font-semibold text-ink-900 dark:text-white">QR code for your store</p>
+            <p className="mt-1 text-[12px] leading-relaxed text-ink-500">
+              Generated from your address. Print it for the counter, add it to packaging, or share it in a story —
+              scanning opens your storefront.
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <Button variant="outline" size="sm" onClick={() => toast.success('QR code downloaded', { description: `${config.slug}-store-qr.svg` })}>
+                Download SVG
+              </Button>
+              <Button variant="ghost" size="sm" onClick={() => toast.success('Store link copied', { description: storeUrl })}>
+                <Copy className="size-3.5" />
+                Copy link
+              </Button>
+            </div>
+          </div>
+        </div>
       </Panel>
 
       <div className="grid content-start gap-4">
@@ -256,8 +393,8 @@ function StoreOverview() {
             </div>
           </dl>
           <p className="mt-3 border-t pt-3 text-[12px] leading-relaxed text-ink-500">
-            A {money(10000)} sale on your own store keeps {money(10000 - (10000 * (plan.ownStoreFee ?? 0)) / 100)} — versus{' '}
-            {money(10000 - (10000 * plan.commission) / 100)} on the marketplace.
+            A {money(1000)} sale on your own store keeps {money(1000 - (1000 * (plan.ownStoreFee ?? 0)) / 100)} — versus{' '}
+            {money(1000 - (1000 * plan.commission) / 100)} on the marketplace.
           </p>
           <Button variant="outline" size="sm" className="mt-4 w-full" asChild>
             <AdminLink to="/seller/plan">Manage plan</AdminLink>
@@ -271,6 +408,343 @@ function StoreOverview() {
             through SafalMarketHub like any other sale.
           </AlertDescription>
         </Alert>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/** A number with its own trend, so "3,480 visitors" means something. */
+function MetricCard({
+  label,
+  value,
+  current,
+  previous,
+}: {
+  label: string
+  value: string
+  current: number
+  previous: number
+}) {
+  const delta = previous === 0 ? 0 : Math.round(((current - previous) / previous) * 100)
+  const up = delta >= 0
+
+  return (
+    <div className="rounded-lg border bg-card p-4 shadow-xs">
+      <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-ink-400">{label}</p>
+      <p className="mt-2 text-[24px] font-bold leading-none tabular text-ink-950 dark:text-white">{value}</p>
+      <p
+        className={cn(
+          'mt-2 flex items-center gap-1 text-[11px] font-semibold tabular',
+          up ? 'text-teal-600 dark:text-teal-100' : 'text-red-600 dark:text-red-300'
+        )}
+      >
+        <TrendingUp className={cn('size-3.5', !up && 'rotate-180')} />
+        {up ? '+' : ''}
+        {delta}% vs last period
+      </p>
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------- homepage --- */
+function StoreHomepage() {
+  const { config, updateConfig, homepageSections, toggleSection, moveSection } = useStorefrontStore()
+
+  return (
+    <div className="grid gap-4 xl:grid-cols-[1fr_1fr]">
+      <div className="grid content-start gap-4">
+        <Panel
+          title="Homepage sections"
+          description="Turn sections on or off and put them in the order you want. That is the whole layout tool — no page building."
+        >
+          <ul className="grid gap-2">
+            {homepageSections.map((section, i) => (
+              <li key={section.id} className="flex items-center gap-3 rounded-lg border bg-card px-3 py-2.5">
+                <GripVertical className="size-4 shrink-0 text-ink-300" aria-hidden />
+                <span className="min-w-0 flex-1">
+                  <span className="block text-[13px] font-semibold text-ink-900 dark:text-white">{section.label}</span>
+                  <span className="block text-[11px] text-ink-500">{section.hint}</span>
+                </span>
+                <span className="flex shrink-0 items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="size-7"
+                    aria-label={`Move ${section.label} up`}
+                    disabled={i === 0}
+                    onClick={() => moveSection(section.id, -1)}
+                  >
+                    <ChevronUp className="size-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="size-7"
+                    aria-label={`Move ${section.label} down`}
+                    disabled={i === homepageSections.length - 1}
+                    onClick={() => moveSection(section.id, 1)}
+                  >
+                    <ChevronDown className="size-4" />
+                  </Button>
+                  <Switch
+                    checked={section.on}
+                    disabled={section.locked}
+                    aria-label={`Show ${section.label}`}
+                    onCheckedChange={() => toggleSection(section.id)}
+                  />
+                </span>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-3 text-[11px] text-ink-500">The hero banner is always shown — it is your store's front door.</p>
+        </Panel>
+
+        <Panel title="Announcement bar" description="One message, above everything else.">
+          <div className="flex items-center justify-between gap-4">
+            <Label htmlFor="ann-toggle" className="text-[13px]">
+              Show the announcement bar
+            </Label>
+            <Switch
+              id="ann-toggle"
+              checked={config.announcement.on}
+              onCheckedChange={(on) => updateConfig({ announcement: { ...config.announcement, on } })}
+            />
+          </div>
+          <div className="mt-4">
+            <Labeled label="Message">
+              <Input
+                value={config.announcement.text}
+                maxLength={80}
+                onChange={(e) => updateConfig({ announcement: { ...config.announcement, text: e.target.value } })}
+              />
+            </Labeled>
+          </div>
+          <Button variant="outline" size="sm" className="mt-4" asChild>
+            <AdminLink to="/seller/marketing" search={{ tab: 'announcement' }}>
+              More marketing tools
+            </AdminLink>
+          </Button>
+        </Panel>
+      </div>
+
+      <div className="xl:sticky xl:top-24 xl:self-start">
+        <Panel title="Live preview" padded={false}>
+          <StorePreview />
+        </Panel>
+      </div>
+    </div>
+  )
+}
+
+/* ---------------------------------------------------------- collections --- */
+function StoreCollections() {
+  const { collections, addCollection, updateCollection, removeCollection } = useStorefrontStore()
+  const [name, setName] = useState('')
+  const [rule, setRule] = useState<Collection['rule']>('newest')
+  const [ruleValue, setRuleValue] = useState('25')
+
+  return (
+    <div className="grid gap-4 lg:grid-cols-[1.3fr_1fr]">
+      <Panel
+        title="Collections"
+        description="Group products so customers can browse the way they shop — instead of you designing pages."
+        padded={false}
+      >
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Collection</TableHead>
+              <TableHead className="hidden sm:table-cell">Fills by</TableHead>
+              <TableHead className="text-right">Products</TableHead>
+              <TableHead className="text-right">Shown</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {collections.map((collection) => (
+              <TableRow key={collection.id}>
+                <TableCell>
+                  <span className="block font-semibold text-ink-900 dark:text-white">{collection.name}</span>
+                  {collection.system && <span className="block text-[11px] text-ink-500">Built in</span>}
+                </TableCell>
+                <TableCell className="hidden text-[12px] text-ink-600 sm:table-cell dark:text-ink-300">
+                  {COLLECTION_RULES.find((r) => r.id === collection.rule)?.label}
+                  {collection.rule === 'under-price' && collection.ruleValue ? ` · ${money(collection.ruleValue)}` : ''}
+                </TableCell>
+                <TableCell className="text-right tabular">{collection.productCount}</TableCell>
+                <TableCell className="text-right">
+                  <Switch
+                    checked={collection.visible}
+                    aria-label={`Show ${collection.name} on the storefront`}
+                    onCheckedChange={(visible) => updateCollection(collection.id, { visible })}
+                  />
+                </TableCell>
+                <TableCell className="text-right">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 text-red-600 hover:text-red-700 dark:text-red-300"
+                    disabled={collection.system}
+                    onClick={() => {
+                      removeCollection(collection.id)
+                      toast.success(`${collection.name} deleted`)
+                    }}
+                  >
+                    Delete
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Panel>
+
+      <Panel title="New collection">
+        <div className="grid gap-4">
+          <Labeled label="Collection name">
+            <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Summer Collection" />
+          </Labeled>
+
+          <div>
+            <Label className="mb-[7px]">How it fills</Label>
+            <div className="grid gap-2">
+              {COLLECTION_RULES.map((option) => (
+                <button
+                  key={option.id}
+                  type="button"
+                  onClick={() => setRule(option.id)}
+                  className={cn(
+                    'rounded-lg border px-3.5 py-2.5 text-left transition-colors',
+                    rule === option.id ? 'border-brand-600 ring-1 ring-brand-600/20' : 'hover:border-ink-400'
+                  )}
+                >
+                  <span className="block text-[13px] font-semibold text-ink-900 dark:text-white">{option.label}</span>
+                  <span className="block text-[11px] text-ink-500">{option.hint}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {rule === 'under-price' && (
+            <Labeled label="Price ceiling">
+              <Input type="number" value={ruleValue} onChange={(e) => setRuleValue(e.target.value)} className="tabular" />
+            </Labeled>
+          )}
+
+          <Button
+            disabled={!name.trim()}
+            onClick={() => {
+              addCollection({
+                name: name.trim(),
+                rule,
+                ruleValue: rule === 'under-price' ? Number(ruleValue) || 0 : undefined,
+                productIds: [],
+                productCount: rule === 'manual' ? 0 : 5,
+                visible: true,
+              })
+              setName('')
+              toast.success('Collection created')
+            }}
+          >
+            Create collection
+          </Button>
+        </div>
+      </Panel>
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------ analytics --- */
+function StoreAnalytics() {
+  const plan = usePlan()
+  const best = [...SELLER_PRODUCTS].sort((a, b) => b.sold - a.sold)[0]
+
+  return (
+    <div className="grid gap-4">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <MetricCard label="Visitors" value={STORE_ANALYTICS.visitors.toLocaleString('en-US')} current={STORE_ANALYTICS.visitors} previous={STORE_ANALYTICS.previous.visitors} />
+        <MetricCard label="Orders" value={String(STORE_ANALYTICS.orders)} current={STORE_ANALYTICS.orders} previous={STORE_ANALYTICS.previous.orders} />
+        <MetricCard label="Sales" value={money(STORE_ANALYTICS.sales)} current={STORE_ANALYTICS.sales} previous={STORE_ANALYTICS.previous.sales} />
+        <MetricCard label="Conversion" value={`${STORE_ANALYTICS.conversion}%`} current={STORE_ANALYTICS.conversion} previous={STORE_ANALYTICS.previous.conversion} />
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-[1.5fr_1fr]">
+        <Panel title="Visitors & orders" description="Last 14 days on your own store.">
+          <div className="h-[260px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={STORE_TRAFFIC_14D} margin={{ top: 8, right: 8, bottom: 0, left: -18 }}>
+                <defs>
+                  <linearGradient id="visitorsFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="var(--color-brand-500)" stopOpacity={0.28} />
+                    <stop offset="100%" stopColor="var(--color-brand-500)" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-border)" />
+                <XAxis dataKey="day" tickLine={false} axisLine={false} tick={{ fontSize: 11 }} interval={2} />
+                <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 11 }} />
+                <Tooltip
+                  contentStyle={{
+                    borderRadius: 10,
+                    border: '1px solid var(--color-border)',
+                    background: 'var(--color-card)',
+                    fontSize: 12,
+                  }}
+                />
+                <Area type="monotone" dataKey="visitors" stroke="var(--color-brand-500)" strokeWidth={2} fill="url(#visitorsFill)" />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </Panel>
+
+        <div className="grid content-start gap-4">
+          <Panel title="Where visitors came from">
+            <ul className="grid gap-3">
+              {STORE_TRAFFIC_SOURCES.map((source) => {
+                const share = Math.round((source.visitors / STORE_ANALYTICS.visitors) * 100)
+                return (
+                  <li key={source.source}>
+                    <div className="flex items-baseline justify-between gap-3">
+                      <span className="text-[13px] text-ink-700 dark:text-ink-200">{source.source}</span>
+                      <span className="text-[12px] font-semibold tabular text-ink-900 dark:text-white">
+                        {source.visitors.toLocaleString('en-US')}
+                      </span>
+                    </div>
+                    <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-ink-200 dark:bg-secondary">
+                      <div className="h-full rounded-full bg-brand-600" style={{ width: `${share}%` }} />
+                    </div>
+                    <p className="mt-1 text-[11px] text-ink-500 tabular">{source.orders} orders</p>
+                  </li>
+                )
+              })}
+            </ul>
+          </Panel>
+
+          <Panel title="Best seller">
+            {best && (
+              <div className="flex items-center gap-3">
+                <ProductScene glyph={best.glyph} tone={best.tone} className="size-14 shrink-0 rounded-md" grain={false} />
+                <div className="min-w-0">
+                  <p className="truncate text-[13px] font-semibold text-ink-900 dark:text-white">{best.name}</p>
+                  <p className="mt-0.5 text-[12px] text-ink-500 tabular">{best.sold} sold · {money(best.price)}</p>
+                </div>
+              </div>
+            )}
+          </Panel>
+
+          {plan.analytics !== 'Advanced' && (
+            <Alert variant="info">
+              <TrendingUp />
+              <AlertTitle>{plan.analytics} analytics</AlertTitle>
+              <AlertDescription>
+                Pro adds product-level funnels, repeat-customer rates and export.{' '}
+                <AdminLink to="/seller/plan" className="font-semibold underline">
+                  Compare plans
+                </AdminLink>
+              </AlertDescription>
+            </Alert>
+          )}
+        </div>
       </div>
     </div>
   )
@@ -427,100 +901,6 @@ function StoreCustomize() {
         <StorePreview />
       </div>
     </div>
-  )
-}
-
-/** A miniature of the generated storefront, driven by the seller's own settings. */
-function StorePreview() {
-  const plan = usePlan()
-  const { config } = useStorefrontStore()
-  const storeUrl = useStoreUrl()
-  const products = SELLER_PRODUCTS.filter((p) => p.status === 'Active').slice(0, 4)
-  const fontFamily =
-    config.font === 'Playfair' ? 'Georgia, serif' : config.font === 'Sora' ? 'system-ui, sans-serif' : 'inherit'
-
-  return (
-    <Panel title="Preview" description="This is what your customers will see." padded={false}>
-      <div className="overflow-hidden rounded-b-lg" style={{ fontFamily }}>
-        {/* browser chrome */}
-        <div className="flex items-center gap-3 border-b bg-muted/60 px-4 py-2.5">
-          <span className="flex gap-1.5">
-            <span className="size-2 rounded-full bg-ink-300" />
-            <span className="size-2 rounded-full bg-ink-300" />
-            <span className="size-2 rounded-full bg-ink-300" />
-          </span>
-          <span className="mx-auto flex items-center gap-1.5 rounded-full border bg-background px-3 py-1 text-[10px] tabular text-ink-500">
-            <Lock className="size-2.5" />
-            {storeUrl}
-          </span>
-        </div>
-
-        <div className="bg-background">
-          {/* store header — the seller's brand, not ours */}
-          <div className="flex items-center gap-3 border-b px-4 py-3">
-            <span
-              className="grid size-7 shrink-0 place-items-center rounded-md text-[10px] font-bold text-white"
-              style={{ background: config.brandColor }}
-            >
-              {config.logoText.slice(0, 3).toUpperCase()}
-            </span>
-            <span className="text-[13px] font-bold tracking-[-0.01em] text-ink-950 dark:text-white">{config.name}</span>
-            <nav className="ml-4 hidden gap-3 text-[11px] text-ink-500 sm:flex">
-              <span>Home</span>
-              <span>Shop</span>
-              <span>Categories</span>
-              <span>About</span>
-            </nav>
-            <span className="ml-auto flex items-center gap-2 text-ink-400">
-              <Search className="size-3.5" />
-              <ShoppingCart className="size-3.5" />
-            </span>
-          </div>
-
-          {/* banner */}
-          <div
-            className="px-5 py-7"
-            style={{ background: `linear-gradient(135deg, ${config.brandColor}14, ${config.accentColor}0F)` }}
-          >
-            <p className="text-[17px] font-bold leading-tight tracking-[-0.02em] text-ink-950 dark:text-white">
-              {config.bannerHeadline}
-            </p>
-            <p className="mt-1.5 max-w-[320px] text-[11px] leading-relaxed text-ink-600 dark:text-ink-300">
-              {config.bannerSub}
-            </p>
-            <span
-              className="mt-3.5 inline-block rounded-md px-3 py-1.5 text-[11px] font-semibold text-white"
-              style={{ background: config.brandColor }}
-            >
-              Shop now
-            </span>
-          </div>
-
-          {/* products */}
-          <div className="grid grid-cols-2 gap-2.5 p-4 sm:grid-cols-4">
-            {products.map((p) => (
-              <div key={p.id}>
-                <ProductScene glyph={p.glyph} tone={p.tone} className="aspect-square rounded-md" grain={false} />
-                <p className="mt-1.5 line-clamp-1 text-[10px] font-semibold text-ink-900 dark:text-white">{p.name}</p>
-                <p className="text-[10px] font-bold tabular" style={{ color: config.brandColor }}>
-                  {money(p.price)}
-                </p>
-              </div>
-            ))}
-          </div>
-
-          {/* footer — badge only on Growth */}
-          <div className="border-t px-4 py-3 text-center">
-            <p className="text-[10px] text-ink-500">
-              © 2026 {config.name} · {config.supportEmail}
-            </p>
-            {!plan.removeBranding && (
-              <p className="mt-1 text-[10px] font-semibold text-ink-400">Powered by SafalMarketHub</p>
-            )}
-          </div>
-        </div>
-      </div>
-    </Panel>
   )
 }
 
@@ -802,7 +1182,8 @@ function StoreDomains() {
 
 /* ---------------------------------------------------------------- pages --- */
 function StorePages() {
-  const { config, updateConfig } = useStorefrontStore()
+  const { policies, setPolicy } = useStorefrontStore()
+  const progress = usePolicyProgress()
 
   return (
     <div className="grid gap-4 lg:grid-cols-[1fr_1fr]">
@@ -817,34 +1198,41 @@ function StorePages() {
         </ul>
       </Panel>
 
-      <Panel title="Policies" description="Your business details fill the legal pages.">
+      <Panel title="Policies" description="Start from a template, edit to match how you actually trade.">
         <p className="text-[13px] leading-relaxed text-ink-600 dark:text-ink-300">
-          Privacy, Terms, Shipping and Return pages are pre-written from SafalMarketHub's templates and your business
-          information. Review them before publishing — they appear under your brand, not ours.
+          These four pages appear under your brand, not ours. Each has a SafalMarketHub template you can use as-is or
+          rewrite.
         </p>
-        <div className="mt-5 grid gap-2">
-          {['Privacy Policy', 'Terms & Conditions', 'Shipping Policy', 'Return Policy'].map((policy) => (
-            <div key={policy} className="flex items-center justify-between gap-3 rounded-sm border px-3.5 py-2.5">
-              <span className="text-[13px] font-medium text-ink-800 dark:text-ink-100">{policy}</span>
-              <div className="flex items-center gap-2">
-                <StatusBadge status={config.policiesConfigured ? 'Verified' : 'Pending'} />
-                <Button variant="ghost" size="sm" className="h-8">
-                  Edit
-                </Button>
+        <div className="mt-5 grid gap-4">
+          {POLICY_TEMPLATES.map((policy) => (
+            <div key={policy.key} className="rounded-lg border p-4">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-[13px] font-semibold text-ink-900 dark:text-white">{policy.label}</p>
+                  <p className="mt-0.5 text-[11px] text-ink-500">{policy.description}</p>
+                </div>
+                <div className="flex shrink-0 items-center gap-2">
+                  <StatusBadge status={policies[policy.key].trim() ? 'Verified' : 'Pending'} />
+                  <Button variant="outline" size="sm" className="h-8" onClick={() => setPolicy(policy.key, policy.template)}>
+                    Use template
+                  </Button>
+                </div>
               </div>
+              <Textarea
+                rows={3}
+                className="mt-3"
+                placeholder="Write your policy, or start from the template."
+                value={policies[policy.key]}
+                onChange={(e) => setPolicy(policy.key, e.target.value)}
+              />
             </div>
           ))}
         </div>
-        <Button
-          className="mt-5"
-          variant="outline"
-          onClick={() => {
-            updateConfig({ policiesConfigured: true })
-            toast.success('Policies marked as reviewed')
-          }}
-        >
-          Mark policies as reviewed
-        </Button>
+        <p className="mt-4 text-[12px] text-ink-500">
+          {progress.complete
+            ? 'All four policies are written — your store is ready to publish.'
+            : `${progress.done} of ${progress.total} written. Publishing works either way, but customers trust a store that says how returns work.`}
+        </p>
       </Panel>
     </div>
   )

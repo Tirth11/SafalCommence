@@ -24,6 +24,7 @@ import { StatusBadge } from '@/components/admin/status-badge'
 import { ProductThumb } from '@/components/commerce/product-thumb'
 import { PriceDetails, SellerLine } from '@/components/shop/shop-bits'
 import { AccountLayout, Field } from '@/routes/shop/account'
+import { DeliveryFeedback } from '@/components/shop/delivery-feedback'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -543,6 +544,15 @@ export function OrderDetailPage() {
               </Panel>
             )
           })}
+
+          {/* Delivered orders get the three feedback questions in one place. */}
+          {order.status === 'Delivered' && (
+            <DeliveryFeedback
+              orderId={order.id}
+              productName={order.shipments[0]?.items[0]?.name ?? 'your order'}
+              sellerName={order.shipments[0]?.seller ?? 'the seller'}
+            />
+          )}
         </div>
 
         <div className="grid content-start gap-4">

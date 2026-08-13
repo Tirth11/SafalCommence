@@ -4,7 +4,7 @@ import { ArrowRight, Check, Minus, Sparkles, Store, X } from 'lucide-react'
 
 import { EditorialHeading, Reveal } from '@/components/marketing/reveal'
 import { Button } from '@/components/ui/button'
-import { PLAN_FEATURES, PLANS } from '@/data/plans'
+import { PLAN_FEATURES, PLANS, TRIAL_DAYS } from '@/data/plans'
 import { cn, money } from '@/lib/utils'
 
 /**
@@ -15,8 +15,8 @@ import { cn, money } from '@/lib/utils'
  */
 export function Pricing() {
   const [showAll, setShowAll] = useState(false)
-  // Business is sold as "contact sales" on the marketing page.
-  const visible = PLANS.filter((p) => p.id !== 'business')
+  // All three tiers fit on one row; anything larger is a sales conversation.
+  const visible = PLANS
 
   return (
     <section id="pricing" className="scroll-mt-24 border-y bg-muted/40 py-16 sm:py-24 dark:bg-card/30">
@@ -30,8 +30,16 @@ export function Pricing() {
           />
         </Reveal>
 
+        {/* The trial removes the leap of faith: build first, pay to publish. */}
+        <Reveal delay={0.04}>
+          <p className="mx-auto mt-8 flex w-fit flex-wrap items-center justify-center gap-2 rounded-full border bg-card px-4 py-2 text-[13px] font-semibold text-ink-700 shadow-xs dark:text-ink-200">
+            <Sparkles className="size-4 text-brand-600 dark:text-brand-300" />
+            Try your online store free for {TRIAL_DAYS} days — no card required
+          </p>
+        </Reveal>
+
         {/* Plan cards */}
-        <div className="mt-14 grid gap-5 lg:grid-cols-3">
+        <div className="mt-10 grid gap-5 lg:grid-cols-3">
           {visible.map((plan, i) => (
             <Reveal key={plan.id} delay={i * 0.08}>
               <div
@@ -98,13 +106,13 @@ export function Pricing() {
         <Reveal delay={0.1}>
           <div className="mt-5 flex flex-wrap items-center gap-6 rounded-3xl border bg-ink-950 p-6 sm:p-8">
             <div className="min-w-0 flex-1">
-              <p className="text-[12px] font-bold uppercase tracking-[0.14em] text-brand-300">Business &amp; Enterprise</p>
+              <p className="text-[12px] font-bold uppercase tracking-[0.14em] text-brand-300">Enterprise</p>
               <h3 className="mt-2 text-[22px] tracking-[-0.02em] text-white sm:text-[26px]">
                 Unlimited products, API access, negotiated rates
               </h3>
               <p className="mt-2.5 max-w-[620px] text-[14px] leading-relaxed text-ink-300">
-                From $62/month, or custom pricing for multiple storefronts, advanced roles, ERP integration, custom
-                checkout and dedicated support — including a negotiated marketplace commission.
+                Custom pricing for multiple storefronts, advanced roles, ERP integration, custom checkout and dedicated
+                support — including a negotiated marketplace commission.
               </p>
             </div>
             <Button size="lg" variant="onInk" asChild>
@@ -120,9 +128,9 @@ export function Pricing() {
               title="We bring the customer"
               subtitle="A sale on the SafalMarketHub marketplace"
               rows={[
-                { label: 'Product price', value: money(10000) },
-                { label: 'Marketplace commission (6% on Pro)', value: `− ${money(600)}`, negative: true },
-                { label: 'You receive', value: money(9400), total: true },
+                { label: 'Product price', value: money(1000) },
+                { label: 'Marketplace commission (6% on Pro)', value: `− ${money(60)}`, negative: true },
+                { label: 'You receive', value: money(940), total: true },
               ]}
               note="Commission covers the customer we introduced, the checkout, support and settlement."
             />
@@ -131,9 +139,9 @@ export function Pricing() {
               subtitle="The same sale on your own storefront"
               accent
               rows={[
-                { label: 'Product price', value: money(10000) },
-                { label: 'Platform fee (1% on Pro)', value: `− ${money(100)}`, negative: true },
-                { label: 'You receive', value: money(9900), total: true },
+                { label: 'Product price', value: money(1000) },
+                { label: 'Platform fee (1% on Pro)', value: `− ${money(10)}`, negative: true },
+                { label: 'You receive', value: money(990), total: true },
               ]}
               note="You already pay a subscription, so we take a fraction. Payment-gateway charges are separate."
             />

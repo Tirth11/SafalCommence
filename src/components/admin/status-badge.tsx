@@ -79,6 +79,14 @@ const STATUS_TONE: Record<string, Tone> = {
   // Commission
   Scheduled: 'info',
   Expired: 'muted',
+  // Storefront & marketing
+  Published: 'success',
+  Paused: 'warning',
+  'Not Started': 'muted',
+  Recovered: 'success',
+  'Reminder Sent': 'info',
+  Included: 'success',
+  'Pending DNS': 'warning',
   // Priority
   Low: 'muted',
   Medium: 'info',

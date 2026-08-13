@@ -41,7 +41,7 @@ export function ShopHomePage() {
               </Button>
             </div>
             <ul className="mt-7 flex flex-wrap gap-x-5 gap-y-2">
-              {['Free delivery over $12', '7-day returns', 'Verified sellers'].map((item) => (
+              {['Free delivery over $99', '7-day returns', 'Verified sellers'].map((item) => (
                 <li key={item} className="flex items-center gap-1.5 text-[13px] font-medium text-ink-700 dark:text-ink-300">
                   <BadgeCheck className="size-4 shrink-0 text-teal-500" />
                   {item}

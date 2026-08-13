@@ -82,6 +82,10 @@ Delivery is mocked: serviceable PINs are `400001, 400053, 400069, 110024, 560038
 | `/seller/inventory` | Stock table + set/add stock dialog |
 | `/seller/orders` · `/seller/orders/$id` | Status tabs · fulfilment: accept → pack checklist → ship (label or manual) → track → delivered → return response |
 | `/seller/transactions` · `/seller/settlements` · `/seller/settlements/$id` | Earnings: commission, deductions, settlement lifecycle |
+| `/seller/online-store` | White-label storefront: overview (+ store analytics and QR code), customise, homepage sections, collections, per-channel products, analytics, domains, policies |
+| `/seller/online-store/setup` | Six-step setup wizard (`?step=` details → branding → homepage → selling → url → preview). Gated by a 14-day trial: build free, subscribe to publish |
+| `/seller/marketing` | Coupons, free-shipping rule, announcement bar, abandoned carts (`?tab=`) |
+| `/seller/plan` | Plan & billing — Free / Growth / Pro, usage meter, worked fee examples |
 | `/seller/profile` | Store, legal, addresses, bank, verification, public profile |
 | `/seller/notifications` · `/seller/support` · `/seller/settings` | Notifications, tickets, account & security |
 
@@ -116,10 +120,30 @@ Both are stripped from production builds (`import.meta.env.DEV`).
 
 ## Data
 
-All screens read from typed mocks — `src/data/catalog.ts` (marketing storefront), `src/data/shop.ts` (customer catalogue, orders, returns), `src/data/admin.ts` (platform), `src/data/seller.ts` (single seller). Shapes mirror the intended API so components can be wired to real endpoints without changing props.
+All screens read from typed mocks — `src/data/catalog.ts` (marketing storefront), `src/data/shop.ts` (customer catalogue, orders, returns), `src/data/admin.ts` (platform), `src/data/seller.ts` (single seller), `src/data/plans.ts` (pricing tiers, themes, channel fees), `src/data/marketing.ts` (coupons, collections, store analytics, abandoned carts). Shapes mirror the intended API so components can be wired to real endpoints without changing props.
 
 Customer-facing data deliberately excludes commission, seller banking and internal sub-order ids — a shopper sees shipments, not the platform's split.
 
 ## Not built (later phases)
 
-White-label storefronts, custom domains, multi-warehouse, advanced RBAC, ads, B2B/wholesale, multi-currency, advanced analytics, AI moderation, loyalty/wallet/BNPL, product comparison, live seller chat, gift cards and referrals.
+Multi-warehouse, advanced RBAC, ads, B2B/wholesale, multi-currency, AI moderation, loyalty/wallet/BNPL, product comparison, live seller chat, gift cards and referrals. A page builder is deliberately out of scope — sellers pick a theme and toggle homepage sections instead.
+
+## Monetisation model
+
+Three revenue streams, three plans:
+
+| | Free | Growth | Pro |
+| --- | ---: | ---: | ---: |
+| Monthly | $0 | $12 | $29 |
+| Products | 25 | 250 | 1,000 |
+| Marketplace commission | 12% | 9% | 6% |
+| Own online store | — | subdomain | custom domain |
+| Own-store platform fee | — | 2% | 1% |
+| Coupons · free shipping · announcement bar · collections | — | yes | yes |
+| Remove "Powered by" · branded emails · abandoned-cart email | — | — | yes |
+| Analytics | Basic | Standard | Advanced |
+| Staff | 1 | 2 | 5 |
+
+Anything above Pro is Enterprise — a conversation, not a pricing card.
+
+The split is the point: SafalMarketHub charges a **commission** when it brings the customer, and a **subscription plus a small platform fee** when the seller brings their own. Sellers can build a complete storefront on a **14-day trial** and only need a plan at the moment they publish. Every product carries a per-channel switch and price, while **inventory stays shared**, so a unit sold anywhere decrements the same stock.

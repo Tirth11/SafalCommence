@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useNavigate, useParams } from '@tanstack/react-router'
-import { ArrowLeft, ArrowRight, Check, GripVertical, ImagePlus, Plus, Trash2, TriangleAlert, X } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, GripVertical, ImagePlus, Plus, Sparkles, Trash2, TriangleAlert, X } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { AdminLink, adminLinkProps, useAdminSearch } from '@/components/admin/admin-link'
@@ -15,8 +15,11 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Field, SelectField } from '@/routes/seller/setup'
+import { Switch } from '@/components/ui/switch'
 import { PRODUCT_CATEGORIES, SELLER_PRODUCTS } from '@/data/seller'
-import { discountPercent, money } from '@/lib/utils'
+import { PriceCheck } from '@/components/seller/seller-assistant'
+import { usePlan } from '@/store/storefront-store'
+import { cn, discountPercent, money } from '@/lib/utils'
 
 const STEPS = [
   { key: 'basic', label: 'Basic Details' },
@@ -32,6 +35,7 @@ export function SellerProductFormPage() {
   const { productId } = useParams({ strict: false }) as { productId?: string }
   const search = useAdminSearch()
   const navigate = useNavigate()
+  const plan = usePlan()
 
   const existing = productId && productId !== 'new' ? SELLER_PRODUCTS.find((p) => p.id === productId) : undefined
   const step = search.step ?? 'basic'
@@ -373,10 +377,23 @@ export function SellerProductFormPage() {
               )}
             </div>
             <p className="mt-3 text-[12px] text-ink-500">
-              Platform commission at 10% ≈ {money(Math.round(price * 0.1))} · your expected earning ≈{' '}
-              {money(price - Math.round(price * 0.1))} per unit.
+              Marketplace commission at {plan.commission}% ≈ {money(Math.round((price * plan.commission) / 100))} · your
+              expected earning ≈ {money(price - Math.round((price * plan.commission) / 100))} per unit.
             </p>
           </div>
+
+          {existing && (
+            <div className="mt-6">
+              <p className="mb-2 flex items-center gap-2 text-[13px] font-semibold text-ink-900 dark:text-white">
+                <Sparkles className="size-4 text-brand-600 dark:text-brand-300" />
+                Help me price this
+              </p>
+              <PriceCheck product={existing} commission={plan.commission} />
+            </div>
+          )}
+
+          <ChannelSelector price={price} />
+
           <WizardActions onBack={() => prevStep && go(prevStep)} onNext={() => nextStep && go(nextStep)} disabled={priceInvalid} />
         </Panel>
       )}
@@ -599,6 +616,96 @@ function ProductSubmitted({ productId }: { productId: string }) {
           </Button>
         </div>
       </div>
+    </div>
+  )
+}
+
+/**
+ * Where does this product sell, and for how much? Marketplace and own-store
+ * prices are independent, but the stock number behind them is the same one —
+ * that shared-inventory guarantee is the core of the multi-channel model.
+ */
+function ChannelSelector({ price }: { price: number }) {
+  const plan = usePlan()
+  const [channels, setChannels] = useState({
+    marketplace: { on: true, price },
+    store: { on: plan.whiteLabel, price: Math.max(0, price - Math.round(price * 0.05)) },
+  })
+
+  const rows = [
+    {
+      key: 'marketplace' as const,
+      label: 'SafalMarketHub Marketplace',
+      hint: `${plan.commission}% commission — we bring the customer`,
+      available: true,
+    },
+    {
+      key: 'store' as const,
+      label: 'My Online Store',
+      hint: plan.whiteLabel
+        ? `${plan.ownStoreFee}% platform fee — you bring the customer`
+        : 'Available on Growth and Pro',
+      available: plan.whiteLabel,
+    },
+  ]
+
+  return (
+    <div className="mt-6 rounded-lg border p-5">
+      <p className="text-[14px] font-semibold text-ink-900 dark:text-white">Where do you want to sell this product?</p>
+      <p className="mt-1 text-[12px] text-ink-500">Set a different price per channel. Stock is shared.</p>
+
+      <ul className="mt-4 grid gap-3">
+        {rows.map((row) => {
+          const channel = channels[row.key]
+          return (
+            <li
+              key={row.key}
+              className={cn(
+                'flex flex-wrap items-center gap-4 rounded-lg border px-4 py-3',
+                !row.available && 'opacity-60'
+              )}
+            >
+              <span className="min-w-0 flex-1">
+                <span className="block text-[13px] font-semibold text-ink-900 dark:text-white">{row.label}</span>
+                <span className="block text-[11px] text-ink-500">{row.hint}</span>
+              </span>
+
+              <span className="flex shrink-0 items-center gap-3">
+                {channel.on && row.available && (
+                  <Input
+                    type="number"
+                    value={channel.price}
+                    aria-label={`${row.label} price`}
+                    onChange={(e) =>
+                      setChannels((c) => ({ ...c, [row.key]: { ...c[row.key], price: Number(e.target.value) } }))
+                    }
+                    className="h-9 w-[110px] text-right text-[12px] tabular"
+                  />
+                )}
+                <Switch
+                  checked={channel.on && row.available}
+                  disabled={!row.available}
+                  aria-label={`Sell on ${row.label}`}
+                  onCheckedChange={(on) => setChannels((c) => ({ ...c, [row.key]: { ...c[row.key], on } }))}
+                />
+              </span>
+            </li>
+          )
+        })}
+
+        <li className="flex flex-wrap items-center gap-3 rounded-lg border border-dashed px-4 py-3 opacity-60">
+          <span className="min-w-0 flex-1">
+            <span className="block text-[13px] font-semibold text-ink-700 dark:text-ink-200">B2B Wholesale</span>
+            <span className="block text-[11px] text-ink-500">Coming later</span>
+          </span>
+          <Switch checked={false} disabled aria-label="Sell on B2B Wholesale" />
+        </li>
+      </ul>
+
+      <p className="mt-4 border-t pt-4 text-[12px] text-ink-500">
+        <strong className="text-ink-900 dark:text-white">Inventory: shared across channels.</strong> A unit sold
+        anywhere reduces the same stock count, so you can never oversell.
+      </p>
     </div>
   )
 }
