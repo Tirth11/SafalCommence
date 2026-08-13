@@ -21,7 +21,7 @@ import { toast } from 'sonner'
 import { AdminLink } from '@/components/admin/admin-link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { SELLER_PRODUCTS, type SellerProduct } from '@/data/seller'
+import { SELLER_ORDERS, SELLER_PRODUCTS, type SellerProduct } from '@/data/seller'
 import {
   businessSnapshot,
   marginAt,
@@ -121,12 +121,14 @@ function quickActionsFor(pathname: string): QuickAction[] {
     ]
 
   return [
-    { label: 'Check sales', prompt: 'How are my sales this month?', icon: BarChart3 },
-    { label: "Today's orders", prompt: "Show today's new orders", icon: Package },
-    { label: 'Low stock', prompt: 'Which products are running low on stock?', icon: Boxes },
     { label: 'Add product', prompt: 'Add a product', icon: Plus },
-    { label: 'Check reviews', prompt: 'What are customers saying about my headphones?', icon: Star },
-    { label: 'Earnings', prompt: 'How much money am I getting this week?', icon: Wallet },
+    { label: 'Check sales', prompt: 'How are my sales this month?', icon: BarChart3 },
+    { label: 'Check pricing', prompt: 'Am I overpriced?', icon: BarChart3 },
+    { label: 'Check inventory', prompt: 'Which products are running low on stock?', icon: Boxes },
+    { label: 'Check orders', prompt: "Show today's new orders", icon: Package },
+    { label: 'Customer reviews', prompt: 'What are customers complaining about?', icon: Star },
+    { label: 'Settlement', prompt: 'Explain my next settlement', icon: Wallet },
+    { label: 'Improve', prompt: 'What should I improve?', icon: TriangleAlert },
   ]
 }
 
@@ -193,6 +195,16 @@ function AssistantPanel({ seed, onClose }: { seed?: string; onClose: () => void 
     const q = text.toLowerCase()
     const snapshot = businessSnapshot()
     const product = findProduct(q)
+
+    // ---- today's action center
+    if (/\bwhat should i do today|today'?s action|action center|needs attention\b/.test(q)) {
+      return say({
+        from: 'bot',
+        text: 'Here is the work queue I would clear first today.',
+        node: <TodayActionCard />,
+        rateable: true,
+      })
+    }
 
     // ---- add a product, conversationally
     if (/\badd (a )?(new )?product|create a product|list a product\b/.test(q)) {
@@ -303,6 +315,17 @@ function AssistantPanel({ seed, onClose }: { seed?: string; onClose: () => void 
     // ---- settlements
     if (/\bsettlement|payout|getting paid|money.*(week|coming)|earnings\b/.test(q)) {
       return say({ from: 'bot', text: 'Your next settlement:', node: <SettlementCard /> })
+    }
+
+    // ---- why a product may not be selling
+    if (/\bwhy\b.*\b(not selling|not sell|isn'?t selling)|\bnot selling\b|\bwhy.*selling\b/.test(q)) {
+      const target = product ?? slowestSeller()
+      return say({
+        from: 'bot',
+        text: `Here are possible signals for ${target.name}. I am treating these as clues, not proof.`,
+        node: <NotSellingCard product={target} />,
+        rateable: true,
+      })
     }
 
     // ---- sales
@@ -783,6 +806,118 @@ function ProductPerformance({ product }: { product: SellerProduct }) {
         </Button>
         <Button size="sm" variant="ghost" className="h-7 px-2.5 text-[11px]" asChild>
           <AdminLink to="/seller/inventory">Update stock</AdminLink>
+        </Button>
+      </div>
+    </div>
+  )
+}
+
+function TodayActionCard() {
+  const snapshot = businessSnapshot()
+  const listingNeeds = SELLER_PRODUCTS.filter((p) => p.status === 'Changes Required' || p.images < 3 || p.status === 'Draft')
+  const returns = SELLER_ORDERS.filter((order) => order.returnCase)
+
+  const rows = [
+    {
+      label: 'New orders',
+      value: String(SELLER_ORDERS.filter((order) => order.status === 'New').length),
+      body: 'Ready to accept and process.',
+      to: '/seller/orders',
+    },
+    {
+      label: 'Low stock products',
+      value: String(snapshot.lowStock.length + snapshot.outOfStock.length),
+      body: snapshot.lowStock[0] ? `${snapshot.lowStock[0].name} may run out soon.` : 'No urgent restock risk.',
+      to: '/seller/inventory',
+    },
+    {
+      label: 'Listings need changes',
+      value: String(listingNeeds.length),
+      body: listingNeeds[0] ? `${listingNeeds[0].name} needs attention.` : 'Listing basics look healthy.',
+      to: '/seller/products',
+    },
+    {
+      label: 'Returns opened',
+      value: String(returns.length),
+      body: returns[0]?.returnCase?.reason ?? 'No return exception waiting.',
+      to: '/seller/orders',
+    },
+    {
+      label: 'Settlement',
+      value: money(snapshot.settlementDue),
+      body: 'Expected on 18 Aug.',
+      to: '/seller/settlements',
+    },
+  ]
+
+  return (
+    <div className="rounded-xl border bg-card p-3.5">
+      <ul className="grid gap-2">
+        {rows.map((row) => (
+          <li key={row.label} className="rounded-lg border px-3 py-2">
+            <div className="flex items-baseline justify-between gap-3">
+              <p className="text-[12px] font-semibold text-ink-900 dark:text-white">{row.label}</p>
+              <p className="text-[14px] font-bold tabular text-ink-950 dark:text-white">{row.value}</p>
+            </div>
+            <p className="mt-0.5 text-[11px] text-ink-500">{row.body}</p>
+            <Button size="sm" variant="ghost" className="mt-1.5 h-7 px-2 text-[11px]" asChild>
+              <AdminLink to={row.to}>Open</AdminLink>
+            </Button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
+function NotSellingCard({ product }: { product: SellerProduct }) {
+  const insight = priceInsightFor(product)
+  const summary = REVIEW_SUMMARIES[product.id]
+  const signals = [
+    {
+      label: 'Price',
+      body: insight
+        ? insight.difference > 2
+          ? `Your price is ${money(insight.difference)} above the marketplace average.`
+          : 'Your price is close to the marketplace average.'
+        : 'No same-product market price is available yet.',
+    },
+    {
+      label: 'Listing',
+      body:
+        product.images < 3
+          ? `Only ${product.images} image${product.images === 1 ? '' : 's'} uploaded. More angles may help.`
+          : `${product.images} images uploaded.`,
+    },
+    {
+      label: 'Reviews',
+      body: summary ? `${summary.rating} rating. Customers mention ${summary.dislikes[0].toLowerCase()}.` : 'No review pattern yet.',
+    },
+    {
+      label: 'Inventory',
+      body: product.available > 0 ? `${product.available} units are available.` : 'Out of stock, so shoppers cannot buy it.',
+    },
+  ]
+
+  return (
+    <div className="rounded-xl border bg-card p-3.5">
+      <ul className="grid gap-2">
+        {signals.map((signal) => (
+          <li key={signal.label} className="rounded-lg border px-3 py-2">
+            <p className="text-[12px] font-semibold text-ink-900 dark:text-white">{signal.label}</p>
+            <p className="mt-0.5 text-[11px] text-ink-500">{signal.body}</p>
+          </li>
+        ))}
+      </ul>
+      <p className="mt-3 text-[11px] text-ink-500">
+        Start with the strongest signal, then review the result before changing price or promotion.
+      </p>
+      <div className="mt-3 flex flex-wrap gap-2">
+        <Button size="sm" variant="outline" className="h-7 px-2.5 text-[11px]" asChild>
+          <AdminLink to={`/seller/products/${product.id}`}>Improve listing</AdminLink>
+        </Button>
+        <Button size="sm" variant="ghost" className="h-7 px-2.5 text-[11px]" asChild>
+          <AdminLink to="/seller/marketing">Create offer</AdminLink>
         </Button>
       </div>
     </div>

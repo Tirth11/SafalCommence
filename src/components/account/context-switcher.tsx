@@ -31,7 +31,7 @@ export function ContextSwitcher({ variant = 'light' }: { variant?: 'light' | 'on
 
   function go(next: Context) {
     switchContext(next)
-    navigate(adminLinkProps({ to: next === 'personal' ? '/shop' : '/seller' }))
+    navigate(adminLinkProps({ to: next === 'personal' ? '/' : '/seller' }))
   }
 
   return (
@@ -59,7 +59,10 @@ export function ContextSwitcher({ variant = 'light' }: { variant?: 'light' | 'on
         <DropdownMenuLabel>Switch context</DropdownMenuLabel>
         <DropdownMenuItem onSelect={() => go('personal')}>
           <ShoppingBag />
-          <span className="flex-1">Personal · Shopping</span>
+          <span className="min-w-0 flex-1">
+            <span className="block truncate">Personal · Shopping</span>
+            <span className="block text-[11px] text-ink-500">Customer home, orders and account</span>
+          </span>
           {context === 'personal' && <Check className="size-4 text-brand-600 dark:text-brand-300" />}
         </DropdownMenuItem>
 
@@ -70,7 +73,7 @@ export function ContextSwitcher({ variant = 'light' }: { variant?: 'light' | 'on
             <span className="min-w-0 flex-1">
               <span className="block truncate">{org.name}</span>
               <span className="block text-[11px] text-ink-500">
-                {org.role} · {org.status}
+                Seller Dashboard · {org.role} · {org.status}
               </span>
             </span>
             {context === org.id && <Check className="size-4 text-brand-600 dark:text-brand-300" />}
