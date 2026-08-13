@@ -88,8 +88,8 @@ const ACCOUNTS: Record<string, SignInAccount> = {
     organizations: [{ id: 'ORG-1', name: 'ABC Electronics', role: 'Owner' }],
   },
   'demo@safalmarkethub.com': {
-    portal: '/shop',
-    portalLabel: 'the marketplace',
+    portal: '/',
+    portalLabel: 'your shopping home',
     user: { id: 'USR-2', firstName: 'Rohit', lastName: 'Sharma', email: 'demo@safalmarkethub.com' },
     organizations: [],
   },

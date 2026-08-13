@@ -5,6 +5,7 @@ import { AdminLink } from '@/components/admin/admin-link'
 import { ProductScene } from '@/components/marketing/scene'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
+import { AssistantChat, PaymentSheet, type CheckoutDraft } from '@/components/shop/assistant-chat'
 import { findMatches, findSimilarToPhoto, GUIDE_STEPS, searchProducts, type Match } from '@/data/discovery'
 import { cn, money } from '@/lib/utils'
 
@@ -19,7 +20,7 @@ import { cn, money } from '@/lib/utils'
    technology behind it.
    ========================================================================== */
 
-type AssistantMode = 'guide' | 'photo' | 'search' | 'voice'
+type AssistantMode = 'guide' | 'photo' | 'search' | 'voice' | 'chat'
 
 type AssistantContext = {
   open: (mode: AssistantMode, query?: string) => void
@@ -75,15 +76,71 @@ function AssistantDialog({
   mode: AssistantMode
   query: string
 }) {
+  // A purchase started in chat pauses the conversation for the payment sheet,
+  // then returns to it. The shopper never feels thrown out mid-sentence.
+  const [paying, setPaying] = useState<CheckoutDraft | null>(null)
+  const [placed, setPlaced] = useState<{ orderId: string; total: number } | null>(null)
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={(next) => {
+        if (!next) {
+          setPaying(null)
+          setPlaced(null)
+        }
+        onOpenChange(next)
+      }}
+    >
       <DialogContent className="max-w-[560px] p-0">
         {mode === 'guide' && <GuideFlow key={String(open)} />}
         {mode === 'photo' && <PhotoFlow key={String(open)} />}
         {mode === 'search' && <SearchResults query={query} />}
         {mode === 'voice' && <VoiceFlow key={String(open)} />}
+        {mode === 'chat' && (
+          <>
+            <DialogTitle className="sr-only">Shopping assistant</DialogTitle>
+            {placed ? (
+              <OrderPlaced order={placed} onClose={() => onOpenChange(false)} />
+            ) : paying ? (
+              <PaymentSheet
+                draft={paying}
+                onCancel={() => setPaying(null)}
+                onDone={(orderId) => {
+                  setPlaced({ orderId, total: paying.total })
+                  setPaying(null)
+                }}
+              />
+            ) : (
+              <AssistantChat key={String(open)} onRequestPayment={setPaying} />
+            )}
+          </>
+        )}
       </DialogContent>
     </Dialog>
+  )
+}
+
+/** Where a conversational purchase lands. */
+function OrderPlaced({ order, onClose }: { order: { orderId: string; total: number }; onClose: () => void }) {
+  return (
+    <div className="p-6 text-center">
+      <span className="mx-auto grid size-12 place-items-center rounded-full bg-teal-50 text-teal-600 dark:bg-teal-600/15 dark:text-teal-100">
+        <Check className="size-6" strokeWidth={2.6} />
+      </span>
+      <DialogTitle className="mt-4 text-[21px]">Order placed</DialogTitle>
+      <DialogDescription className="mt-2 text-[13px]">
+        {order.orderId} · {money(order.total)} paid. We'll email the confirmation.
+      </DialogDescription>
+      <div className="mt-6 flex flex-wrap justify-center gap-2.5">
+        <Button asChild>
+          <AdminLink to="/account/orders">Track order</AdminLink>
+        </Button>
+        <Button variant="outline" onClick={onClose}>
+          Keep shopping
+        </Button>
+      </div>
+    </div>
   )
 }
 

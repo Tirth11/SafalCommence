@@ -11,23 +11,34 @@ import {
   ShopByNeed,
   ShopWithConfidence,
 } from '@/components/marketing/discovery-sections'
-import { PickUpWhereYouLeftOff } from '@/components/marketing/for-you'
 import { ShopHero } from '@/components/marketing/shop-hero'
 import { AssistantProvider } from '@/components/shop/assistant'
+import {
+  ActiveOrderCard,
+  AssistantFab,
+  AssistantWelcome,
+  ComingSoon,
+  ContinueShopping,
+  OffersForYou,
+  ShopperHero,
+  TodaysOffers,
+  YourWishlist,
+} from '@/components/shop/shopping-home'
 import { SHOP_PRODUCTS } from '@/data/shop'
+import { useAccountStore } from '@/store/account-store'
 
 /**
- * A shopper's landing page.
+ * One route, two audiences.
  *
- * The promise is "shopping made simpler", and the page proves it in the first
- * screen: search normally, show a photo, or be asked two questions. Everything
- * after that is browsing — by category, by occasion, by budget — with product
- * rails named the way a person would say them.
+ * Signed out, this is the pitch: shopping made simpler, proved in the first
+ * screen by three ways in — type it, show a photo, or answer two questions.
  *
- * Selling is one quiet line above the footer. This page belongs to customers.
+ * Signed in, it becomes a personal shopping home. Not a dashboard: no counts
+ * of orders and returns, just what to buy, what's on offer, and where the
+ * current parcel is.
  */
 export function LandingPage() {
-  const popular = SHOP_PRODUCTS.slice(0, 4)
+  const user = useAccountStore((s) => s.user)
 
   return (
     <AssistantProvider>
@@ -39,25 +50,57 @@ export function LandingPage() {
       </a>
       <SiteHeader />
 
-      <main id="main">
-        <ShopHero />
-        <PickUpWhereYouLeftOff />
-        <ShopByCategory />
-        <ShopByNeed />
-        <ShopByBudget />
-
-        <ProductRail title="Popular right now" sub="What shoppers are buying this week." products={popular} />
-
-        <CantDecide />
-
-        <PhotoSearchBand />
-
-        <ShopWithConfidence />
-        <ContactBand />
-        <SellerFooterCta />
-      </main>
+      <main id="main">{user ? <ShoppingHome /> : <MarketingHome />}</main>
 
       <SiteFooter />
+      {/* The assistant follows the shopper everywhere on this page. */}
+      <AssistantFab />
     </AssistantProvider>
+  )
+}
+
+/* ------------------------------------------------------------ signed in --- */
+function ShoppingHome() {
+  const popular = SHOP_PRODUCTS.slice(0, 4)
+
+  return (
+    <>
+      <ShopperHero />
+      <ActiveOrderCard />
+      <AssistantWelcome />
+      <TodaysOffers />
+      <ContinueShopping />
+      <YourWishlist />
+      <OffersForYou />
+      <ShopByCategory />
+      <ShopByBudget />
+      <ProductRail title="Popular right now" sub="What shoppers are buying this week." products={popular} />
+      <ComingSoon />
+      <CantDecide />
+      <PhotoSearchBand />
+      <ShopWithConfidence />
+      <ContactBand />
+      <SellerFooterCta />
+    </>
+  )
+}
+
+/* ----------------------------------------------------------- signed out --- */
+function MarketingHome() {
+  const popular = SHOP_PRODUCTS.slice(0, 4)
+
+  return (
+    <>
+      <ShopHero />
+      <ShopByCategory />
+      <ShopByNeed />
+      <ShopByBudget />
+      <ProductRail title="Popular right now" sub="What shoppers are buying this week." products={popular} />
+      <CantDecide />
+      <PhotoSearchBand />
+      <ShopWithConfidence />
+      <ContactBand />
+      <SellerFooterCta />
+    </>
   )
 }
