@@ -271,7 +271,7 @@ export function AssistantChat({ onRequestPayment }: { onRequestPayment: (draft: 
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Ask for anything…"
-            aria-label="Message Safal Assistant"
+            aria-label="Message SafalAssistant"
             className="h-11 min-w-0 flex-1 bg-transparent px-4 text-[14px] outline-none"
           />
           <button
