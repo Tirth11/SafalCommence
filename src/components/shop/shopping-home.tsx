@@ -293,6 +293,51 @@ export function YourWishlist() {
   )
 }
 
+/* ------------------------------------------------------------- buy again -- */
+/** Straight from delivered orders — reordering should take one tap. */
+export function BuyAgain() {
+  const add = useCartStore((s) => s.add)
+
+  const delivered = CUSTOMER_ORDERS.filter((o) => o.status === 'Delivered')
+    .flatMap((order) => order.shipments.flatMap((s) => s.items.map((item) => ({ item, order }))))
+    .slice(0, 4)
+
+  if (!delivered.length) return null
+
+  return (
+    <section className="container-wide py-10">
+      <Heading title="Buy again" sub="Things you've bought before." cta={{ label: 'All orders', to: '/account/orders' }} />
+      <ul className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {delivered.map(({ item, order }) => (
+          <li key={`${order.id}-${item.productId}`}>
+            <div className="flex h-full flex-col rounded-2xl border bg-card p-4 shadow-xs">
+              <div className="flex gap-3">
+                <ProductScene glyph={item.glyph} tone={item.tone} className="size-16 shrink-0 rounded-xl" grain={false} />
+                <div className="min-w-0">
+                  <p className="line-clamp-2 text-[13px] font-semibold text-ink-900 dark:text-white">{item.name}</p>
+                  <p className="mt-1 text-[12px] text-ink-500">{item.variant}</p>
+                  <p className="mt-1 text-[13px] font-bold tabular text-ink-950 dark:text-white">{money(item.price)}</p>
+                </div>
+              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                className="mt-3.5 w-full"
+                onClick={() => {
+                  add(item.productId, item.variant)
+                  toast.success('Added to cart', { description: item.name })
+                }}
+              >
+                Buy again
+              </Button>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
 /* --------------------------------------------------------------- upcoming -- */
 export function ComingSoon() {
   const [reminded, setReminded] = useState<string[]>([])

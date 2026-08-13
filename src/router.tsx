@@ -68,6 +68,8 @@ import { SellerOnlineStorePage } from '@/routes/seller/online-store'
 import { SellerStoreSetupPage } from '@/routes/seller/store-setup'
 import { SellerMarketingPage } from '@/routes/seller/marketing'
 import { AboutPage, ContactPage, HelpPage, LegalPage, PricingPage } from '@/routes/pages'
+import { MyOffersPage } from '@/routes/shop/offers'
+import { ShoppingSettingsPage } from '@/routes/shop/shopping-settings'
 import { SellerNotificationsPage, SellerSettingsPage, SellerSupportPage } from '@/routes/seller/support'
 import { SellerStatePreview } from '@/components/seller/seller-state-preview'
 
@@ -166,6 +168,8 @@ const shopRoutes = [
   createRoute({ getParentRoute: () => shopLayoutRoute, path: '/account/returns', component: ReturnsPage }),
   createRoute({ getParentRoute: () => shopLayoutRoute, path: '/account/addresses', component: AddressesPage }),
   createRoute({ getParentRoute: () => shopLayoutRoute, path: '/account/wishlist', component: WishlistPage }),
+  createRoute({ getParentRoute: () => shopLayoutRoute, path: '/account/offers', component: MyOffersPage }),
+  createRoute({ getParentRoute: () => shopLayoutRoute, path: '/account/shopping', component: ShoppingSettingsPage }),
   createRoute({ getParentRoute: () => shopLayoutRoute, path: '/account/profile', component: ProfilePage }),
   createRoute({ getParentRoute: () => shopLayoutRoute, path: '/account/notifications', component: CustomerNotificationsPage }),
   createRoute({ getParentRoute: () => shopLayoutRoute, path: '/account/support', component: CustomerSupportPage }),

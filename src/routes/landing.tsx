@@ -19,6 +19,7 @@ import {
   AssistantWelcome,
   ComingSoon,
   ContinueShopping,
+  BuyAgain,
   OffersForYou,
   ShopperHero,
   TodaysOffers,
@@ -72,6 +73,7 @@ function ShoppingHome() {
       <ContinueShopping />
       <YourWishlist />
       <OffersForYou />
+      <BuyAgain />
       <ShopByCategory />
       <ShopByBudget />
       <ProductRail title="Popular right now" sub="What shoppers are buying this week." products={popular} />

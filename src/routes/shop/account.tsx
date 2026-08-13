@@ -1,25 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
-import {
-  Bell,
-  Building2,
-  CheckCheck,
-  Heart,
-  House,
-  LifeBuoy,
-  LogOut,
-  MapPin,
-  Package,
-  Paperclip,
-  Plus,
-  ShieldCheck,
-  ShoppingCart,
-  Store,
-  Trash2,
-  Truck,
-  Undo2,
-  User,
-} from 'lucide-react'
+import { Bell, Building2, CheckCheck, CreditCard, Heart, House, LifeBuoy, LogOut, MapPin, Package, Paperclip, Plus, ShieldCheck, ShoppingCart, Store, Tag, Trash2, Truck, Undo2, User } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { ActionDialog, useActionDialog } from '@/components/admin/action-dialog'
@@ -56,6 +37,8 @@ const ACCOUNT_NAV = [
   { label: 'Returns & Refunds', to: '/account/returns', icon: Undo2 },
   { label: 'My Addresses', to: '/account/addresses', icon: MapPin },
   { label: 'Wishlist', to: '/account/wishlist', icon: Heart },
+  { label: 'My Offers', to: '/account/offers', icon: Tag },
+  { label: 'Shopping & Payments', to: '/account/shopping', icon: CreditCard },
   { label: 'Profile & Security', to: '/account/profile', icon: ShieldCheck },
   { label: 'Notifications', to: '/account/notifications', icon: Bell },
   { label: 'Help & Support', to: '/account/support', icon: LifeBuoy },
