@@ -418,10 +418,10 @@ export function AssistantFab() {
     <button
       type="button"
       onClick={() => assistant.open('chat')}
-      className="fixed bottom-24 right-5 z-40 inline-flex items-center gap-2 rounded-full bg-ink-950 py-3 pl-4 pr-5 text-[14px] font-semibold text-white shadow-lg transition-transform hover:-translate-y-0.5 sm:bottom-[76px] sm:right-7 dark:bg-white dark:text-ink-950"
+      className="fixed bottom-20 right-5 z-40 inline-flex items-center gap-2 rounded-full bg-ink-950 py-3 pl-4 pr-5 text-[14px] font-semibold text-white shadow-lg transition-transform hover:-translate-y-0.5 sm:bottom-[76px] sm:right-7 dark:bg-white dark:text-ink-950"
     >
       <Sparkles className="size-4" />
-      Need help?
+      Safal Assistant
     </button>
   )
 }
