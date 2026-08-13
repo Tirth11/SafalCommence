@@ -330,7 +330,7 @@ export function ShopWithConfidence() {
  */
 export function ContactBand() {
   return (
-    <section className="container-wide py-12 sm:py-16">
+    <section id="contact" className="container-wide scroll-mt-24 py-12 sm:py-16">
       <div className="rounded-3xl border bg-card p-6 shadow-xs sm:p-10">
         <div className="grid gap-8 lg:grid-cols-[1fr_1.2fr]">
           <div>

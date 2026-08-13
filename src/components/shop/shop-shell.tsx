@@ -5,7 +5,8 @@ import { toast } from 'sonner'
 
 import { AdminLink, adminLinkProps } from '@/components/admin/admin-link'
 import { Logo } from '@/components/brand/logo'
-import { HEADER_BAR_CLASS, NAV_LINK_CLASS, PRIMARY_NAV } from '@/components/layout/nav-items'
+import { HEADER_BAR_CLASS, PRIMARY_NAV } from '@/components/layout/nav-items'
+import { PrimaryNavLink } from '@/components/layout/nav-link'
 import { AssistantProvider, useOptionalAssistant } from '@/components/shop/assistant'
 import { SiteFooter } from '@/components/layout/site-footer'
 import { Button } from '@/components/ui/button'
@@ -74,14 +75,13 @@ function ShopHeader({ menuOpen, setMenuOpen }: { menuOpen: boolean; setMenuOpen:
             </div>
             <nav className="flex-1 overflow-y-auto p-5">
               {PRIMARY_NAV.map((item) => (
-                <AdminLink
-                  key={item.label}
-                  to={item.to}
-                  className="flex items-center justify-between border-b py-3.5 text-[15px] font-semibold text-ink-900 dark:text-white"
-                >
-                  {item.label}
-                  <ChevronRight className="size-4 text-ink-400" />
-                </AdminLink>
+                <span key={item.label} className="relative flex items-center">
+                  <PrimaryNavLink
+                    item={item}
+                    className="flex-1 border-b py-3.5 text-[15px] font-semibold text-ink-900 dark:text-white"
+                  />
+                  <ChevronRight className="pointer-events-none absolute right-0 size-4 text-ink-400" />
+                </span>
               ))}
               <p className="mb-2 mt-6 text-[11px] font-bold uppercase tracking-[0.1em] text-ink-400">Categories</p>
               {SHOP_CATEGORIES.map((cat) => (
@@ -103,13 +103,7 @@ function ShopHeader({ menuOpen, setMenuOpen }: { menuOpen: boolean; setMenuOpen:
 
         <nav aria-label="Primary" className="hidden items-center gap-0.5 xl:flex">
           {PRIMARY_NAV.map((item) => (
-            <AdminLink
-              key={item.label}
-              to={item.to}
-              className={NAV_LINK_CLASS}
-            >
-              {item.label}
-            </AdminLink>
+            <PrimaryNavLink key={item.label} item={item} />
           ))}
         </nav>
 

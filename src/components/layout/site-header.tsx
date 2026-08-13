@@ -9,7 +9,8 @@ import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
-import { HEADER_BAR_CLASS, NAV_LINK_CLASS, PRIMARY_NAV } from '@/components/layout/nav-items'
+import { HEADER_BAR_CLASS, PRIMARY_NAV } from '@/components/layout/nav-items'
+import { PrimaryNavLink } from '@/components/layout/nav-link'
 import { useOptionalAssistant } from '@/components/shop/assistant'
 import { useAccountStore, useStartSellingTarget } from '@/store/account-store'
 import { useCartStore } from '@/store/cart-store'
@@ -38,9 +39,7 @@ export function SiteHeader() {
 
         <nav aria-label="Primary" className="hidden items-center gap-0.5 xl:flex">
           {PRIMARY_NAV.map((item) => (
-            <AdminLink key={item.label} to={item.to} search={item.search} className={NAV_LINK_CLASS}>
-              {item.label}
-            </AdminLink>
+            <PrimaryNavLink key={item.label} item={item} />
           ))}
         </nav>
 
@@ -141,17 +140,15 @@ export function SiteHeader() {
                 </form>
 
                 <nav aria-label="Mobile" className="mb-7">
-                  {[...PRIMARY_NAV, { label: 'Wishlist', to: '/account/wishlist', search: undefined }].map((item) => (
-                    <AdminLink
-                      key={item.label}
-                      to={item.to}
-                      search={item.search}
-                      onClick={() => setMenuOpen(false)}
-                      className="flex items-center justify-between border-b py-4 text-[17px] font-semibold text-ink-900 dark:text-white"
-                    >
-                      {item.label}
-                      <ChevronRight className="size-4 text-ink-400" />
-                    </AdminLink>
+                  {[...PRIMARY_NAV, { label: 'Wishlist', to: '/account/wishlist' }].map((item) => (
+                    <span key={item.label} className="relative flex items-center">
+                      <PrimaryNavLink
+                        item={item}
+                        onNavigate={() => setMenuOpen(false)}
+                        className="flex-1 border-b py-4 text-[17px] font-semibold text-ink-900 dark:text-white"
+                      />
+                      <ChevronRight className="pointer-events-none absolute right-0 size-4 text-ink-400" />
+                    </span>
                   ))}
                 </nav>
 
