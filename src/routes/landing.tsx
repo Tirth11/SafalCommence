@@ -2,6 +2,7 @@ import { SiteFooter } from '@/components/layout/site-footer'
 import { SiteHeader } from '@/components/layout/site-header'
 import {
   CantDecide,
+  ContactBand,
   PhotoSearchBand,
   ProductRail,
   SellerFooterCta,
@@ -27,8 +28,6 @@ import { SHOP_PRODUCTS } from '@/data/shop'
  */
 export function LandingPage() {
   const popular = SHOP_PRODUCTS.slice(0, 4)
-  const affordable = [...SHOP_PRODUCTS].filter((p) => p.price <= 50).sort((a, b) => a.price - b.price).slice(0, 4)
-  const recent = [...SHOP_PRODUCTS].slice(-4).reverse()
 
   return (
     <AssistantProvider>
@@ -51,18 +50,10 @@ export function LandingPage() {
 
         <CantDecide />
 
-        <ProductRail
-          title="Great finds under $50"
-          sub="Well-rated things that don't cost much."
-          products={affordable}
-          showReason
-        />
-
         <PhotoSearchBand />
 
-        <ProductRail title="Recently added" sub="New from sellers across the marketplace." products={recent} />
-
         <ShopWithConfidence />
+        <ContactBand />
         <SellerFooterCta />
       </main>
 

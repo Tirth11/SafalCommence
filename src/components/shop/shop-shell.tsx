@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useLocation, useNavigate } from '@tanstack/react-router'
-import { Bell, ChevronDown, ChevronRight, Grid2x2, Heart, House, Menu, Search, ShoppingCart, User } from 'lucide-react'
+import { Bell, ChevronDown, ChevronRight, Grid2x2, Heart, House, Menu, Mic, Search, ShoppingCart, User } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { AdminLink, adminLinkProps } from '@/components/admin/admin-link'
 import { Logo } from '@/components/brand/logo'
+import { HEADER_BAR_CLASS, NAV_LINK_CLASS, PRIMARY_NAV } from '@/components/layout/nav-items'
+import { AssistantProvider, useOptionalAssistant } from '@/components/shop/assistant'
 import { SiteFooter } from '@/components/layout/site-footer'
 import { Button } from '@/components/ui/button'
 import {
@@ -18,16 +20,11 @@ import { Input } from '@/components/ui/input'
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { CUSTOMER_NOTIFICATIONS, SHOP_CATEGORIES, SHOP_PRODUCTS } from '@/data/shop'
 import { AccountMenuSections, ContextSwitcher } from '@/components/account/context-switcher'
-import { useAccountStore, useStartSellingTarget } from '@/store/account-store'
+import { useAccountStore } from '@/store/account-store'
 import { useCartCount, useCartStore } from '@/store/cart-store'
 import { cn } from '@/lib/utils'
 
-const NAV = [
-  { label: 'Home', to: '/shop' },
-  { label: 'Shop', to: '/shop/all' },
-  { label: 'Categories', to: '/shop/categories' },
-  { label: 'Help', to: '/account/support' },
-]
+
 
 const MOBILE_NAV = [
   { label: 'Home', to: '/shop', icon: House },
@@ -44,12 +41,14 @@ export function ShopShell({ children, wide = false }: { children: React.ReactNod
   useEffect(() => setMenuOpen(false), [location.pathname])
 
   return (
-    <div className="flex min-h-dvh flex-col bg-background">
+    <AssistantProvider>
+      <div className="flex min-h-dvh flex-col bg-background">
       <ShopHeader menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
       <main className={cn('flex-1 pb-24 pt-6 sm:pb-12', wide ? 'container-wide' : 'container-page')}>{children}</main>
       <SiteFooter />
       <ShopMobileNav />
-    </div>
+      </div>
+    </AssistantProvider>
   )
 }
 
@@ -58,11 +57,10 @@ function ShopHeader({ menuOpen, setMenuOpen }: { menuOpen: boolean; setMenuOpen:
   const count = useCartCount()
   const user = useAccountStore((s) => s.user)
   const wishlist = useCartStore((s) => s.wishlist)
-  const sell = useStartSellingTarget()
 
   return (
     <header className="sticky top-0 z-50 border-b bg-background/90 backdrop-blur-xl">
-      <div className="container-wide flex h-16 items-center gap-3 sm:gap-5">
+      <div className={HEADER_BAR_CLASS}>
         <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
           <SheetTrigger asChild>
             <Button variant="ghost" size="icon" aria-label="Open menu" className="lg:hidden">
@@ -75,7 +73,7 @@ function ShopHeader({ menuOpen, setMenuOpen }: { menuOpen: boolean; setMenuOpen:
               <Logo size="sm" />
             </div>
             <nav className="flex-1 overflow-y-auto p-5">
-              {NAV.map((item) => (
+              {PRIMARY_NAV.map((item) => (
                 <AdminLink
                   key={item.label}
                   to={item.to}
@@ -103,23 +101,16 @@ function ShopHeader({ menuOpen, setMenuOpen }: { menuOpen: boolean; setMenuOpen:
 
         <Logo />
 
-        <nav aria-label="Primary" className="hidden items-center gap-0.5 lg:flex">
-          {NAV.map((item) => (
+        <nav aria-label="Primary" className="hidden items-center gap-0.5 xl:flex">
+          {PRIMARY_NAV.map((item) => (
             <AdminLink
               key={item.label}
               to={item.to}
-              className="rounded-sm px-3 py-2.5 text-sm font-medium text-ink-700 transition-colors hover:bg-ink-100 hover:text-ink-950 dark:text-ink-300 dark:hover:bg-secondary dark:hover:text-white"
+              className={NAV_LINK_CLASS}
             >
               {item.label}
             </AdminLink>
           ))}
-          {/* Existing accounts go straight to business setup — never re-register */}
-          <AdminLink
-            to={sell.to}
-            className="rounded-sm px-3 py-2.5 text-sm font-medium text-ink-700 transition-colors hover:bg-ink-100 hover:text-ink-950 dark:text-ink-300 dark:hover:bg-secondary dark:hover:text-white"
-          >
-            {sell.label === 'Seller Dashboard' ? 'Seller Dashboard' : 'Sell on SafalMarketHub'}
-          </AdminLink>
         </nav>
 
         <SearchBox className="hidden flex-1 md:block" />
@@ -177,6 +168,7 @@ function SearchBox({ className }: { className?: string }) {
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState(false)
   const navigate = useNavigate()
+  const assistant = useOptionalAssistant()
 
   const suggestions = useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -216,8 +208,19 @@ function SearchBox({ className }: { className?: string }) {
           onBlur={() => setTimeout(() => setOpen(false), 150)}
           placeholder="Search for products, brands or categories"
           aria-label="Search for products, brands or categories"
-          className="h-10 w-full pl-11 text-sm md:max-w-[440px]"
+          className="h-11 w-full rounded-full pl-11 pr-11 text-sm md:max-w-[440px]"
         />
+        {/* Same voice entry point as the landing header, same position. */}
+        {assistant && (
+          <button
+            type="button"
+            onClick={() => assistant.open('voice')}
+            aria-label="Search by voice"
+            className="absolute right-1.5 top-1/2 grid size-8 -translate-y-1/2 place-items-center rounded-full text-ink-500 transition-colors hover:bg-muted hover:text-ink-900 md:right-[calc(100%-432px)] dark:hover:text-white"
+          >
+            <Mic className="size-[18px]" />
+          </button>
+        )}
       </form>
 
       {open && query && (

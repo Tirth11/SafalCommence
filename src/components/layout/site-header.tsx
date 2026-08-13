@@ -9,22 +9,12 @@ import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import { HEADER_BAR_CLASS, NAV_LINK_CLASS, PRIMARY_NAV } from '@/components/layout/nav-items'
 import { useOptionalAssistant } from '@/components/shop/assistant'
 import { useAccountStore, useStartSellingTarget } from '@/store/account-store'
 import { useCartStore } from '@/store/cart-store'
 
-/**
- * Every entry resolves to a real route and navigates client-side. Raw <a>
- * hrefs were doing full page reloads and dropping router state, which is what
- * made the nav feel unresponsive.
- */
-const NAV: { label: string; to: string; search?: Record<string, string> }[] = [
-  { label: 'Categories', to: '/shop/categories' },
-  { label: 'Offers', to: '/shop/all', search: { sort: 'price-asc' } },
-  { label: 'Pricing', to: '/pricing' },
-  { label: 'Help', to: '/help' },
-  { label: 'Contact', to: '/contact' },
-]
+
 
 export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -43,17 +33,12 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-50 border-b bg-background/85 backdrop-blur-xl backdrop-saturate-150">
-      <div className="container-wide flex h-18 items-center gap-4">
+      <div className={HEADER_BAR_CLASS}>
         <Logo />
 
         <nav aria-label="Primary" className="hidden items-center gap-0.5 xl:flex">
-          {NAV.map((item) => (
-            <AdminLink
-              key={item.label}
-              to={item.to}
-              search={item.search}
-              className="flex h-10 items-center rounded-md px-3 text-sm font-medium text-ink-700 transition-colors hover:bg-ink-100 hover:text-ink-950 dark:text-ink-300 dark:hover:bg-secondary dark:hover:text-white"
-            >
+          {PRIMARY_NAV.map((item) => (
+            <AdminLink key={item.label} to={item.to} search={item.search} className={NAV_LINK_CLASS}>
               {item.label}
             </AdminLink>
           ))}
@@ -156,7 +141,7 @@ export function SiteHeader() {
                 </form>
 
                 <nav aria-label="Mobile" className="mb-7">
-                  {[...NAV, { label: 'Wishlist', to: '/account/wishlist', search: undefined }].map((item) => (
+                  {[...PRIMARY_NAV, { label: 'Wishlist', to: '/account/wishlist', search: undefined }].map((item) => (
                     <AdminLink
                       key={item.label}
                       to={item.to}

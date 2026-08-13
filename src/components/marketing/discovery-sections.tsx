@@ -1,4 +1,4 @@
-import { ArrowRight, Camera, Heart, Package, RotateCcw, ShieldCheck, Sparkles, Star, Store } from 'lucide-react'
+import { ArrowRight, Camera, Heart, Mail, MessageCircle, Package, Phone, RotateCcw, ShieldCheck, Sparkles, Star, Store } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { AdminLink } from '@/components/admin/admin-link'
@@ -15,7 +15,7 @@ import { cn, discountPercent, money } from '@/lib/utils'
    The browsing half of the landing page.
 
    Every heading is something a shopper would actually say out loud — "shop by
-   category", "what are you shopping for", "great finds under $50" — and every
+   category", "what are you shopping for", "popular right now" — and every
    section ends in products rather than explanation.
    ========================================================================== */
 
@@ -318,6 +318,60 @@ export function ShopWithConfidence() {
             </li>
           ))}
         </ul>
+      </div>
+    </section>
+  )
+}
+
+/* ---------------------------------------------------------------- contact -- */
+/**
+ * Contact lives at the bottom of the page rather than in the header — a
+ * shopper reaches for it after something goes wrong, not before they browse.
+ */
+export function ContactBand() {
+  return (
+    <section className="container-wide py-12 sm:py-16">
+      <div className="rounded-3xl border bg-card p-6 shadow-xs sm:p-10">
+        <div className="grid gap-8 lg:grid-cols-[1fr_1.2fr]">
+          <div>
+            <h2 className="text-[26px] leading-tight tracking-[-0.03em] sm:text-[32px]">Need a hand?</h2>
+            <p className="mt-3 max-w-[380px] text-[15px] leading-relaxed text-ink-600 dark:text-ink-300">
+              Questions about an order, a return, or selling here — a person reads every message.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Button asChild>
+                <AdminLink to="/contact">Contact us</AdminLink>
+              </Button>
+              <Button variant="outline" asChild>
+                <AdminLink to="/help">Help centre</AdminLink>
+              </Button>
+            </div>
+          </div>
+
+          <ul className="grid gap-3 sm:grid-cols-3">
+            {[
+              { icon: MessageCircle, label: 'Chat', value: 'Replies in minutes', to: '/account/support' },
+              { icon: Mail, label: 'Email', value: 'help@safalmarkethub.com', to: '/contact' },
+              { icon: Phone, label: 'Phone', value: '+1 (415) 555-0142', to: '/contact' },
+            ].map((item) => (
+              <li key={item.label}>
+                <AdminLink
+                  to={item.to}
+                  className="flex h-full flex-col rounded-2xl border p-4 transition-[transform,border-color] hover:-translate-y-0.5 hover:border-brand-200"
+                >
+                  <item.icon className="size-5 text-brand-600 dark:text-brand-300" />
+                  <span className="mt-3 text-[14px] font-semibold text-ink-900 dark:text-white">{item.label}</span>
+                  <span className="mt-0.5 break-words text-[12px] leading-relaxed text-ink-500">{item.value}</span>
+                </AdminLink>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <p className="mt-8 border-t pt-6 text-[12px] leading-relaxed text-ink-500">
+          SafalVir, Inc. · 2261 Market Street, Suite 5320, San Francisco, CA 94114 · Monday–Friday 9:00–20:00,
+          Saturday 10:00–18:00
+        </p>
       </div>
     </section>
   )
