@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { ArrowUp, Camera, Check, CreditCard, Lock, MapPin, Mic, ShieldCheck, Sparkles, Star, ThumbsDown, ThumbsUp } from 'lucide-react'
+import { ArrowUp, Camera, Check, CreditCard, Lock, MapPin, ShieldCheck, Sparkles, Star, ThumbsDown, ThumbsUp } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { AdminLink } from '@/components/admin/admin-link'
@@ -68,7 +68,6 @@ export function AssistantChat({ onRequestPayment }: { onRequestPayment: (draft: 
   const [input, setInput] = useState('')
   const [thinking, setThinking] = useState(false)
   const [results, setResults] = useState<ShopProduct[]>([])
-  const [listening, setListening] = useState(false)
   const scroller = useRef<HTMLDivElement>(null)
 
   const [bubbles, setBubbles] = useState<Bubble[]>(() => [
@@ -193,7 +192,7 @@ export function AssistantChat({ onRequestPayment }: { onRequestPayment: (draft: 
     })
   }
 
-  /* ------------------------------------------------ photo and voice input -- */
+  /* ------------------------------------------------------- photo input -- */
   const attachPhoto = () => {
     say({ from: 'user', text: '📷 Photo uploaded' })
     setThinking(true)
@@ -203,39 +202,6 @@ export function AssistantChat({ onRequestPayment }: { onRequestPayment: (draft: 
       setResults(matches.map((m) => m.product))
       say({ from: 'bot', text: 'Here is what looks closest to your photo:', matches, rateable: true })
     }, 1100)
-  }
-
-  const startVoice = () => {
-    type SpeechWindow = Window & {
-      SpeechRecognition?: new () => SpeechRecognitionLike
-      webkitSpeechRecognition?: new () => SpeechRecognitionLike
-    }
-    const w = window as SpeechWindow
-    const Recognition = w.SpeechRecognition ?? w.webkitSpeechRecognition
-    setListening(true)
-
-    // No speech API, or no microphone permission: fall back to a worked
-    // example rather than leaving the button spinning.
-    if (!Recognition) {
-      window.setTimeout(() => {
-        setListening(false)
-        send('headphones under $80')
-      }, 1200)
-      return
-    }
-
-    const recognition = new Recognition()
-    recognition.lang = 'en-US'
-    recognition.interimResults = false
-    recognition.onresult = (event) => {
-      setListening(false)
-      send(event.results[0][0].transcript)
-    }
-    recognition.onerror = () => {
-      setListening(false)
-      send('headphones under $80')
-    }
-    recognition.start()
   }
 
   const draftFor = (product: ShopProduct): CheckoutDraft => {
@@ -304,7 +270,7 @@ export function AssistantChat({ onRequestPayment }: { onRequestPayment: (draft: 
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder={listening ? 'Listening…' : 'Ask for anything…'}
+            placeholder="Ask for anything…"
             aria-label="Message the shopping assistant"
             className="h-11 min-w-0 flex-1 bg-transparent px-4 text-[14px] outline-none"
           />
@@ -315,18 +281,6 @@ export function AssistantChat({ onRequestPayment }: { onRequestPayment: (draft: 
             className="grid size-9 shrink-0 place-items-center rounded-full text-ink-500 transition-colors hover:bg-muted hover:text-ink-900 dark:hover:text-white"
           >
             <Camera className="size-[18px]" />
-          </button>
-          <button
-            type="button"
-            onClick={startVoice}
-            aria-label="Speak your request"
-            aria-pressed={listening}
-            className={cn(
-              'grid size-9 shrink-0 place-items-center rounded-full transition-colors',
-              listening ? 'bg-red-500 text-white' : 'text-ink-500 hover:bg-muted hover:text-ink-900 dark:hover:text-white'
-            )}
-          >
-            <Mic className="size-[18px]" />
           </button>
         </div>
         <Button type="submit" size="icon" className="size-11 shrink-0 rounded-full" disabled={!input.trim()} aria-label="Send">
@@ -673,12 +627,3 @@ export function useAssistantSuggestions() {
 }
 
 export { factsFor }
-
-/** Minimal shape of the Web Speech API used by the composer's mic button. */
-type SpeechRecognitionLike = {
-  lang: string
-  interimResults: boolean
-  onresult: (event: { results: { 0: { 0: { transcript: string } } } }) => void
-  onerror: () => void
-  start: () => void
-}

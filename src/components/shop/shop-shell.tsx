@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useLocation, useNavigate } from '@tanstack/react-router'
-import { Bell, ChevronDown, ChevronRight, Grid2x2, Heart, House, Menu, Mic, Search, ShoppingCart, User } from 'lucide-react'
+import { Bell, ChevronDown, ChevronRight, Grid2x2, Heart, House, Menu, Search, ShoppingCart, User } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { AdminLink, adminLinkProps } from '@/components/admin/admin-link'
 import { Logo } from '@/components/brand/logo'
 import { HEADER_BAR_CLASS, PRIMARY_NAV } from '@/components/layout/nav-items'
 import { PrimaryNavLink } from '@/components/layout/nav-link'
-import { AssistantProvider, useOptionalAssistant } from '@/components/shop/assistant'
+import { AssistantProvider } from '@/components/shop/assistant'
 import { SiteFooter } from '@/components/layout/site-footer'
 import { Button } from '@/components/ui/button'
 import {
@@ -162,7 +162,6 @@ function SearchBox({ className }: { className?: string }) {
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState(false)
   const navigate = useNavigate()
-  const assistant = useOptionalAssistant()
 
   const suggestions = useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -202,19 +201,8 @@ function SearchBox({ className }: { className?: string }) {
           onBlur={() => setTimeout(() => setOpen(false), 150)}
           placeholder="Search for products, brands or categories"
           aria-label="Search for products, brands or categories"
-          className="h-11 w-full rounded-full pl-11 pr-11 text-sm md:max-w-[440px]"
+          className="h-11 w-full rounded-full pl-11 text-sm md:max-w-[440px]"
         />
-        {/* Same voice entry point as the landing header, same position. */}
-        {assistant && (
-          <button
-            type="button"
-            onClick={() => assistant.open('voice')}
-            aria-label="Search by voice"
-            className="absolute right-1.5 top-1/2 grid size-8 -translate-y-1/2 place-items-center rounded-full text-ink-500 transition-colors hover:bg-muted hover:text-ink-900 md:right-[calc(100%-432px)] dark:hover:text-white"
-          >
-            <Mic className="size-[18px]" />
-          </button>
-        )}
       </form>
 
       {open && query && (

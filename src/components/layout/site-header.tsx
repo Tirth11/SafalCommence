@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from '@tanstack/react-router'
-import { ChevronRight, Heart, Menu, Mic, Search, ShoppingCart, Store, User } from 'lucide-react'
+import { ChevronRight, Heart, Menu, Search, ShoppingCart, Store, User } from 'lucide-react'
 
 import { AdminLink, adminLinkProps } from '@/components/admin/admin-link'
 import { AccountMenuSections } from '@/components/account/context-switcher'
@@ -11,7 +11,6 @@ import { Input } from '@/components/ui/input'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { HEADER_BAR_CLASS, PRIMARY_NAV } from '@/components/layout/nav-items'
 import { PrimaryNavLink } from '@/components/layout/nav-link'
-import { useOptionalAssistant } from '@/components/shop/assistant'
 import { useAccountStore, useStartSellingTarget } from '@/store/account-store'
 import { useCartStore } from '@/store/cart-store'
 
@@ -25,7 +24,6 @@ export function SiteHeader() {
   const signOut = useAccountStore((s) => s.signOut)
   const sell = useStartSellingTarget()
   const { items, wishlist } = useCartStore()
-  const assistant = useOptionalAssistant()
 
   const search = (e: React.FormEvent) => {
     e.preventDefault()
@@ -45,24 +43,16 @@ export function SiteHeader() {
 
         {/* Search is the main event, so it stays open and centred. */}
         <form onSubmit={search} className="mx-auto hidden w-full max-w-[420px] md:block">
-          <div className="relative flex items-center">
-            <Search className="pointer-events-none absolute left-3.5 size-[18px] text-ink-400" />
+          <div className="relative">
+            <Search className="pointer-events-none absolute left-3.5 top-1/2 size-[18px] -translate-y-1/2 text-ink-400" />
             <Input
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search for anything..."
               aria-label="Search for anything"
-              className="h-11 rounded-full pl-11 pr-11 text-sm"
+              className="h-11 rounded-full pl-11 text-sm"
             />
-            <button
-              type="button"
-              onClick={() => assistant?.open('voice')}
-              aria-label="Search by voice"
-              className="absolute right-1.5 grid size-8 place-items-center rounded-full text-ink-500 transition-colors hover:bg-muted hover:text-ink-900 dark:hover:text-white"
-            >
-              <Mic className="size-[18px]" />
-            </button>
           </div>
         </form>
 
@@ -122,21 +112,8 @@ export function SiteHeader() {
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="Search for anything..."
                     aria-label="Search for anything"
-                    className="pl-11 pr-11"
+                    className="pl-11"
                   />
-                  {assistant && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setMenuOpen(false)
-                        assistant.open('voice')
-                      }}
-                      aria-label="Search by voice"
-                      className="absolute right-1.5 top-1/2 grid size-8 -translate-y-1/2 place-items-center rounded-full text-ink-500"
-                    >
-                      <Mic className="size-[18px]" />
-                    </button>
-                  )}
                 </form>
 
                 <nav aria-label="Mobile" className="mb-7">
