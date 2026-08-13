@@ -83,7 +83,7 @@ function AssistantFab() {
     <button
       type="button"
       onClick={() => open()}
-      className="fixed bottom-20 right-5 z-40 inline-flex items-center gap-2 rounded-full bg-ink-950 py-3 pl-4 pr-5 text-[14px] font-semibold text-white shadow-lg transition-transform hover:-translate-y-0.5 sm:bottom-7 sm:right-7 dark:bg-white dark:text-ink-950"
+      className="fixed bottom-20 right-5 z-40 inline-flex items-center gap-2 rounded-full bg-ink-950 py-3 pl-4 pr-5 text-[14px] font-semibold text-white shadow-lg transition-transform hover:-translate-y-0.5 sm:bottom-[76px] sm:right-7 dark:bg-white dark:text-ink-950"
     >
       <Sparkles className="size-4" />
       Safal Assistant
@@ -156,6 +156,14 @@ function AssistantPanel({ seed, onClose }: { seed?: string; onClose: () => void 
   useEffect(() => {
     scroller.current?.scrollTo({ top: scroller.current.scrollHeight })
   }, [messages, thinking])
+
+  // Lets the dev state-preview pill move out from under the panel.
+  useEffect(() => {
+    document.body.dataset.assistantOpen = 'true'
+    return () => {
+      delete document.body.dataset.assistantOpen
+    }
+  }, [])
 
   const say = (msg: DistributiveOmit<Msg, 'id'>) => setMessages((m) => [...m, { ...msg, id: nextId() } as Msg])
 

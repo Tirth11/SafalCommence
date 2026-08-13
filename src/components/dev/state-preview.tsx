@@ -16,7 +16,15 @@ export function StatePreview({ label, items, note }: { label: string; items: Ite
   if (!import.meta.env.DEV) return null
 
   return (
-    <div className="fixed bottom-4 right-4 z-[120] print:hidden">
+    <div
+      className={cn(
+        'state-preview fixed bottom-4 right-4 z-[120] transition-[right,opacity] print:hidden',
+        // Steps clear of the seller assistant panel rather than being buried
+        // under it; the panel is full width on small screens, so hide there.
+        "[body[data-assistant-open='true']_&]:right-[444px]",
+        "max-lg:[body[data-assistant-open='true']_&]:pointer-events-none max-lg:[body[data-assistant-open='true']_&]:opacity-0"
+      )}
+    >
       {open ? (
         <div className="w-[290px] rounded-md border bg-popover p-3.5 shadow-xl">
           <div className="flex items-center justify-between gap-2">
