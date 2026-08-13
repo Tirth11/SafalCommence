@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from '@tanstack/react-router'
-import { ChevronRight, Heart, Menu, Search, ShoppingCart, Store, User } from 'lucide-react'
+import { ChevronRight, Heart, Menu, Mic, Search, ShoppingCart, Store, User } from 'lucide-react'
 
 import { AdminLink, adminLinkProps } from '@/components/admin/admin-link'
 import { AccountMenuSections } from '@/components/account/context-switcher'
@@ -9,14 +9,21 @@ import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import { useOptionalAssistant } from '@/components/shop/assistant'
 import { useAccountStore, useStartSellingTarget } from '@/store/account-store'
 import { useCartStore } from '@/store/cart-store'
 
-/** Three links, a search box, and the three icons every shopper looks for. */
-const NAV = [
-  { label: 'Categories', href: '/shop/categories' },
-  { label: 'Offers', href: '/shop/all?sort=price-asc' },
-  { label: 'Help', href: '/account/support' },
+/**
+ * Every entry resolves to a real route and navigates client-side. Raw <a>
+ * hrefs were doing full page reloads and dropping router state, which is what
+ * made the nav feel unresponsive.
+ */
+const NAV: { label: string; to: string; search?: Record<string, string> }[] = [
+  { label: 'Categories', to: '/shop/categories' },
+  { label: 'Offers', to: '/shop/all', search: { sort: 'price-asc' } },
+  { label: 'Pricing', to: '/pricing' },
+  { label: 'Help', to: '/help' },
+  { label: 'Contact', to: '/contact' },
 ]
 
 export function SiteHeader() {
@@ -27,6 +34,7 @@ export function SiteHeader() {
   const signOut = useAccountStore((s) => s.signOut)
   const sell = useStartSellingTarget()
   const { items, wishlist } = useCartStore()
+  const assistant = useOptionalAssistant()
 
   const search = (e: React.FormEvent) => {
     e.preventDefault()
@@ -38,34 +46,43 @@ export function SiteHeader() {
       <div className="container-wide flex h-18 items-center gap-4">
         <Logo />
 
-        <nav aria-label="Primary" className="hidden items-center gap-0.5 lg:flex">
+        <nav aria-label="Primary" className="hidden items-center gap-0.5 xl:flex">
           {NAV.map((item) => (
-            <a
+            <AdminLink
               key={item.label}
-              href={item.href}
-              className="rounded-sm px-3 py-2.5 text-sm font-medium text-ink-700 transition-colors hover:bg-ink-100 hover:text-ink-950 dark:text-ink-300 dark:hover:bg-secondary dark:hover:text-white"
+              to={item.to}
+              search={item.search}
+              className="flex h-10 items-center rounded-md px-3 text-sm font-medium text-ink-700 transition-colors hover:bg-ink-100 hover:text-ink-950 dark:text-ink-300 dark:hover:bg-secondary dark:hover:text-white"
             >
               {item.label}
-            </a>
+            </AdminLink>
           ))}
         </nav>
 
         {/* Search is the main event, so it stays open and centred. */}
         <form onSubmit={search} className="mx-auto hidden w-full max-w-[420px] md:block">
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-3.5 top-1/2 size-[18px] -translate-y-1/2 text-ink-400" />
+          <div className="relative flex items-center">
+            <Search className="pointer-events-none absolute left-3.5 size-[18px] text-ink-400" />
             <Input
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search for anything..."
               aria-label="Search for anything"
-              className="h-11 rounded-full pl-11 text-sm"
+              className="h-11 rounded-full pl-11 pr-11 text-sm"
             />
+            <button
+              type="button"
+              onClick={() => assistant?.open('voice')}
+              aria-label="Search by voice"
+              className="absolute right-1.5 grid size-8 place-items-center rounded-full text-ink-500 transition-colors hover:bg-muted hover:text-ink-900 dark:hover:text-white"
+            >
+              <Mic className="size-[18px]" />
+            </button>
           </div>
         </form>
 
-        <div className="ml-auto flex items-center gap-1 md:ml-0">
+        <div className="ml-auto flex items-center gap-0.5 md:ml-0">
           <Button variant="ghost" size="icon" aria-label={`Wishlist, ${wishlist.length} saved`} className="relative hidden sm:inline-flex" asChild>
             <AdminLink to="/account/wishlist">
               <Heart className="size-5" />
@@ -104,7 +121,7 @@ export function SiteHeader() {
 
           <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" aria-label="Open menu" className="lg:hidden">
+              <Button variant="ghost" size="icon" aria-label="Open menu" className="xl:hidden">
                 <Menu className="size-5" />
               </Button>
             </SheetTrigger>
@@ -121,21 +138,35 @@ export function SiteHeader() {
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="Search for anything..."
                     aria-label="Search for anything"
-                    className="pl-11"
+                    className="pl-11 pr-11"
                   />
+                  {assistant && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMenuOpen(false)
+                        assistant.open('voice')
+                      }}
+                      aria-label="Search by voice"
+                      className="absolute right-1.5 top-1/2 grid size-8 -translate-y-1/2 place-items-center rounded-full text-ink-500"
+                    >
+                      <Mic className="size-[18px]" />
+                    </button>
+                  )}
                 </form>
 
                 <nav aria-label="Mobile" className="mb-7">
-                  {[...NAV, { label: 'Wishlist', href: '/account/wishlist' }].map((item) => (
-                    <a
+                  {[...NAV, { label: 'Wishlist', to: '/account/wishlist', search: undefined }].map((item) => (
+                    <AdminLink
                       key={item.label}
-                      href={item.href}
+                      to={item.to}
+                      search={item.search}
                       onClick={() => setMenuOpen(false)}
                       className="flex items-center justify-between border-b py-4 text-[17px] font-semibold text-ink-900 dark:text-white"
                     >
                       {item.label}
                       <ChevronRight className="size-4 text-ink-400" />
-                    </a>
+                    </AdminLink>
                   ))}
                 </nav>
 

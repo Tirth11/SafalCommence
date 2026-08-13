@@ -191,11 +191,13 @@ export function searchProducts(query: string, limit = 4): Match[] {
       product.shortDescription
     } ${facts.needs.join(' ')} ${facts.qualities.join(' ')}`.toLowerCase()
 
-    let score = words.reduce((sum, word) => sum + (haystack.includes(word) ? 3 : 0), 0)
-    if (product.price <= cap) score += 2
-    else if (cap !== Infinity) score -= 4
+    const hits = words.filter((word) => haystack.includes(word)).length
+    // Being cheap enough is not a reason to appear in someone's search for
+    // something else — a word has to match before price is even considered.
+    if (words.length > 0 && hits === 0) return { product, score: 0, facts }
+    if (product.price > cap) return { product, score: 0, facts }
 
-    return { product, score, facts }
+    return { product, score: hits * 3 + (product.price <= cap * 0.75 ? 1 : 0) + product.rating - 4, facts }
   })
     .filter((entry) => entry.score > 0)
     .sort((a, b) => b.score - a.score)

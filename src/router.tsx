@@ -67,6 +67,7 @@ import { SellerPlanPage } from '@/routes/seller/plan'
 import { SellerOnlineStorePage } from '@/routes/seller/online-store'
 import { SellerStoreSetupPage } from '@/routes/seller/store-setup'
 import { SellerMarketingPage } from '@/routes/seller/marketing'
+import { AboutPage, ContactPage, HelpPage, LegalPage, PricingPage } from '@/routes/pages'
 import { SellerNotificationsPage, SellerSettingsPage, SellerSupportPage } from '@/routes/seller/support'
 import { SellerStatePreview } from '@/components/seller/seller-state-preview'
 
@@ -83,6 +84,17 @@ const rootRoute = createRootRoute({
 const indexRoute = createRoute({ getParentRoute: () => rootRoute, path: '/', component: LandingPage })
 const loginRoute = createRoute({ getParentRoute: () => rootRoute, path: '/login', component: LoginPage })
 const registerRoute = createRoute({ getParentRoute: () => rootRoute, path: '/register', component: RegisterPage })
+
+/* Everything the header and footer link to — no dead ends in the chrome. */
+const infoRoutes = [
+  createRoute({ getParentRoute: () => rootRoute, path: '/pricing', component: PricingPage }),
+  createRoute({ getParentRoute: () => rootRoute, path: '/contact', component: ContactPage }),
+  createRoute({ getParentRoute: () => rootRoute, path: '/help', component: HelpPage }),
+  createRoute({ getParentRoute: () => rootRoute, path: '/about', component: AboutPage }),
+  createRoute({ getParentRoute: () => rootRoute, path: '/privacy', component: () => <LegalPage kind="privacy" /> }),
+  createRoute({ getParentRoute: () => rootRoute, path: '/terms', component: () => <LegalPage kind="terms" /> }),
+  createRoute({ getParentRoute: () => rootRoute, path: '/returns', component: () => <LegalPage kind="returns" /> }),
+]
 
 /* ---------------------------------------------------------- admin portal --- */
 const adminLoginRoute = createRoute({
@@ -202,6 +214,7 @@ const routeTree = rootRoute.addChildren([
   indexRoute,
   loginRoute,
   registerRoute,
+  ...infoRoutes,
   adminLoginRoute,
   adminLayoutRoute.addChildren(adminRoutes),
   sellerLayoutRoute.addChildren(sellerRoutes),

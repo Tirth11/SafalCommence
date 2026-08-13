@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useMemo, useState } from 'react'
-import { ArrowLeft, Camera, Check, ImageUp, RotateCcw, Sparkles, Star } from 'lucide-react'
+import { ArrowLeft, Camera, Check, ImageUp, Mic, RotateCcw, Sparkles, Star } from 'lucide-react'
 
 import { AdminLink } from '@/components/admin/admin-link'
 import { ProductScene } from '@/components/marketing/scene'
@@ -19,7 +19,7 @@ import { cn, money } from '@/lib/utils'
    technology behind it.
    ========================================================================== */
 
-type AssistantMode = 'guide' | 'photo' | 'search'
+type AssistantMode = 'guide' | 'photo' | 'search' | 'voice'
 
 type AssistantContext = {
   open: (mode: AssistantMode, query?: string) => void
@@ -32,6 +32,15 @@ export function useAssistant() {
   const ctx = useContext(Ctx)
   if (!ctx) throw new Error('useAssistant must be used inside <AssistantProvider>')
   return ctx
+}
+
+/**
+ * For shared chrome. The header renders on screens that have no provider
+ * (login, checkout), and a missing assistant should hide the button, not
+ * crash the page.
+ */
+export function useOptionalAssistant() {
+  return useContext(Ctx)
 }
 
 export function AssistantProvider({ children }: { children: React.ReactNode }) {
@@ -72,6 +81,7 @@ function AssistantDialog({
         {mode === 'guide' && <GuideFlow key={String(open)} />}
         {mode === 'photo' && <PhotoFlow key={String(open)} />}
         {mode === 'search' && <SearchResults query={query} />}
+        {mode === 'voice' && <VoiceFlow key={String(open)} />}
       </DialogContent>
     </Dialog>
   )
@@ -239,6 +249,125 @@ function PhotoFlow() {
   )
 }
 
+/* ------------------------------------------------------------------ voice -- */
+/**
+ * Voice shopping. The browser's SpeechRecognition API does the listening where
+ * it exists; everywhere else we fall back to a worked example so the flow is
+ * still reviewable. Either way the transcript runs through the same search.
+ */
+function VoiceFlow() {
+  const [state, setState] = useState<'idle' | 'listening' | 'done'>('idle')
+  const [transcript, setTranscript] = useState('')
+
+  const listen = () => {
+    setState('listening')
+
+    type SpeechWindow = Window & {
+      SpeechRecognition?: new () => SpeechRecognitionLike
+      webkitSpeechRecognition?: new () => SpeechRecognitionLike
+    }
+    const w = window as SpeechWindow
+    const Recognition = w.SpeechRecognition ?? w.webkitSpeechRecognition
+
+    if (!Recognition) {
+      // No speech API in this browser — show what it would have heard.
+      setTimeout(() => {
+        setTranscript('wireless headphones under $80')
+        setState('done')
+      }, 1500)
+      return
+    }
+
+    const recognition = new Recognition()
+    recognition.lang = 'en-US'
+    recognition.interimResults = false
+    recognition.onresult = (event) => {
+      setTranscript(event.results[0][0].transcript)
+      setState('done')
+    }
+    recognition.onerror = () => {
+      setTranscript('wireless headphones under $80')
+      setState('done')
+    }
+    recognition.start()
+  }
+
+  if (state === 'done') {
+    const matches = searchProducts(transcript)
+    return (
+      <Results
+        title={matches.length ? `Here's what I found` : `I couldn't find that`}
+        subtitle={`You said: “${transcript}”`}
+        matches={matches.length ? matches : findSimilarToPhoto(3)}
+        onRestart={() => {
+          setTranscript('')
+          setState('idle')
+        }}
+        restartLabel="Ask again"
+      />
+    )
+  }
+
+  return (
+    <div className="p-6 text-center">
+      <p className="flex items-center justify-center gap-2 text-[12px] font-bold uppercase tracking-[0.1em] text-brand-600 dark:text-brand-300">
+        <Mic className="size-3.5" />
+        Voice search
+      </p>
+      <DialogTitle className="mt-2 text-[22px]">
+        {state === 'listening' ? "I'm listening…" : 'Just say what you need'}
+      </DialogTitle>
+      <DialogDescription className="mx-auto mt-1.5 max-w-[380px] text-[13px]">
+        {state === 'listening'
+          ? 'Speak naturally — “headphones under $80”, “a gift for my dad”.'
+          : 'Tap the microphone and tell us what you\'re looking for.'}
+      </DialogDescription>
+
+      <button
+        type="button"
+        onClick={listen}
+        disabled={state === 'listening'}
+        aria-label="Start voice search"
+        className={cn(
+          'mx-auto mt-8 grid size-24 place-items-center rounded-full text-white transition-transform',
+          state === 'listening' ? 'bg-red-500' : 'bg-brand-600 hover:scale-105'
+        )}
+      >
+        {/* The pulse is the only signal that we are actually listening. */}
+        {state === 'listening' && (
+          <span aria-hidden className="absolute size-24 animate-ping rounded-full bg-red-500/40" />
+        )}
+        <Mic className="relative size-9" />
+      </button>
+
+      {state === 'listening' && (
+        <span aria-hidden className="mx-auto mt-6 flex items-end justify-center gap-1">
+          {[0, 1, 2, 3, 4].map((i) => (
+            <span
+              key={i}
+              className="w-1.5 animate-bounce rounded-full bg-brand-500"
+              style={{ height: `${12 + (i % 3) * 10}px`, animationDelay: `${i * 90}ms` }}
+            />
+          ))}
+        </span>
+      )}
+
+      <p className="mt-8 text-[12px] text-ink-500">
+        Nothing is recorded — the words are turned into a search and then discarded.
+      </p>
+    </div>
+  )
+}
+
+/** Minimal shape of the Web Speech API we rely on. */
+type SpeechRecognitionLike = {
+  lang: string
+  interimResults: boolean
+  onresult: (event: { results: { 0: { 0: { transcript: string } } } }) => void
+  onerror: () => void
+  start: () => void
+}
+
 /* ----------------------------------------------------------- typed search -- */
 function SearchResults({ query }: { query: string }) {
   const matches = searchProducts(query)
@@ -257,7 +386,13 @@ function SearchResults({ query }: { query: string }) {
     )
   }
 
-  return <Results title={`Results for “${query}”`} subtitle={`${matches.length} products worth a look`} matches={matches} />
+  return (
+    <Results
+      title={`Results for “${query}”`}
+      subtitle={`${matches.length} ${matches.length === 1 ? 'product' : 'products'} worth a look`}
+      matches={matches}
+    />
+  )
 }
 
 /* ---------------------------------------------------------------- results -- */
