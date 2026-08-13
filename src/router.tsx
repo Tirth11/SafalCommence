@@ -66,6 +66,7 @@ import { SellerProfilePage } from '@/routes/seller/profile'
 import { SellerPlanPage } from '@/routes/seller/plan'
 import { SellerOnlineStorePage } from '@/routes/seller/online-store'
 import { SellerStoreSetupPage } from '@/routes/seller/store-setup'
+import { SellerProductImportPage } from '@/routes/seller/product-import'
 import { SellerMarketingPage } from '@/routes/seller/marketing'
 import { AboutPage, ContactPage, HelpPage, LegalPage, PricingPage } from '@/routes/pages'
 import { MyOffersPage } from '@/routes/shop/offers'
@@ -194,6 +195,7 @@ const sellerRoutes = [
   createRoute({ getParentRoute: () => sellerLayoutRoute, path: '/seller/approved', component: SellerApprovedPage }),
   createRoute({ getParentRoute: () => sellerLayoutRoute, path: '/seller/products', component: SellerProductsPage }),
   createRoute({ getParentRoute: () => sellerLayoutRoute, path: '/seller/products/$productId', component: SellerProductFormPage }),
+  createRoute({ getParentRoute: () => sellerLayoutRoute, path: '/seller/products/import', component: SellerProductImportPage }),
   createRoute({ getParentRoute: () => sellerLayoutRoute, path: '/seller/inventory', component: SellerInventoryPage }),
   createRoute({ getParentRoute: () => sellerLayoutRoute, path: '/seller/orders', component: SellerOrdersPage }),
   createRoute({ getParentRoute: () => sellerLayoutRoute, path: '/seller/orders/$orderId', component: SellerOrderDetailPage }),

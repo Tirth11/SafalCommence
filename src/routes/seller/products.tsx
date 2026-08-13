@@ -1,10 +1,11 @@
 import { useNavigate } from '@tanstack/react-router'
-import { Archive, Copy, Package, Pause, Pencil, Play, Plus } from 'lucide-react'
+import { Archive, Copy, Package, Pause, Pencil, Play } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { ActionDialog, useActionDialog } from '@/components/admin/action-dialog'
 import { AdminLink, adminLinkProps, useAdminSearch } from '@/components/admin/admin-link'
 import { DataTable, type Column } from '@/components/admin/data-table'
+import { AddProductMenu } from '@/components/seller/add-product-menu'
 import { EmptyState, PageHeader } from '@/components/admin/primitives'
 import { StatusBadge } from '@/components/admin/status-badge'
 import { ProductThumb } from '@/components/commerce/product-thumb'
@@ -179,14 +180,7 @@ export function SellerProductsPage() {
         title="Products"
         description="Your catalogue, with moderation and availability state for every listing."
         breadcrumb={[{ label: 'Dashboard', to: '/seller' }, { label: 'Products', to: '/seller/products' }]}
-        actions={
-          <Button size="sm" asChild>
-            <AdminLink to="/seller/products/new">
-              <Plus className="size-4" />
-              Add Product
-            </AdminLink>
-          </Button>
-        }
+        actions={<AddProductMenu />}
       />
 
       <SellerStatusBanner className="mb-5" />

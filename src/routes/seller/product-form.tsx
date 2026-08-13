@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useNavigate, useParams } from '@tanstack/react-router'
-import { ArrowLeft, ArrowRight, Check, GripVertical, ImagePlus, Plus, Trash2, TriangleAlert, X } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, GripVertical, ImagePlus, Plus, Sparkles, Trash2, TriangleAlert, X } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { AdminLink, adminLinkProps, useAdminSearch } from '@/components/admin/admin-link'
@@ -17,6 +17,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Field, SelectField } from '@/routes/seller/setup'
 import { Switch } from '@/components/ui/switch'
 import { PRODUCT_CATEGORIES, SELLER_PRODUCTS } from '@/data/seller'
+import { PriceCheck } from '@/components/seller/seller-assistant'
 import { usePlan } from '@/store/storefront-store'
 import { cn, discountPercent, money } from '@/lib/utils'
 
@@ -380,6 +381,16 @@ export function SellerProductFormPage() {
               expected earning ≈ {money(price - Math.round((price * plan.commission) / 100))} per unit.
             </p>
           </div>
+
+          {existing && (
+            <div className="mt-6">
+              <p className="mb-2 flex items-center gap-2 text-[13px] font-semibold text-ink-900 dark:text-white">
+                <Sparkles className="size-4 text-brand-600 dark:text-brand-300" />
+                Help me price this
+              </p>
+              <PriceCheck product={existing} commission={plan.commission} />
+            </div>
+          )}
 
           <ChannelSelector price={price} />
 
