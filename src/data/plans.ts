@@ -1,5 +1,5 @@
 /* ==========================================================================
-   SafalMarketHub pricing — a hybrid model.
+   SafalMarketHub pricing — a hybrid model, kept to three tiers.
 
    Three revenue streams:
      1. marketplace commission (SafalMarketHub brought the customer)
@@ -8,20 +8,22 @@
 
    The fee split is the point: when we bring the buyer we take a commission;
    when the seller brings the buyer they pay a subscription plus a low fee.
+   Anything bigger than Pro is a conversation, not a pricing card.
    ========================================================================== */
 
-export type PlanId = 'starter' | 'growth' | 'pro' | 'business'
+export type PlanId = 'free' | 'growth' | 'pro'
+
+export type AnalyticsTier = 'Basic' | 'Standard' | 'Advanced'
 
 export type Plan = {
   id: PlanId
   name: string
   price: number
-  /** Shown on the marketing page; Business is sold as "contact sales". */
+  /** Shown on the marketing page. */
   priceLabel: string
   bestFor: string
   tagline: string
   popular?: boolean
-  enterprise?: boolean
   /** Headline numbers used on cards and in the seller plan screen. */
   productLimit: number | 'Unlimited'
   commission: number
@@ -33,17 +35,19 @@ export type Plan = {
   customDomain: boolean
   removeBranding: boolean
   coupons: boolean
-  advancedAnalytics: boolean
-  api: boolean
-  prioritySupport: boolean
-  b2b: 'no' | 'limited' | 'yes'
+  freeShippingRules: boolean
+  announcementBar: boolean
+  collections: boolean
+  brandedEmails: boolean
+  analytics: AnalyticsTier
+  abandonedCart: boolean
   highlights: string[]
 }
 
 export const PLANS: Plan[] = [
   {
-    id: 'starter',
-    name: 'Starter',
+    id: 'free',
+    name: 'Free',
     price: 0,
     priceLabel: '$0',
     bestFor: 'New marketplace sellers',
@@ -58,11 +62,18 @@ export const PLANS: Plan[] = [
     customDomain: false,
     removeBranding: false,
     coupons: false,
-    advancedAnalytics: false,
-    api: false,
-    prioritySupport: false,
-    b2b: 'no',
-    highlights: ['Sell on the marketplace', '25 products', '12% marketplace commission', 'Seller dashboard, orders & inventory'],
+    freeShippingRules: false,
+    announcementBar: false,
+    collections: false,
+    brandedEmails: false,
+    analytics: 'Basic',
+    abandonedCart: false,
+    highlights: [
+      'Sell on the marketplace',
+      '25 products',
+      '12% marketplace commission',
+      'Seller dashboard, orders & inventory',
+    ],
   },
   {
     id: 'growth',
@@ -81,16 +92,18 @@ export const PLANS: Plan[] = [
     customDomain: false,
     removeBranding: false,
     coupons: true,
-    advancedAnalytics: false,
-    api: false,
-    prioritySupport: false,
-    b2b: 'no',
+    freeShippingRules: true,
+    announcementBar: true,
+    collections: true,
+    brandedEmails: false,
+    analytics: 'Standard',
+    abandonedCart: false,
     highlights: [
-      'Everything in Starter',
+      'Everything in Free',
       'Your own store on a SafalMarketHub subdomain',
       '250 products · 9% commission',
       '2% fee on your own-store sales',
-      'Logo, colours and 2 themes',
+      'Coupons, free-shipping rules and collections',
     ],
   },
   {
@@ -105,83 +118,60 @@ export const PLANS: Plan[] = [
     commission: 6,
     ownStoreFee: 1,
     staff: 5,
-    themes: 4,
-    whiteLabel: true,
-    subdomain: true,
-    customDomain: true,
-    removeBranding: true,
-    coupons: true,
-    advancedAnalytics: true,
-    api: false,
-    prioritySupport: true,
-    b2b: 'limited',
-    highlights: [
-      'Everything in Growth',
-      'Connect your own domain',
-      '1,000 products · 6% commission',
-      '1% fee on your own-store sales',
-      'No "Powered by" badge · 5 staff accounts',
-    ],
-  },
-  {
-    id: 'business',
-    name: 'Business',
-    price: 59,
-    priceLabel: '$59',
-    bestFor: 'Established businesses',
-    tagline: 'Full white-label, API access and the lowest fees.',
-    productLimit: 'Unlimited',
-    commission: 4,
-    ownStoreFee: 0.5,
-    staff: 15,
     themes: 'All',
     whiteLabel: true,
     subdomain: true,
     customDomain: true,
     removeBranding: true,
     coupons: true,
-    advancedAnalytics: true,
-    api: true,
-    prioritySupport: true,
-    b2b: 'yes',
+    freeShippingRules: true,
+    announcementBar: true,
+    collections: true,
+    brandedEmails: true,
+    analytics: 'Advanced',
+    abandonedCart: true,
     highlights: [
-      'Everything in Pro',
-      'Unlimited products · 4% commission',
-      '0.5% fee on your own-store sales',
-      'API & webhooks · 15 staff accounts',
-      'All themes and B2B features',
+      'Everything in Growth',
+      'Connect your own domain',
+      '1,000 products · 6% commission',
+      '1% fee on your own-store sales',
+      'No "Powered by" badge · branded emails · 5 staff',
     ],
   },
 ]
 
 export const getPlan = (id: PlanId) => PLANS.find((p) => p.id === id)!
 
+/** How long a seller can build a storefront before they have to subscribe. */
+export const TRIAL_DAYS = 14
+
 /** Full matrix for the comparison table. `true`/`false` render as tick/cross. */
 export const PLAN_FEATURES: { label: string; note?: string; value: (plan: Plan) => string | boolean }[] = [
   { label: 'Monthly price', value: (p) => `${p.priceLabel}${p.price ? '/mo' : ''}` },
   { label: 'Sell on SafalMarketHub marketplace', value: () => true },
-  { label: 'Marketplace products', value: (p) => String(p.productLimit) },
+  { label: 'Marketplace products', value: (p) => (typeof p.productLimit === 'number' ? p.productLimit.toLocaleString('en-US') : p.productLimit) },
   { label: 'Marketplace commission', value: (p) => `${p.commission}%` },
   { label: 'Seller dashboard', value: () => true },
   { label: 'Orders & inventory', value: () => true },
-  { label: 'Basic analytics', value: () => true },
-  { label: 'White-label store', value: (p) => p.whiteLabel },
+  { label: 'Own online store', value: (p) => p.whiteLabel },
   { label: 'SafalMarketHub subdomain', value: (p) => p.subdomain },
   { label: 'Custom domain', value: (p) => p.customDomain },
-  { label: 'Remove "Powered by SafalMarketHub"', value: (p) => p.removeBranding },
+  { label: 'Theme customisation', value: (p) => p.whiteLabel },
   { label: 'Store themes', value: (p) => (p.themes === null ? '—' : String(p.themes)) },
-  { label: 'Custom logo & branding', value: (p) => p.whiteLabel },
+  { label: 'Remove "Powered by SafalMarketHub"', value: (p) => p.removeBranding },
+  { label: 'Coupons & discount codes', value: (p) => p.coupons },
+  { label: 'Free-shipping rules', value: (p) => p.freeShippingRules },
+  { label: 'Announcement bar', value: (p) => p.announcementBar },
+  { label: 'Product collections', value: (p) => p.collections },
+  { label: 'Branded order emails', value: (p) => p.brandedEmails },
+  { label: 'Abandoned-cart reminders', value: (p) => p.abandonedCart },
+  { label: 'Analytics', value: (p) => p.analytics },
   { label: 'Staff accounts', value: (p) => String(p.staff) },
   {
     label: 'Own-store transaction fee',
     note: 'Payment-gateway charges are separate.',
     value: (p) => (p.ownStoreFee === null ? '—' : `${p.ownStoreFee}%`),
   },
-  { label: 'Coupons & discounts', value: (p) => p.coupons },
-  { label: 'Advanced analytics', value: (p) => p.advancedAnalytics },
-  { label: 'API / webhooks', value: (p) => p.api },
-  { label: 'Priority support', value: (p) => p.prioritySupport },
-  { label: 'B2B features', value: (p) => (p.b2b === 'no' ? false : p.b2b === 'limited' ? 'Limited' : true) },
 ]
 
 /* ------------------------------------------------------------ storefront -- */

@@ -123,7 +123,7 @@ export function SettingsPage() {
           <Panel title="Logistics">
             <div className="grid gap-5 sm:grid-cols-2">
               <SelectSetting id="courier" label="Default courier partner" value="Delhivery" options={['Delhivery', 'Blue Dart', 'Ecom Express']} />
-              <TextSetting id="free-shipping" label="Free shipping above ($)" value="12" />
+              <TextSetting id="free-shipping" label="Free shipping above ($)" value="99" />
             </div>
           </Panel>
         </TabsContent>

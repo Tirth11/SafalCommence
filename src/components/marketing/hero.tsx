@@ -86,8 +86,8 @@ export function Hero() {
                   <span className="text-[11px] font-semibold text-ink-600 tabular dark:text-ink-300">4.6 (214)</span>
                 </div>
                 <div className="mt-2.5 flex flex-wrap items-baseline gap-x-2">
-                  <span className="text-[19px] font-bold tabular text-ink-950 dark:text-white">{money(4999)}</span>
-                  <span className="text-[13px] text-ink-400 line-through tabular">{money(6999)}</span>
+                  <span className="text-[19px] font-bold tabular text-ink-950 dark:text-white">{money(62)}</span>
+                  <span className="text-[13px] text-ink-400 line-through tabular">{money(87)}</span>
                   <span className="rounded-full bg-gold-50 px-2 py-0.5 text-[11px] font-bold text-gold-600 dark:bg-gold-600/15 dark:text-gold-400">
                     29% OFF
                   </span>

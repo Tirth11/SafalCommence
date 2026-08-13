@@ -242,7 +242,7 @@ export function AdminRefundsPage() {
         {[
           { label: 'Awaiting review', value: '2', hint: 'Requested + under review' },
           { label: 'Refund exposure', value: money(REFUNDS.filter((r) => ['Requested', 'Under Review'].includes(r.status)).reduce((s, r) => s + r.amount, 0)), hint: 'Open requests' },
-          { label: 'Refunded this week', value: money(2449), hint: '1 refund' },
+          { label: 'Refunded this week', value: money(31), hint: '1 refund' },
           { label: 'Rejected this week', value: '1', hint: 'Outside return window' },
         ].map((c) => (
           <div key={c.label} className="rounded-lg border bg-card p-4 shadow-xs">
@@ -707,9 +707,9 @@ export function AdminCommissionPage() {
             <MoneyRows
               className="mt-2"
               rows={[
-                { label: 'Product value', value: money(10000) },
-                { label: 'Commission at 10%', value: `− ${money(1000)}`, tone: 'negative' },
-                { label: 'Seller gross receivable', value: money(9000), tone: 'total' },
+                { label: 'Product value', value: money(1000) },
+                { label: 'Commission at 10%', value: `− ${money(100)}`, tone: 'negative' },
+                { label: 'Seller gross receivable', value: money(900), tone: 'total' },
               ]}
             />
             <p className="mt-3 text-[12px] text-ink-500">

@@ -9,15 +9,18 @@ import { StatusBadge } from '@/components/admin/status-badge'
 import { OnboardingChecklist } from '@/components/seller/seller-bits'
 import { SellerStatusBanner, SellerStatusPill } from '@/components/seller/status-banner'
 import { Button } from '@/components/ui/button'
-import { SELLER_ORDERS, SELLER_PRODUCTS, SELLER_SALES_7D } from '@/data/seller'
-import { money } from '@/lib/utils'
+import { ProductScene } from '@/components/marketing/scene'
+import { SELLER_ORDERS, SELLER_PRODUCTS, SELLER_SALES_7D, SELLER_TRANSACTIONS } from '@/data/seller'
+import { cn, money } from '@/lib/utils'
 import { useOnboardingProgress, useSellerStore } from '@/store/seller-store'
+import { usePlan } from '@/store/storefront-store'
 
 const PERIODS = ['7 Days', '30 Days', 'Custom'] as const
 
 export function SellerDashboardPage() {
   const [period, setPeriod] = useState<(typeof PERIODS)[number]>('7 Days')
   const { storeName, status, kyc } = useSellerStore()
+  const plan = usePlan()
   const { isComplete, percent } = useOnboardingProgress()
 
   const newOrders = SELLER_ORDERS.filter((o) => o.status === 'New')
@@ -29,6 +32,29 @@ export function SellerDashboardPage() {
   const recentOrders = SELLER_ORDERS.slice(0, 5)
 
   const onboarding = status === 'Onboarding' || (status === 'Pending Review' && !isComplete)
+
+  const bestSellers = [...SELLER_PRODUCTS].sort((a, b) => b.sold - a.sold).slice(0, 4)
+
+  // Sales by the channel that produced them — the number that justifies the plan.
+  const marketplaceSales = SELLER_TRANSACTIONS.filter((t) => t.channel === 'marketplace').reduce((s, t) => s + t.gross, 0)
+  const storeSales = SELLER_TRANSACTIONS.filter((t) => t.channel === 'store').reduce((s, t) => s + t.gross, 0)
+  const totalSales = marketplaceSales + storeSales || 1
+  const channelSplit = [
+    {
+      label: 'SafalMarketHub marketplace',
+      value: marketplaceSales,
+      share: Math.round((marketplaceSales / totalSales) * 100),
+      fee: `${plan.commission}% commission`,
+      own: false,
+    },
+    {
+      label: 'My online store',
+      value: storeSales,
+      share: Math.round((storeSales / totalSales) * 100),
+      fee: plan.ownStoreFee === null ? 'not on this plan' : `${plan.ownStoreFee}% platform fee`,
+      own: true,
+    },
+  ]
 
   const kpis: Kpi[] = [
     { label: 'Total Sales', value: '$3,100', hint: 'Last 30 days', delta: { value: '+18.4%', direction: 'up' } },
@@ -169,6 +195,66 @@ export function SellerDashboardPage() {
               )}
             </div>
           </section>
+
+          {/* The two questions a KPI row can't answer: where did the money come
+              from, and what is actually selling. */}
+          <div className="mt-6 grid gap-4 lg:grid-cols-2">
+            <Panel title="Where sales came from" description="Last 30 days, by channel.">
+              <ul className="grid gap-4">
+                {channelSplit.map((channel) => (
+                  <li key={channel.label}>
+                    <div className="flex items-baseline justify-between gap-3">
+                      <span className="text-[13px] font-medium text-ink-700 dark:text-ink-200">{channel.label}</span>
+                      <span className="text-[14px] font-bold tabular text-ink-950 dark:text-white">
+                        {money(channel.value)}
+                      </span>
+                    </div>
+                    <div className="mt-2 h-2 overflow-hidden rounded-full bg-ink-200 dark:bg-secondary">
+                      <div
+                        className={cn('h-full rounded-full', channel.own ? 'bg-teal-500' : 'bg-brand-600')}
+                        style={{ width: `${channel.share}%` }}
+                      />
+                    </div>
+                    <p className="mt-1 text-[11px] text-ink-500 tabular">
+                      {channel.share}% of sales · {channel.fee}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-4 border-t pt-4 text-[12px] leading-relaxed text-ink-500">
+                Sales you bring to your own store cost you far less. That gap is the point of having one.
+              </p>
+            </Panel>
+
+            <Panel
+              title="Best sellers"
+              description="Units sold in the last 30 days."
+              actions={
+                <Button variant="ghost" size="sm" className="h-8" asChild>
+                  <AdminLink to="/seller/products">All products</AdminLink>
+                </Button>
+              }
+            >
+              <ul className="grid gap-3">
+                {bestSellers.map((product, i) => (
+                  <li key={product.id} className="flex items-center gap-3">
+                    <span className="w-4 shrink-0 text-[12px] font-bold tabular text-ink-400">{i + 1}</span>
+                    <ProductScene glyph={product.glyph} tone={product.tone} className="size-10 shrink-0 rounded-md" grain={false} />
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-[13px] font-semibold text-ink-900 dark:text-white">
+                        {product.name}
+                      </span>
+                      <span className="block text-[11px] text-ink-500 tabular">{money(product.price)}</span>
+                    </span>
+                    <span className="shrink-0 text-right">
+                      <span className="block text-[14px] font-bold tabular text-ink-950 dark:text-white">{product.sold}</span>
+                      <span className="block text-[11px] text-ink-500">sold</span>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </Panel>
+          </div>
 
           {/* Sales + low stock */}
           <div className="mt-6 grid gap-4 xl:grid-cols-[1.6fr_1fr]">

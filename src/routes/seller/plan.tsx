@@ -34,7 +34,7 @@ export function SellerPlanPage() {
       <Panel
         title="Current plan"
         actions={
-          plan.id !== 'business' && (
+          plan.id !== 'pro' && (
             <Button size="sm" asChild>
               <a href="#plans">Upgrade plan</a>
             </Button>
@@ -131,7 +131,7 @@ export function SellerPlanPage() {
                     <span className="font-bold tabular">{option.commission}%</span> marketplace commission
                   </li>
                   <li className="text-[12px] text-ink-700 dark:text-ink-200">
-                    <span className="font-bold tabular">{String(option.productLimit)}</span> products
+                    <span className="font-bold tabular">{typeof option.productLimit === 'number' ? option.productLimit.toLocaleString('en-US') : option.productLimit}</span> products
                   </li>
                   <li className="text-[12px] text-ink-700 dark:text-ink-200">
                     {option.whiteLabel ? (
@@ -186,13 +186,13 @@ export function SellerPlanPage() {
             <p className="text-[13px] font-semibold text-ink-900 dark:text-white">
               SafalMarketHub brings the customer
             </p>
-            <p className="mt-1.5 text-[12px] text-ink-500">A marketplace sale of {money(10000)}</p>
+            <p className="mt-1.5 text-[12px] text-ink-500">A marketplace sale of {money(1000)}</p>
             <p className="mt-3 text-[13px] tabular text-ink-700 dark:text-ink-200">
               Commission {plan.commission}% ={' '}
-              <span className="font-bold text-destructive">− {money((10000 * plan.commission) / 100)}</span>
+              <span className="font-bold text-destructive">− {money((1000 * plan.commission) / 100)}</span>
             </p>
             <p className="mt-1 text-[15px] font-bold tabular text-ink-950 dark:text-white">
-              You get {money(10000 - (10000 * plan.commission) / 100)}
+              You get {money(1000 - (1000 * plan.commission) / 100)}
             </p>
           </div>
           <div className="rounded-lg border border-teal-200 p-4 dark:border-teal-600/40">
@@ -204,10 +204,10 @@ export function SellerPlanPage() {
               <>
                 <p className="mt-3 text-[13px] tabular text-ink-700 dark:text-ink-200">
                   Platform fee {plan.ownStoreFee}% ={' '}
-                  <span className="font-bold text-destructive">− {money((10000 * plan.ownStoreFee) / 100)}</span>
+                  <span className="font-bold text-destructive">− {money((1000 * plan.ownStoreFee) / 100)}</span>
                 </p>
                 <p className="mt-1 text-[15px] font-bold tabular text-ink-950 dark:text-white">
-                  You get {money(10000 - (10000 * plan.ownStoreFee) / 100)}
+                  You get {money(1000 - (1000 * plan.ownStoreFee) / 100)}
                 </p>
               </>
             )}

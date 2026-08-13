@@ -366,7 +366,7 @@ export function ProductDetailPage() {
               business days; express delivery in 1–2 business days where available.
             </p>
             <p className="mt-3">
-              Delivery charges are calculated at checkout based on your PIN code. Orders above {money(999)} qualify for free
+              Delivery charges are calculated at checkout based on your PIN code. Orders above {money(99)} qualify for free
               standard delivery.
             </p>
           </div>

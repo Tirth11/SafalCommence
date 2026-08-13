@@ -65,6 +65,8 @@ import { SellerSettlementDetailPage, SellerSettlementsPage, SellerTransactionsPa
 import { SellerProfilePage } from '@/routes/seller/profile'
 import { SellerPlanPage } from '@/routes/seller/plan'
 import { SellerOnlineStorePage } from '@/routes/seller/online-store'
+import { SellerStoreSetupPage } from '@/routes/seller/store-setup'
+import { SellerMarketingPage } from '@/routes/seller/marketing'
 import { SellerNotificationsPage, SellerSettingsPage, SellerSupportPage } from '@/routes/seller/support'
 import { SellerStatePreview } from '@/components/seller/seller-state-preview'
 
@@ -188,6 +190,8 @@ const sellerRoutes = [
   }),
   createRoute({ getParentRoute: () => sellerLayoutRoute, path: '/seller/plan', component: SellerPlanPage }),
   createRoute({ getParentRoute: () => sellerLayoutRoute, path: '/seller/online-store', component: SellerOnlineStorePage }),
+  createRoute({ getParentRoute: () => sellerLayoutRoute, path: '/seller/online-store/setup', component: SellerStoreSetupPage }),
+  createRoute({ getParentRoute: () => sellerLayoutRoute, path: '/seller/marketing', component: SellerMarketingPage }),
   createRoute({ getParentRoute: () => sellerLayoutRoute, path: '/seller/profile', component: SellerProfilePage }),
   createRoute({ getParentRoute: () => sellerLayoutRoute, path: '/seller/notifications', component: SellerNotificationsPage }),
   createRoute({ getParentRoute: () => sellerLayoutRoute, path: '/seller/support', component: SellerSupportPage }),
