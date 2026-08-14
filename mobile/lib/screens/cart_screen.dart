@@ -38,7 +38,6 @@ class CartScreen extends StatelessWidget {
               children: [
                 for (final line in lines) _CartRow(line: line),
                 const SizedBox(height: 8),
-
                 if (offer != null)
                   Container(
                     padding: const EdgeInsets.all(14),
@@ -48,24 +47,34 @@ class CartScreen extends StatelessWidget {
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.check_circle_outline, size: 18, color: AppColors.teal),
+                        const Icon(Icons.check_circle_outline,
+                            size: 18, color: AppColors.teal),
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(
                             'Best offer applied — ${offer.code ?? offer.headline} saves ${money(discount)}',
-                            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.teal),
+                            style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.teal),
                           ),
                         ),
                       ],
                     ),
                   ),
-
                 const SizedBox(height: 20),
-                Text('Price details', style: Theme.of(context).textTheme.titleMedium),
+                Text('Price details',
+                    style: Theme.of(context).textTheme.titleMedium),
                 const SizedBox(height: 10),
                 _SummaryRow(label: 'Subtotal', value: money(subtotal)),
-                if (discount > 0) _SummaryRow(label: 'Offer discount', value: '− ${money(discount)}', good: true),
-                _SummaryRow(label: 'Delivery', value: shipping == 0 ? 'Free' : money(shipping)),
+                if (discount > 0)
+                  _SummaryRow(
+                      label: 'Offer discount',
+                      value: '− ${money(discount)}',
+                      good: true),
+                _SummaryRow(
+                    label: 'Delivery',
+                    value: shipping == 0 ? 'Free' : money(shipping)),
                 const Divider(height: 24),
                 _SummaryRow(label: 'Total', value: money(total), bold: true),
               ],
@@ -85,15 +94,22 @@ class CartScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(money(total), style: const TextStyle(fontSize: 19, fontWeight: FontWeight.w700)),
-                        Text('${state.cartCount} items', style: Theme.of(context).textTheme.bodySmall),
+                        Text(money(total),
+                            style: const TextStyle(
+                                fontSize: 19, fontWeight: FontWeight.w700)),
+                        Text('${state.cartCount} items',
+                            style: Theme.of(context).textTheme.bodySmall),
                       ],
                     ),
                     const SizedBox(width: 16),
                     Expanded(
                       child: FilledButton(
                         onPressed: () => Navigator.of(context).push(
-                          MaterialPageRoute(builder: (_) => CheckoutScreen(total: total, discount: discount, shipping: shipping)),
+                          MaterialPageRoute(
+                              builder: (_) => CheckoutScreen(
+                                  total: total,
+                                  discount: discount,
+                                  shipping: shipping)),
                         ),
                         child: const Text('Checkout'),
                       ),
@@ -136,10 +152,12 @@ class _CartRow extends StatelessWidget {
                   product.name,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600, height: 1.3),
+                  style: const TextStyle(
+                      fontSize: 13.5, fontWeight: FontWeight.w600, height: 1.3),
                 ),
                 const SizedBox(height: 2),
-                Text('${line.variant} · ${product.seller}', style: Theme.of(context).textTheme.bodySmall),
+                Text('${line.variant} · ${product.seller}',
+                    style: Theme.of(context).textTheme.bodySmall),
                 const SizedBox(height: 8),
                 Row(
                   children: [
@@ -148,7 +166,9 @@ class _CartRow extends StatelessWidget {
                       onChanged: (value) => state.setQty(line.key, value),
                     ),
                     const Spacer(),
-                    Text(money(line.lineTotal), style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w700)),
+                    Text(money(line.lineTotal),
+                        style: const TextStyle(
+                            fontSize: 14.5, fontWeight: FontWeight.w700)),
                   ],
                 ),
               ],
@@ -187,7 +207,9 @@ class _QtyStepper extends StatelessWidget {
           _StepButton(icon: Icons.remove, onTap: () => onChanged(qty - 1)),
           SizedBox(
             width: 28,
-            child: Text('$qty', textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.w700)),
+            child: Text('$qty',
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontWeight: FontWeight.w700)),
           ),
           _StepButton(icon: Icons.add, onTap: () => onChanged(qty + 1)),
         ],
@@ -206,13 +228,18 @@ class _StepButton extends StatelessWidget {
     return InkWell(
       customBorder: const CircleBorder(),
       onTap: onTap,
-      child: Padding(padding: const EdgeInsets.all(6), child: Icon(icon, size: 15)),
+      child: Padding(
+          padding: const EdgeInsets.all(6), child: Icon(icon, size: 15)),
     );
   }
 }
 
 class _SummaryRow extends StatelessWidget {
-  const _SummaryRow({required this.label, required this.value, this.good = false, this.bold = false});
+  const _SummaryRow(
+      {required this.label,
+      required this.value,
+      this.good = false,
+      this.bold = false});
 
   final String label;
   final String value;

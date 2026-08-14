@@ -30,17 +30,21 @@ class HomeScreen extends StatelessWidget {
     return CustomScrollView(
       slivers: [
         SliverToBoxAdapter(child: _Hero(onOpenTab: onOpenTab)),
-        if (order != null) SliverToBoxAdapter(child: _ActiveOrderCard(order: order)),
-
-        const SliverToBoxAdapter(child: SectionHeader(title: "Today's offers 🔥", subtitle: 'Running now — no waiting.')),
+        if (order != null)
+          SliverToBoxAdapter(child: _ActiveOrderCard(order: order)),
+        const SliverToBoxAdapter(
+            child: SectionHeader(
+                title: "Today's offers 🔥",
+                subtitle: 'Running now — no waiting.')),
         SliverToBoxAdapter(
           child: HorizontalRail(
             height: 172,
             itemWidth: 232,
-            children: [for (final offer in todayOffers) _OfferCard(offer: offer)],
+            children: [
+              for (final offer in todayOffers) _OfferCard(offer: offer)
+            ],
           ),
         ),
-
         SliverToBoxAdapter(
           child: SectionHeader(
             title: 'Shop by category',
@@ -49,39 +53,51 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
         SliverToBoxAdapter(child: _CategoryStrip(onOpenTab: onOpenTab)),
-
         const SliverToBoxAdapter(
-          child: SectionHeader(title: 'What are you shopping for?', subtitle: 'Not everyone thinks in categories.'),
+          child: SectionHeader(
+              title: 'What are you shopping for?',
+              subtitle: 'Not everyone thinks in categories.'),
         ),
-        SliverToBoxAdapter(child: const _NeedsStrip()),
-
+        const SliverToBoxAdapter(child: _NeedsStrip()),
         const SliverToBoxAdapter(
-          child: SectionHeader(title: 'Shop within your budget', subtitle: "Pick a number and we'll stay under it."),
+          child: SectionHeader(
+              title: 'Shop within your budget',
+              subtitle: "Pick a number and we'll stay under it."),
         ),
-        SliverToBoxAdapter(child: const _BudgetStrip()),
-
+        const SliverToBoxAdapter(child: _BudgetStrip()),
         const SliverToBoxAdapter(
-          child: SectionHeader(title: 'Popular right now', subtitle: 'What shoppers are buying this week.'),
+          child: SectionHeader(
+              title: 'Popular right now',
+              subtitle: 'What shoppers are buying this week.'),
         ),
         SliverToBoxAdapter(
           child: HorizontalRail(
-            children: [for (final product in products.take(5)) ProductCard(product: product)],
+            children: [
+              for (final product in products.take(5))
+                ProductCard(product: product)
+            ],
           ),
         ),
-
         if (saved.isNotEmpty) ...[
-          const SliverToBoxAdapter(child: SectionHeader(title: 'Your wishlist', subtitle: 'Saved for later.')),
+          const SliverToBoxAdapter(
+              child: SectionHeader(
+                  title: 'Your wishlist', subtitle: 'Saved for later.')),
           SliverToBoxAdapter(
-            child: HorizontalRail(children: [for (final product in saved) ProductCard(product: product)]),
+            child: HorizontalRail(children: [
+              for (final product in saved) ProductCard(product: product)
+            ]),
           ),
         ],
-
-        const SliverToBoxAdapter(child: SectionHeader(title: 'Offers for you', subtitle: 'Based on what you viewed.')),
-        SliverToBoxAdapter(child: const _PriceDrops()),
-
-        const SliverToBoxAdapter(child: SectionHeader(title: 'Coming soon', subtitle: 'Worth waiting a few days for.')),
-        SliverToBoxAdapter(child: const _ComingSoon()),
-
+        const SliverToBoxAdapter(
+            child: SectionHeader(
+                title: 'Offers for you',
+                subtitle: 'Based on what you viewed.')),
+        const SliverToBoxAdapter(child: _PriceDrops()),
+        const SliverToBoxAdapter(
+            child: SectionHeader(
+                title: 'Coming soon',
+                subtitle: 'Worth waiting a few days for.')),
+        const SliverToBoxAdapter(child: _ComingSoon()),
         const SliverToBoxAdapter(child: _CantDecide()),
         const SliverToBoxAdapter(child: _TrustStrip()),
         const SliverToBoxAdapter(child: _SellerLine()),
@@ -123,7 +139,8 @@ class _Hero extends StatelessWidget {
             name != null
                 ? 'What are you looking for today?'
                 : 'Search for what you need, or let us help you choose.',
-            style: const TextStyle(fontSize: 15, color: AppColors.ink500),
+            style: const TextStyle(
+                fontSize: 15, height: 1.35, color: AppColors.ink700),
           ),
           const SizedBox(height: 18),
 
@@ -138,14 +155,27 @@ class _Hero extends StatelessWidget {
                 borderRadius: BorderRadius.circular(Radii.pill),
                 border: Border.all(color: AppColors.border),
                 boxShadow: [
-                  BoxShadow(color: AppColors.ink950.withOpacity(0.05), blurRadius: 18, offset: const Offset(0, 6)),
+                  BoxShadow(
+                      color: AppColors.ink950.withValues(alpha: 0.05),
+                      blurRadius: 18,
+                      offset: const Offset(0, 6)),
                 ],
               ),
               child: const Row(
                 children: [
                   Icon(Icons.search, size: 20, color: AppColors.ink400),
                   SizedBox(width: 10),
-                  Text('Search products, brands or categories', style: TextStyle(color: AppColors.ink400, fontSize: 14)),
+                  Expanded(
+                    child: Text(
+                      'Search products, brands or categories',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                          color: AppColors.ink600,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -191,7 +221,11 @@ class _Hero extends StatelessWidget {
 }
 
 class _QuickAction extends StatelessWidget {
-  const _QuickAction({required this.icon, required this.label, required this.onTap, this.primary = false});
+  const _QuickAction(
+      {required this.icon,
+      required this.label,
+      required this.onTap,
+      this.primary = false});
 
   final IconData icon;
   final String label;
@@ -208,12 +242,14 @@ class _QuickAction extends StatelessWidget {
         decoration: BoxDecoration(
           color: primary ? AppColors.ink950 : AppColors.surface,
           borderRadius: BorderRadius.circular(Radii.pill),
-          border: Border.all(color: primary ? AppColors.ink950 : AppColors.border),
+          border:
+              Border.all(color: primary ? AppColors.ink950 : AppColors.border),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 16, color: primary ? Colors.white : AppColors.brand),
+            Icon(icon,
+                size: 16, color: primary ? Colors.white : AppColors.brand),
             const SizedBox(width: 6),
             Flexible(
               child: Text(
@@ -244,6 +280,13 @@ class _ActiveOrderCard extends StatelessWidget {
     final line = order.lines.first;
     final product = productById(line.productId);
     final reached = order.stage.index;
+    const compactStageLabels = [
+      'Ordered',
+      'Packed',
+      'Shipped',
+      'Out',
+      'Delivered'
+    ];
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
@@ -260,7 +303,8 @@ class _ActiveOrderCard extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ProductScene(glyph: product.glyph, tone: product.tone, size: 52),
+                ProductScene(
+                    glyph: product.glyph, tone: product.tone, size: 52),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -268,22 +312,32 @@ class _ActiveOrderCard extends StatelessWidget {
                     children: [
                       const Row(
                         children: [
-                          Icon(Icons.local_shipping_outlined, size: 15, color: AppColors.brand),
+                          Icon(Icons.local_shipping_outlined,
+                              size: 15, color: AppColors.brand),
                           SizedBox(width: 6),
                           Text(
                             'Your order is on the way',
-                            style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700, color: AppColors.brand),
+                            style: TextStyle(
+                                fontSize: 12.5,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.brand),
                           ),
                         ],
                       ),
                       const SizedBox(height: 4),
                       Text(
                         product.name,
-                        maxLines: 1,
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w600),
+                        style: const TextStyle(
+                          fontSize: 14.8,
+                          height: 1.22,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.ink950,
+                        ),
                       ),
-                      Text('${order.id} · ${order.estimate}', style: Theme.of(context).textTheme.bodySmall),
+                      Text('${order.id} · ${order.estimate}',
+                          style: Theme.of(context).textTheme.bodySmall),
                     ],
                   ),
                 ),
@@ -297,7 +351,8 @@ class _ActiveOrderCard extends StatelessWidget {
                 for (var i = 0; i < orderStageLabels.length; i++)
                   Expanded(
                     child: Padding(
-                      padding: EdgeInsets.only(right: i == orderStageLabels.length - 1 ? 0 : 4),
+                      padding: EdgeInsets.only(
+                          right: i == orderStageLabels.length - 1 ? 0 : 4),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -314,13 +369,17 @@ class _ActiveOrderCard extends StatelessWidget {
                           ),
                           const SizedBox(height: 6),
                           Text(
-                            orderStageLabels[i],
+                            compactStageLabels[i],
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                              fontSize: 9.5,
-                              fontWeight: i <= reached ? FontWeight.w700 : FontWeight.w400,
-                              color: i <= reached ? AppColors.ink700 : AppColors.ink400,
+                              fontSize: 10,
+                              fontWeight: i <= reached
+                                  ? FontWeight.w700
+                                  : FontWeight.w400,
+                              color: i <= reached
+                                  ? AppColors.ink700
+                                  : AppColors.ink400,
                             ),
                           ),
                         ],
@@ -334,7 +393,8 @@ class _ActiveOrderCard extends StatelessWidget {
               width: double.infinity,
               child: FilledButton(
                 onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => OrderDetailScreen(order: order)),
+                  MaterialPageRoute(
+                      builder: (_) => OrderDetailScreen(order: order)),
                 ),
                 child: const Text('Track order'),
               ),
@@ -359,35 +419,53 @@ class _OfferCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final palette = _tones[offer.id] ?? const [AppColors.ink100, AppColors.ink700];
+    final palette =
+        _tones[offer.id] ?? const [AppColors.ink100, AppColors.ink700];
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: palette[0],
         borderRadius: BorderRadius.circular(Radii.lg),
+        border: Border.all(color: palette[1].withValues(alpha: 0.18)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             offer.headline,
-            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700, letterSpacing: -0.6),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+                fontSize: 21,
+                height: 1.08,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.6,
+                color: AppColors.ink950),
           ),
           const SizedBox(height: 4),
-          Text(offer.detail, style: const TextStyle(fontSize: 13, color: AppColors.ink700)),
+          Text(
+            offer.detail,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+                fontSize: 13, height: 1.28, color: AppColors.ink700),
+          ),
           if (offer.code != null) ...[
             const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.75),
+                color: Colors.white.withValues(alpha: 0.88),
                 borderRadius: BorderRadius.circular(Radii.sm),
-                border: Border.all(color: palette[1].withOpacity(0.35)),
+                border: Border.all(color: palette[1].withValues(alpha: 0.35)),
               ),
               child: Text(
                 offer.code!,
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: palette[1]),
+                style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                    color: palette[1]),
               ),
             ),
           ],
@@ -396,13 +474,20 @@ class _OfferCard extends StatelessWidget {
             children: [
               Text(
                 offer.endsLabel.toUpperCase(),
-                style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 0.6, color: AppColors.ink500),
+                style: const TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 0.6,
+                    color: AppColors.ink700),
               ),
               const Spacer(),
               TextButton(
-                style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 8), minimumSize: Size.zero),
+                style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    minimumSize: Size.zero),
                 onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => ListingScreen(category: offer.category)),
+                  MaterialPageRoute(
+                      builder: (_) => ListingScreen(category: offer.category)),
                 ),
                 child: const Text('Shop'),
               ),
@@ -433,19 +518,25 @@ class _CategoryStrip extends StatelessWidget {
           return InkWell(
             borderRadius: BorderRadius.circular(Radii.md),
             onTap: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => ListingScreen(category: category.label)),
+              MaterialPageRoute(
+                  builder: (_) => ListingScreen(category: category.label)),
             ),
             child: SizedBox(
               width: 78,
               child: Column(
                 children: [
-                  ProductScene(glyph: category.glyph, tone: category.tone, size: 70, radius: Radii.lg),
+                  ProductScene(
+                      glyph: category.glyph,
+                      tone: category.tone,
+                      size: 70,
+                      radius: Radii.lg),
                   const SizedBox(height: 8),
                   Text(
                     category.label,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600),
+                    style: const TextStyle(
+                        fontSize: 11.5, fontWeight: FontWeight.w600),
                   ),
                 ],
               ),
@@ -463,7 +554,7 @@ class _NeedsStrip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return HorizontalRail(
-      height: 148,
+      height: 160,
       itemWidth: 176,
       children: [
         for (final need in shoppingNeeds)
@@ -478,19 +569,29 @@ class _NeedsStrip extends StatelessWidget {
                 color: AppColors.surface,
                 borderRadius: BorderRadius.circular(Radii.lg),
                 border: Border.all(color: AppColors.border),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.ink950.withValues(alpha: 0.03),
+                    blurRadius: 14,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   ProductScene(glyph: need.glyph, tone: need.tone, size: 44),
                   const Spacer(),
-                  Text(need.label, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
+                  Text(need.label,
+                      style: const TextStyle(
+                          fontSize: 14, fontWeight: FontWeight.w700)),
                   const SizedBox(height: 2),
                   Text(
                     need.blurb,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 11.5, color: AppColors.ink500, height: 1.3),
+                    style: const TextStyle(
+                        fontSize: 11.7, color: AppColors.ink700, height: 1.32),
                   ),
                 ],
               ),
@@ -506,7 +607,12 @@ class _BudgetStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const fills = [Color(0xFFEDE8FE), Color(0xFFE3F3F1), Color(0xFFFBF0DC), AppColors.ink100];
+    const fills = [
+      Color(0xFFEDE8FE),
+      Color(0xFFE3F3F1),
+      Color(0xFFFBF0DC),
+      AppColors.ink100
+    ];
 
     return SizedBox(
       height: 74,
@@ -520,19 +626,31 @@ class _BudgetStrip extends StatelessWidget {
           return InkWell(
             borderRadius: BorderRadius.circular(Radii.lg),
             onTap: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => ListingScreen(maxPrice: band.max)),
+              MaterialPageRoute(
+                  builder: (_) => ListingScreen(maxPrice: band.max)),
             ),
             child: Container(
               width: 132,
               padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(color: fills[index % fills.length], borderRadius: BorderRadius.circular(Radii.lg)),
+              decoration: BoxDecoration(
+                color: fills[index % fills.length],
+                borderRadius: BorderRadius.circular(Radii.lg),
+                border:
+                    Border.all(color: AppColors.border.withValues(alpha: 0.7)),
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(band.label, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                  Text(band.label,
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.w700)),
                   const SizedBox(height: 2),
-                  const Text('Browse →', style: TextStyle(fontSize: 11.5, color: AppColors.ink500)),
+                  const Text('Browse →',
+                      style: TextStyle(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.ink700)),
                 ],
               ),
             ),
@@ -562,7 +680,8 @@ class _PriceDrops extends StatelessWidget {
                   subtitle: '${drop.label} · saves ${money(saved)}',
                   trailing: Text(
                     money(product.price),
-                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                    style: const TextStyle(
+                        fontSize: 14, fontWeight: FontWeight.w700),
                   ),
                 );
               },
@@ -590,7 +709,8 @@ class _ComingSoon extends StatelessWidget {
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(Radii.lg),
-                border: Border.all(color: AppColors.border, style: BorderStyle.solid),
+                border: Border.all(
+                    color: AppColors.border, style: BorderStyle.solid),
                 color: AppColors.surface,
               ),
               child: Row(
@@ -609,23 +729,33 @@ class _ComingSoon extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 4),
-                        Text(offer.title, style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w700)),
-                        Text(offer.detail, style: Theme.of(context).textTheme.bodySmall),
+                        Text(offer.title,
+                            style: const TextStyle(
+                                fontSize: 14.5, fontWeight: FontWeight.w700)),
+                        Text(offer.detail,
+                            style: Theme.of(context).textTheme.bodySmall),
                       ],
                     ),
                   ),
                   const SizedBox(width: 10),
                   OutlinedButton(
-                    style: OutlinedButton.styleFrom(minimumSize: const Size(0, 38)),
+                    style: OutlinedButton.styleFrom(
+                        minimumSize: const Size(0, 38)),
                     onPressed: () {
                       state.toggleReminder(offer.id);
                       showToast(
                         context,
-                        state.reminders.contains(offer.id) ? "We'll remind you" : 'Reminder removed',
-                        detail: state.reminders.contains(offer.id) ? offer.title : null,
+                        state.reminders.contains(offer.id)
+                            ? "We'll remind you"
+                            : 'Reminder removed',
+                        detail: state.reminders.contains(offer.id)
+                            ? offer.title
+                            : null,
                       );
                     },
-                    child: Text(state.reminders.contains(offer.id) ? 'Reminder set' : 'Notify me'),
+                    child: Text(state.reminders.contains(offer.id)
+                        ? 'Reminder set'
+                        : 'Notify me'),
                   ),
                 ],
               ),
@@ -657,11 +787,13 @@ class _CantDecide extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Can't decide?", style: Theme.of(context).textTheme.headlineMedium),
+            Text("Can't decide?",
+                style: Theme.of(context).textTheme.headlineMedium),
             const SizedBox(height: 6),
             const Text(
               "Tell us what you're looking for and we'll narrow it down to a few good options.",
-              style: TextStyle(fontSize: 14, height: 1.45, color: AppColors.ink700),
+              style: TextStyle(
+                  fontSize: 14, height: 1.45, color: AppColors.ink700),
             ),
             const SizedBox(height: 14),
             Container(
@@ -674,7 +806,10 @@ class _CantDecide extends StatelessWidget {
               ),
               child: const Text(
                 '“I need a good smartwatch under \$150.”',
-                style: TextStyle(fontSize: 13.5, fontStyle: FontStyle.italic, color: AppColors.ink500),
+                style: TextStyle(
+                    fontSize: 13.5,
+                    fontStyle: FontStyle.italic,
+                    color: AppColors.ink500),
               ),
             ),
             const SizedBox(height: 14),
@@ -682,7 +817,8 @@ class _CantDecide extends StatelessWidget {
               children: [
                 Expanded(
                   child: FilledButton.icon(
-                    onPressed: () => openAssistant(context, AssistantMode.guide),
+                    onPressed: () =>
+                        openAssistant(context, AssistantMode.guide),
                     icon: const Icon(Icons.auto_awesome, size: 17),
                     label: const Text('Help me choose'),
                   ),
@@ -710,13 +846,17 @@ class _TrustStrip extends StatelessWidget {
       (Icons.verified_user_outlined, 'Secure payments'),
       (Icons.replay_outlined, 'Easy returns'),
       (Icons.local_shipping_outlined, 'Order tracking'),
-      (Icons.workspace_premium_outlined, 'Verified sellers'),
+      (Icons.workspace_premium_outlined, 'Verified stores'),
     ];
 
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 24, 16, 0),
       padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 12),
-      decoration: BoxDecoration(color: AppColors.ink100, borderRadius: BorderRadius.circular(Radii.lg)),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(Radii.lg),
+        border: Border.all(color: AppColors.border),
+      ),
       child: Wrap(
         alignment: WrapAlignment.spaceEvenly,
         runSpacing: 14,
@@ -732,7 +872,8 @@ class _TrustStrip extends StatelessWidget {
                   Flexible(
                     child: Text(
                       item.$2,
-                      style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
+                      style: const TextStyle(
+                          fontSize: 12.5, fontWeight: FontWeight.w600),
                     ),
                   ),
                 ],
@@ -744,7 +885,7 @@ class _TrustStrip extends StatelessWidget {
   }
 }
 
-/// Selling gets one quiet line, last. This app belongs to shoppers.
+/// Selling gets one quiet line, last. Shopping still stays first.
 class _SellerLine extends StatelessWidget {
   const _SellerLine();
 
@@ -755,23 +896,37 @@ class _SellerLine extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(Radii.lg),
-        border: Border.all(color: AppColors.ink200),
+        color: AppColors.surface,
+        border: Border.all(color: AppColors.border),
       ),
       child: Row(
         children: [
-          const Icon(Icons.storefront_outlined, size: 20, color: AppColors.ink400),
+          Container(
+            width: 36,
+            height: 36,
+            decoration: const BoxDecoration(
+                color: AppColors.brandSoft, shape: BoxShape.circle),
+            child: const Icon(Icons.storefront_outlined,
+                size: 19, color: AppColors.brand),
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Have something to sell?', style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600)),
-                Text('Sell on SafalMarketHub with the same account.', style: Theme.of(context).textTheme.bodySmall),
+                const Text('Have something to sell?',
+                    style: TextStyle(
+                        fontSize: 13.8,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.ink950)),
+                Text('Sell on SafalMarketHub with the same account.',
+                    style: Theme.of(context).textTheme.bodySmall),
               ],
             ),
           ),
           TextButton(
-            onPressed: () => showToast(context, 'Seller sign-up opens on the web'),
+            onPressed: () =>
+                showToast(context, 'Seller sign-up opens on the web'),
             child: const Text('Start'),
           ),
         ],

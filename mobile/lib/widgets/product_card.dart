@@ -9,7 +9,8 @@ import 'common.dart';
 /// Deliberately plain: image, name, rating, price, one button. A product card
 /// shouldn't become a mini-dashboard.
 class ProductCard extends StatelessWidget {
-  const ProductCard({super.key, required this.product, this.reason, this.compact = false});
+  const ProductCard(
+      {super.key, required this.product, this.reason, this.compact = false});
 
   final Product product;
   final String? reason;
@@ -30,6 +31,13 @@ class ProductCard extends StatelessWidget {
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(Radii.lg),
           border: Border.all(color: AppColors.border),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.ink950.withValues(alpha: 0.035),
+              blurRadius: 16,
+              offset: const Offset(0, 8),
+            ),
+          ],
         ),
         clipBehavior: Clip.antiAlias,
         child: Column(
@@ -39,7 +47,8 @@ class ProductCard extends StatelessWidget {
               children: [
                 AspectRatio(
                   aspectRatio: 1,
-                  child: ProductScene(glyph: product.glyph, tone: product.tone, radius: 0),
+                  child: ProductScene(
+                      glyph: product.glyph, tone: product.tone, radius: 0),
                 ),
                 Positioned(
                   top: 8,
@@ -50,7 +59,11 @@ class ProductCard extends StatelessWidget {
                     tooltip: saved ? 'Remove from wishlist' : 'Save for later',
                     onTap: () {
                       state.toggleWishlist(product.id);
-                      showToast(context, saved ? 'Removed from wishlist' : 'Saved to wishlist');
+                      showToast(
+                          context,
+                          saved
+                              ? 'Removed from wishlist'
+                              : 'Saved to wishlist');
                     },
                   ),
                 ),
@@ -59,21 +72,25 @@ class ProductCard extends StatelessWidget {
                     top: 8,
                     left: 8,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 3),
                       decoration: BoxDecoration(
                         color: AppColors.ink950,
                         borderRadius: BorderRadius.circular(Radii.pill),
                       ),
                       child: Text(
                         product.badge!,
-                        style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: Colors.white),
+                        style: const TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white),
                       ),
                     ),
                   ),
               ],
             ),
             Padding(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.fromLTRB(12, 12, 12, 13),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -81,7 +98,12 @@ class ProductCard extends StatelessWidget {
                     product.name,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 13.5, height: 1.3, fontWeight: FontWeight.w600),
+                    style: const TextStyle(
+                      fontSize: 13.8,
+                      height: 1.26,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.ink950,
+                    ),
                   ),
                   const SizedBox(height: 6),
                   RatingRow(rating: product.rating, reviews: product.reviews),
@@ -96,17 +118,20 @@ class ProductCard extends StatelessWidget {
                     'Sold by ${product.seller}',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 11, color: AppColors.ink400),
+                    style: const TextStyle(
+                        fontSize: 11.5, height: 1.25, color: AppColors.ink600),
                   ),
                   if (!compact) ...[
                     const SizedBox(height: 10),
                     SizedBox(
                       width: double.infinity,
                       child: OutlinedButton(
-                        style: OutlinedButton.styleFrom(minimumSize: const Size(0, 38)),
+                        style: OutlinedButton.styleFrom(
+                            minimumSize: const Size(0, 38)),
                         onPressed: () {
                           state.addToCart(product, product.variants.first);
-                          showToast(context, 'Added to cart', detail: product.name);
+                          showToast(context, 'Added to cart',
+                              detail: product.name);
                         },
                         child: const Text('Add to cart'),
                       ),
@@ -123,7 +148,11 @@ class ProductCard extends StatelessWidget {
 }
 
 class _RoundIcon extends StatelessWidget {
-  const _RoundIcon({required this.icon, required this.onTap, required this.color, this.tooltip});
+  const _RoundIcon(
+      {required this.icon,
+      required this.onTap,
+      required this.color,
+      this.tooltip});
 
   final IconData icon;
   final VoidCallback onTap;
@@ -135,7 +164,7 @@ class _RoundIcon extends StatelessWidget {
     return Tooltip(
       message: tooltip ?? '',
       child: Material(
-        color: Colors.white.withOpacity(0.92),
+        color: Colors.white.withValues(alpha: 0.92),
         shape: const CircleBorder(),
         child: InkWell(
           customBorder: const CircleBorder(),
@@ -152,7 +181,8 @@ class _RoundIcon extends StatelessWidget {
 
 /// Compact horizontal tile for "buy again" and recently-viewed strips.
 class ProductTile extends StatelessWidget {
-  const ProductTile({super.key, required this.product, this.trailing, this.subtitle});
+  const ProductTile(
+      {super.key, required this.product, this.trailing, this.subtitle});
 
   final Product product;
   final Widget? trailing;
@@ -179,12 +209,16 @@ class ProductTile extends StatelessWidget {
                     product.name,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600),
+                    style: const TextStyle(
+                        fontSize: 13.5, fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 3),
                   Text(
                     subtitle ?? money(product.price),
-                    style: const TextStyle(fontSize: 12, color: AppColors.ink500),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                        fontSize: 12.2, color: AppColors.ink600),
                   ),
                 ],
               ),

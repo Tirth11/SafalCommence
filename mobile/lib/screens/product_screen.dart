@@ -42,10 +42,12 @@ class _ProductScreenState extends State<ProductScreen> {
         actions: [
           IconButton(
             tooltip: saved ? 'Remove from wishlist' : 'Save for later',
-            icon: Icon(saved ? Icons.favorite : Icons.favorite_border, color: saved ? AppColors.danger : null),
+            icon: Icon(saved ? Icons.favorite : Icons.favorite_border,
+                color: saved ? AppColors.danger : null),
             onPressed: () {
               state.toggleWishlist(product.id);
-              showToast(context, saved ? 'Removed from wishlist' : 'Saved to wishlist');
+              showToast(context,
+                  saved ? 'Removed from wishlist' : 'Saved to wishlist');
             },
           ),
         ],
@@ -55,7 +57,11 @@ class _ProductScreenState extends State<ProductScreen> {
         children: [
           AspectRatio(
             aspectRatio: 1.15,
-            child: ProductScene(glyph: product.glyph, tone: product.tone, radius: 0, iconScale: 0.30),
+            child: ProductScene(
+                glyph: product.glyph,
+                tone: product.tone,
+                radius: 0,
+                iconScale: 0.30),
           ),
           Padding(
             padding: const EdgeInsets.all(16),
@@ -64,21 +70,27 @@ class _ProductScreenState extends State<ProductScreen> {
               children: [
                 Text(product.brand.toUpperCase(),
                     style: const TextStyle(
-                        fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: 1, color: AppColors.ink400)),
+                        fontSize: 11,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 1,
+                        color: AppColors.ink400)),
                 const SizedBox(height: 6),
-                Text(product.name, style: Theme.of(context).textTheme.headlineMedium),
+                Text(product.name,
+                    style: Theme.of(context).textTheme.headlineMedium),
                 const SizedBox(height: 10),
                 Row(
                   children: [
                     RatingRow(rating: product.rating, reviews: product.reviews),
                     const SizedBox(width: 12),
-                    Text('Sold by ${product.seller}', style: Theme.of(context).textTheme.bodySmall),
+                    Text('Sold by ${product.seller}',
+                        style: Theme.of(context).textTheme.bodySmall),
                   ],
                 ),
                 const SizedBox(height: 16),
                 PriceRow(price: product.price, mrp: product.mrp, large: true),
                 const SizedBox(height: 4),
-                const Text('Inclusive of all taxes', style: TextStyle(fontSize: 12, color: AppColors.ink500)),
+                const Text('Inclusive of all taxes',
+                    style: TextStyle(fontSize: 12, color: AppColors.ink500)),
 
                 // Only shown when it genuinely applies to this price.
                 if (offer != null) ...[
@@ -91,12 +103,16 @@ class _ProductScreenState extends State<ProductScreen> {
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.local_offer_outlined, size: 17, color: AppColors.teal),
+                        const Icon(Icons.local_offer_outlined,
+                            size: 17, color: AppColors.teal),
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(
                             '${offer.code ?? offer.headline} — saves ${money(offerDiscount(offer, product.price))} on this item',
-                            style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: AppColors.teal),
+                            style: const TextStyle(
+                                fontSize: 12.5,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.teal),
                           ),
                         ),
                       ],
@@ -105,7 +121,8 @@ class _ProductScreenState extends State<ProductScreen> {
                 ],
 
                 const SizedBox(height: 22),
-                Text('Choose an option', style: Theme.of(context).textTheme.titleMedium),
+                Text('Choose an option',
+                    style: Theme.of(context).textTheme.titleMedium),
                 const SizedBox(height: 10),
                 Wrap(
                   spacing: 8,
@@ -122,7 +139,8 @@ class _ProductScreenState extends State<ProductScreen> {
                 ),
 
                 const SizedBox(height: 22),
-                Text('Delivery', style: Theme.of(context).textTheme.titleMedium),
+                Text('Delivery',
+                    style: Theme.of(context).textTheme.titleMedium),
                 const SizedBox(height: 10),
                 Row(
                   children: [
@@ -130,7 +148,8 @@ class _ProductScreenState extends State<ProductScreen> {
                       child: TextField(
                         controller: _pinController,
                         keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(hintText: 'Enter ZIP code'),
+                        decoration:
+                            const InputDecoration(hintText: 'Enter ZIP code'),
                       ),
                     ),
                     const SizedBox(width: 10),
@@ -150,11 +169,13 @@ class _ProductScreenState extends State<ProductScreen> {
                 if (_pinResult != null)
                   Padding(
                     padding: const EdgeInsets.only(top: 8),
-                    child: Text(_pinResult!, style: Theme.of(context).textTheme.bodySmall),
+                    child: Text(_pinResult!,
+                        style: Theme.of(context).textTheme.bodySmall),
                   ),
 
                 const SizedBox(height: 22),
-                Text('Highlights', style: Theme.of(context).textTheme.titleMedium),
+                Text('Highlights',
+                    style: Theme.of(context).textTheme.titleMedium),
                 const SizedBox(height: 8),
                 for (final highlight in product.highlights)
                   Padding(
@@ -164,21 +185,28 @@ class _ProductScreenState extends State<ProductScreen> {
                       children: [
                         const Padding(
                           padding: EdgeInsets.only(top: 3),
-                          child: Icon(Icons.check, size: 15, color: AppColors.teal),
+                          child: Icon(Icons.check,
+                              size: 15, color: AppColors.teal),
                         ),
                         const SizedBox(width: 8),
-                        Expanded(child: Text(highlight, style: const TextStyle(fontSize: 13.5, height: 1.4))),
+                        Expanded(
+                            child: Text(highlight,
+                                style: const TextStyle(
+                                    fontSize: 13.5, height: 1.4))),
                       ],
                     ),
                   ),
 
                 const SizedBox(height: 22),
-                Text('About this product', style: Theme.of(context).textTheme.titleMedium),
+                Text('About this product',
+                    style: Theme.of(context).textTheme.titleMedium),
                 const SizedBox(height: 6),
-                Text(product.shortDescription, style: const TextStyle(fontSize: 13.5, height: 1.5, color: AppColors.ink700)),
+                Text(product.shortDescription,
+                    style: const TextStyle(
+                        fontSize: 13.5, height: 1.5, color: AppColors.ink700)),
 
                 const SizedBox(height: 22),
-                _ReturnsRow(days: 7),
+                const _ReturnsRow(days: 7),
               ],
             ),
           ),
@@ -197,7 +225,8 @@ class _ProductScreenState extends State<ProductScreen> {
                 child: OutlinedButton(
                   onPressed: () {
                     state.addToCart(product, _variant);
-                    showToast(context, 'Added to cart', detail: '${product.name} · $_variant');
+                    showToast(context, 'Added to cart',
+                        detail: '${product.name} · $_variant');
                   },
                   child: const Text('Add to cart'),
                 ),
@@ -207,7 +236,8 @@ class _ProductScreenState extends State<ProductScreen> {
                 child: FilledButton(
                   onPressed: () {
                     state.addToCart(product, _variant);
-                    Navigator.of(context).push(MaterialPageRoute(builder: (_) => const CartScreen()));
+                    Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const CartScreen()));
                   },
                   child: const Text('Buy now'),
                 ),

@@ -100,15 +100,17 @@ class _RootShellState extends State<RootShell> {
                 const SizedBox(width: 4),
               ],
             )
-          : AppBar(title: Text(['', 'Categories', 'Search', 'Cart', 'Account'][_index])),
+          : AppBar(
+              title: Text(
+                  ['', 'Categories', 'Search', 'Cart', 'Account'][_index])),
       body: IndexedStack(index: _index, children: pages),
       floatingActionButton: _index == 0
           ? FloatingActionButton.extended(
               backgroundColor: AppColors.ink950,
               foregroundColor: Colors.white,
-              onPressed: () => openAssistant(context, AssistantMode.guide),
+              onPressed: () => openAssistant(context, AssistantMode.chat),
               icon: const Icon(Icons.auto_awesome, size: 18),
-              label: const Text('Need help?'),
+              label: const Text('SafalAssistant'),
             )
           : null,
       bottomNavigationBar: _bottomBar(state.cartCount),
@@ -120,9 +122,16 @@ class _RootShellState extends State<RootShell> {
       currentIndex: _index,
       onTap: _openTab,
       items: [
-        const BottomNavigationBarItem(icon: Icon(Icons.home_outlined), activeIcon: Icon(Icons.home), label: 'Home'),
-        const BottomNavigationBarItem(icon: Icon(Icons.grid_view_outlined), activeIcon: Icon(Icons.grid_view), label: 'Categories'),
-        const BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
+        const BottomNavigationBarItem(
+            icon: Icon(Icons.home_outlined),
+            activeIcon: Icon(Icons.home),
+            label: 'Home'),
+        const BottomNavigationBarItem(
+            icon: Icon(Icons.grid_view_outlined),
+            activeIcon: Icon(Icons.grid_view),
+            label: 'Categories'),
+        const BottomNavigationBarItem(
+            icon: Icon(Icons.search), label: 'Search'),
         BottomNavigationBarItem(
           icon: Badge(
             isLabelVisible: cartCount > 0,
@@ -131,7 +140,10 @@ class _RootShellState extends State<RootShell> {
           ),
           label: 'Cart',
         ),
-        const BottomNavigationBarItem(icon: Icon(Icons.person_outline), activeIcon: Icon(Icons.person), label: 'Account'),
+        const BottomNavigationBarItem(
+            icon: Icon(Icons.person_outline),
+            activeIcon: Icon(Icons.person),
+            label: 'Account'),
       ],
     );
   }
@@ -152,15 +164,21 @@ class _Wordmark extends StatelessWidget {
             color: AppColors.brand,
             borderRadius: BorderRadius.circular(Radii.sm),
           ),
-          child: const Icon(Icons.bar_chart_rounded, size: 18, color: Colors.white),
+          child: const Icon(Icons.bar_chart_rounded,
+              size: 18, color: Colors.white),
         ),
         const SizedBox(width: 9),
         RichText(
           text: const TextSpan(
-            style: TextStyle(fontSize: 16.5, fontWeight: FontWeight.w800, letterSpacing: -0.4, color: AppColors.ink950),
+            style: TextStyle(
+                fontSize: 16.5,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.4,
+                color: AppColors.ink950),
             children: [
               TextSpan(text: 'Safal'),
-              TextSpan(text: 'MarketHub', style: TextStyle(color: AppColors.brand)),
+              TextSpan(
+                  text: 'MarketHub', style: TextStyle(color: AppColors.brand)),
             ],
           ),
         ),
@@ -189,7 +207,8 @@ class _CategoriesTab extends StatelessWidget {
         return InkWell(
           borderRadius: BorderRadius.circular(Radii.lg),
           onTap: () => Navigator.of(context).push(
-            MaterialPageRoute(builder: (_) => ListingScreen(category: category.label)),
+            MaterialPageRoute(
+                builder: (_) => ListingScreen(category: category.label)),
           ),
           child: Container(
             padding: const EdgeInsets.all(12),
@@ -202,11 +221,17 @@ class _CategoriesTab extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                  child: ProductScene(glyph: category.glyph, tone: category.tone, radius: Radii.md),
+                  child: ProductScene(
+                      glyph: category.glyph,
+                      tone: category.tone,
+                      radius: Radii.md),
                 ),
                 const SizedBox(height: 10),
-                Text(category.label, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-                Text('${category.count} items', style: Theme.of(context).textTheme.bodySmall),
+                Text(category.label,
+                    style: const TextStyle(
+                        fontSize: 14, fontWeight: FontWeight.w600)),
+                Text('${category.count} items',
+                    style: Theme.of(context).textTheme.bodySmall),
               ],
             ),
           ),

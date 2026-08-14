@@ -83,8 +83,14 @@ const products = <Product>[
     reviews: 214,
     stock: 24,
     deliveryDays: '3–5 days',
-    shortDescription: 'Over-ear headphones with hybrid ANC and a 40-hour battery.',
-    highlights: ['Hybrid active noise cancelling', '40-hour battery', 'Multipoint Bluetooth 5.3', 'Foldable travel case'],
+    shortDescription:
+        'Over-ear headphones with hybrid ANC and a 40-hour battery.',
+    highlights: [
+      'Hybrid active noise cancelling',
+      '40-hour battery',
+      'Multipoint Bluetooth 5.3',
+      'Foldable travel case'
+    ],
     variants: ['Black', 'Sand', 'Navy'],
     badge: 'Bestseller',
   ),
@@ -102,8 +108,14 @@ const products = <Product>[
     reviews: 128,
     stock: 11,
     deliveryDays: '2–4 days',
-    shortDescription: 'Titanium case, seven-day battery and a bright always-on display.',
-    highlights: ['Titanium case', '7-day battery', 'Always-on display', 'Water resistant to 50 m'],
+    shortDescription:
+        'Titanium case, seven-day battery and a bright always-on display.',
+    highlights: [
+      'Titanium case',
+      '7-day battery',
+      'Always-on display',
+      'Water resistant to 50 m'
+    ],
     variants: ['46 mm · Titanium', '42 mm · Graphite'],
   ),
   Product(
@@ -121,7 +133,12 @@ const products = <Product>[
     stock: 60,
     deliveryDays: '3–5 days',
     shortDescription: 'Breathable cotton that survives a full day.',
-    highlights: ['100% combed cotton', 'Relaxed fit', 'Pre-shrunk', 'Machine washable'],
+    highlights: [
+      '100% combed cotton',
+      'Relaxed fit',
+      'Pre-shrunk',
+      'Machine washable'
+    ],
     variants: ['S', 'M', 'L', 'XL'],
   ),
   Product(
@@ -139,7 +156,12 @@ const products = <Product>[
     stock: 18,
     deliveryDays: '4–6 days',
     shortDescription: 'Warm light and a hand-finished ceramic base.',
-    highlights: ['Hand-finished ceramic', 'Linen shade', 'Warm 2700K bulb included', 'Inline dimmer'],
+    highlights: [
+      'Hand-finished ceramic',
+      'Linen shade',
+      'Warm 2700K bulb included',
+      'Inline dimmer'
+    ],
     variants: ['Sand', 'Slate'],
   ),
   Product(
@@ -157,7 +179,12 @@ const products = <Product>[
     stock: 120,
     deliveryDays: '2–4 days',
     shortDescription: 'A daily-use serum at an easy price.',
-    highlights: ['10% vitamin C', 'Fragrance free', 'Suitable for daily use', '30 ml'],
+    highlights: [
+      '10% vitamin C',
+      'Fragrance free',
+      'Suitable for daily use',
+      '30 ml'
+    ],
     variants: ['30 ml'],
   ),
   Product(
@@ -175,7 +202,12 @@ const products = <Product>[
     stock: 9,
     deliveryDays: '5–7 days',
     shortDescription: 'Replaces a whole rack of fixed weights.',
-    highlights: ['2.5–20 kg per side', 'Knurled grip', 'Quick-lock collars', 'Storage tray included'],
+    highlights: [
+      '2.5–20 kg per side',
+      'Knurled grip',
+      'Quick-lock collars',
+      'Storage tray included'
+    ],
     variants: ['20 kg pair'],
   ),
   Product(
@@ -193,7 +225,12 @@ const products = <Product>[
     stock: 45,
     deliveryDays: '2–3 days',
     shortDescription: 'Charges a laptop from a plug the size of a matchbox.',
-    highlights: ['65W power delivery', 'GaN — runs cool', 'Two USB-C, one USB-A', 'Foldable pins'],
+    highlights: [
+      '65W power delivery',
+      'GaN — runs cool',
+      'Two USB-C, one USB-A',
+      'Foldable pins'
+    ],
     variants: ['White', 'Black'],
   ),
   Product(
@@ -211,7 +248,12 @@ const products = <Product>[
     stock: 32,
     deliveryDays: '3–5 days',
     shortDescription: 'Carry-on sized, with a padded laptop sleeve.',
-    highlights: ['Fits most cabin limits', 'Padded 15" laptop sleeve', 'Water-resistant canvas', 'Luggage pass-through'],
+    highlights: [
+      'Fits most cabin limits',
+      'Padded 15" laptop sleeve',
+      'Water-resistant canvas',
+      'Luggage pass-through'
+    ],
     variants: ['Olive', 'Black'],
     badge: 'New',
   ),
@@ -246,10 +288,14 @@ class ShoppingNeed {
 }
 
 const shoppingNeeds = <ShoppingNeed>[
-  ShoppingNeed('For Work', 'Laptop kit and desk essentials', Glyph.charger, Tone.brand),
-  ShoppingNeed('For Travel', 'Bags, headphones and chargers', Glyph.bag, Tone.teal),
-  ShoppingNeed('For Home', 'Everyday things for your place', Glyph.lamp, Tone.gold),
-  ShoppingNeed('For Fitness', 'Kit for training days', Glyph.dumbbell, Tone.ink),
+  ShoppingNeed(
+      'For Work', 'Laptop kit and desk essentials', Glyph.charger, Tone.brand),
+  ShoppingNeed(
+      'For Travel', 'Bags, headphones and chargers', Glyph.bag, Tone.teal),
+  ShoppingNeed(
+      'For Home', 'Everyday things for your place', Glyph.lamp, Tone.gold),
+  ShoppingNeed(
+      'For Fitness', 'Kit for training days', Glyph.dumbbell, Tone.ink),
 ];
 
 class BudgetBand {

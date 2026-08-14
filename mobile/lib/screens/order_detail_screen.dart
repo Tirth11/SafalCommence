@@ -25,7 +25,8 @@ class OrderDetailScreen extends StatelessWidget {
             children: [
               StatusPill(label: orderStageLabels[reached]),
               const SizedBox(width: 10),
-              Text(order.estimate, style: Theme.of(context).textTheme.bodySmall),
+              Text(order.estimate,
+                  style: Theme.of(context).textTheme.bodySmall),
             ],
           ),
           const SizedBox(height: 20),
@@ -55,8 +56,11 @@ class OrderDetailScreen extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Courier', style: Theme.of(context).textTheme.bodySmall),
-                            Text(order.courier!, style: const TextStyle(fontWeight: FontWeight.w600)),
+                            Text('Courier',
+                                style: Theme.of(context).textTheme.bodySmall),
+                            Text(order.courier!,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w600)),
                           ],
                         ),
                       ),
@@ -64,8 +68,11 @@ class OrderDetailScreen extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Tracking', style: Theme.of(context).textTheme.bodySmall),
-                            Text(order.tracking ?? '—', style: const TextStyle(fontWeight: FontWeight.w600)),
+                            Text('Tracking',
+                                style: Theme.of(context).textTheme.bodySmall),
+                            Text(order.tracking ?? '—',
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w600)),
                           ],
                         ),
                       ),
@@ -87,7 +94,8 @@ class OrderDetailScreen extends StatelessWidget {
                   padding: const EdgeInsets.only(bottom: 10),
                   child: Row(
                     children: [
-                      ProductScene(glyph: product.glyph, tone: product.tone, size: 52),
+                      ProductScene(
+                          glyph: product.glyph, tone: product.tone, size: 52),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(
@@ -97,13 +105,16 @@ class OrderDetailScreen extends StatelessWidget {
                               product.name,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600),
+                              style: const TextStyle(
+                                  fontSize: 13.5, fontWeight: FontWeight.w600),
                             ),
-                            Text('${line.variant} · Qty ${line.qty}', style: Theme.of(context).textTheme.bodySmall),
+                            Text('${line.variant} · Qty ${line.qty}',
+                                style: Theme.of(context).textTheme.bodySmall),
                           ],
                         ),
                       ),
-                      Text(money(product.price * line.qty), style: const TextStyle(fontWeight: FontWeight.w700)),
+                      Text(money(product.price * line.qty),
+                          style: const TextStyle(fontWeight: FontWeight.w700)),
                     ],
                   ),
                 );
@@ -112,8 +123,14 @@ class OrderDetailScreen extends StatelessWidget {
 
           const Divider(height: 28),
           _Money(label: 'Subtotal', value: money(order.subtotal)),
-          if (order.discount > 0) _Money(label: 'Discount', value: '− ${money(order.discount)}', good: true),
-          _Money(label: 'Delivery', value: order.shipping == 0 ? 'Free' : money(order.shipping)),
+          if (order.discount > 0)
+            _Money(
+                label: 'Discount',
+                value: '− ${money(order.discount)}',
+                good: true),
+          _Money(
+              label: 'Delivery',
+              value: order.shipping == 0 ? 'Free' : money(order.shipping)),
           const SizedBox(height: 6),
           _Money(label: 'Total paid', value: money(order.total), bold: true),
 
@@ -134,7 +151,11 @@ class OrderDetailScreen extends StatelessWidget {
 }
 
 class _TimelineRow extends StatelessWidget {
-  const _TimelineRow({required this.label, required this.done, required this.current, required this.last});
+  const _TimelineRow(
+      {required this.label,
+      required this.done,
+      required this.current,
+      required this.last});
 
   final String label;
   final bool done;
@@ -160,13 +181,21 @@ class _TimelineRow extends StatelessWidget {
                           ? AppColors.brand
                           : AppColors.surface,
                   shape: BoxShape.circle,
-                  border: Border.all(color: active ? Colors.transparent : AppColors.ink200, width: 2),
+                  border: Border.all(
+                      color: active ? Colors.transparent : AppColors.ink200,
+                      width: 2),
                 ),
-                child: done ? const Icon(Icons.check, size: 12, color: Colors.white) : null,
+                child: done
+                    ? const Icon(Icons.check, size: 12, color: Colors.white)
+                    : null,
               ),
               if (!last)
                 Expanded(
-                  child: Container(width: 2, color: done ? AppColors.teal.withOpacity(0.35) : AppColors.ink200),
+                  child: Container(
+                      width: 2,
+                      color: done
+                          ? AppColors.teal.withValues(alpha: 0.35)
+                          : AppColors.ink200),
                 ),
             ],
           ),
@@ -189,7 +218,11 @@ class _TimelineRow extends StatelessWidget {
 }
 
 class _Money extends StatelessWidget {
-  const _Money({required this.label, required this.value, this.good = false, this.bold = false});
+  const _Money(
+      {required this.label,
+      required this.value,
+      this.good = false,
+      this.bold = false});
 
   final String label;
   final String value;
@@ -202,7 +235,10 @@ class _Money extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 3),
       child: Row(
         children: [
-          Text(label, style: TextStyle(fontSize: bold ? 15 : 13, color: bold ? AppColors.ink950 : AppColors.ink500)),
+          Text(label,
+              style: TextStyle(
+                  fontSize: bold ? 15 : 13,
+                  color: bold ? AppColors.ink950 : AppColors.ink500)),
           const Spacer(),
           Text(
             value,
@@ -247,9 +283,11 @@ class _FeedbackState extends State<_Feedback> {
         children: [
           Row(
             children: [
-              const Icon(Icons.inventory_2_outlined, size: 18, color: AppColors.teal),
+              const Icon(Icons.inventory_2_outlined,
+                  size: 18, color: AppColors.teal),
               const SizedBox(width: 8),
-              Text('How did it go?', style: Theme.of(context).textTheme.titleMedium),
+              Text('How did it go?',
+                  style: Theme.of(context).textTheme.titleMedium),
             ],
           ),
           const SizedBox(height: 4),
@@ -258,18 +296,26 @@ class _FeedbackState extends State<_Feedback> {
             style: Theme.of(context).textTheme.bodySmall,
           ),
           const SizedBox(height: 16),
-
-          const Text('How was your product?', style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600)),
-          _Stars(value: _productStars, onChanged: (v) => setState(() => _productStars = v)),
+          const Text('How was your product?',
+              style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600)),
+          _Stars(
+              value: _productStars,
+              onChanged: (v) => setState(() => _productStars = v)),
           if (_productStars > 0 && _productStars <= 3) ...[
             const SizedBox(height: 8),
-            const Text("What wasn't right?", style: TextStyle(fontSize: 12.5, color: AppColors.ink700)),
+            const Text("What wasn't right?",
+                style: TextStyle(fontSize: 12.5, color: AppColors.ink700)),
             const SizedBox(height: 6),
             Wrap(
               spacing: 8,
               runSpacing: 8,
               children: [
-                for (final issue in ['Quality', 'Damaged', 'Not as described', 'Wrong item'])
+                for (final issue in [
+                  'Quality',
+                  'Damaged',
+                  'Not as described',
+                  'Wrong item'
+                ])
                   ChoiceChip(
                     label: Text(issue),
                     selected: _issue == issue,
@@ -281,7 +327,9 @@ class _FeedbackState extends State<_Feedback> {
               const SizedBox(height: 12),
               Container(
                 padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(color: AppColors.ink100, borderRadius: BorderRadius.circular(Radii.md)),
+                decoration: BoxDecoration(
+                    color: AppColors.ink100,
+                    borderRadius: BorderRadius.circular(Radii.md)),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -293,14 +341,18 @@ class _FeedbackState extends State<_Feedback> {
                     Row(
                       children: [
                         FilledButton(
-                          style: FilledButton.styleFrom(minimumSize: const Size(0, 38)),
-                          onPressed: () => showToast(context, 'Return request started'),
+                          style: FilledButton.styleFrom(
+                              minimumSize: const Size(0, 38)),
+                          onPressed: () =>
+                              showToast(context, 'Return request started'),
                           child: const Text('Request a return'),
                         ),
                         const SizedBox(width: 8),
                         OutlinedButton(
-                          style: OutlinedButton.styleFrom(minimumSize: const Size(0, 38)),
-                          onPressed: () => showToast(context, 'Opening support'),
+                          style: OutlinedButton.styleFrom(
+                              minimumSize: const Size(0, 38)),
+                          onPressed: () =>
+                              showToast(context, 'Opening support'),
                           child: const Text('Contact support'),
                         ),
                       ],
@@ -313,15 +365,18 @@ class _FeedbackState extends State<_Feedback> {
           if (_productStars >= 4)
             Padding(
               padding: const EdgeInsets.only(top: 6),
-              child: Text('Glad you liked it.', style: Theme.of(context).textTheme.bodySmall),
+              child: Text('Glad you liked it.',
+                  style: Theme.of(context).textTheme.bodySmall),
             ),
-
           const SizedBox(height: 18),
-          const Text('How was the seller?', style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600)),
-          _Stars(value: _sellerStars, onChanged: (v) => setState(() => _sellerStars = v)),
-
+          const Text('How was the seller?',
+              style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600)),
+          _Stars(
+              value: _sellerStars,
+              onChanged: (v) => setState(() => _sellerStars = v)),
           const SizedBox(height: 18),
-          const Text('How was your delivery?', style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600)),
+          const Text('How was your delivery?',
+              style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600)),
           const SizedBox(height: 8),
           Row(
             children: [

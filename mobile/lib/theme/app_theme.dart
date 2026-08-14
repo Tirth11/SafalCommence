@@ -10,6 +10,7 @@ class AppColors {
   static const ink950 = Color(0xFF0B0A12);
   static const ink900 = Color(0xFF16151F);
   static const ink700 = Color(0xFF3F3D4E);
+  static const ink600 = Color(0xFF565366);
   static const ink500 = Color(0xFF6E6B80);
   static const ink400 = Color(0xFF908DA1);
   static const ink200 = Color(0xFFE2E0EA);
@@ -50,12 +51,33 @@ ThemeData buildAppTheme() {
     textTheme: base.textTheme
         .apply(bodyColor: AppColors.ink900, displayColor: AppColors.ink950)
         .copyWith(
-          headlineLarge: const TextStyle(fontSize: 30, height: 1.1, fontWeight: FontWeight.w700, letterSpacing: -0.8),
-          headlineMedium: const TextStyle(fontSize: 24, height: 1.15, fontWeight: FontWeight.w700, letterSpacing: -0.6),
-          titleLarge: const TextStyle(fontSize: 19, fontWeight: FontWeight.w700, letterSpacing: -0.3),
-          titleMedium: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
-          bodyMedium: const TextStyle(fontSize: 14, height: 1.45),
-          bodySmall: TextStyle(fontSize: 12, height: 1.4, color: AppColors.ink500),
+          headlineLarge: const TextStyle(
+              fontSize: 30,
+              height: 1.1,
+              fontWeight: FontWeight.w700,
+              letterSpacing: -0.8,
+              color: AppColors.ink950),
+          headlineMedium: const TextStyle(
+              fontSize: 24,
+              height: 1.15,
+              fontWeight: FontWeight.w700,
+              letterSpacing: -0.6,
+              color: AppColors.ink950),
+          titleLarge: const TextStyle(
+              fontSize: 19,
+              height: 1.18,
+              fontWeight: FontWeight.w700,
+              letterSpacing: -0.3,
+              color: AppColors.ink950),
+          titleMedium: const TextStyle(
+              fontSize: 15,
+              height: 1.25,
+              fontWeight: FontWeight.w700,
+              color: AppColors.ink950),
+          bodyMedium: const TextStyle(
+              fontSize: 14, height: 1.48, color: AppColors.ink700),
+          bodySmall: const TextStyle(
+              fontSize: 12.5, height: 1.42, color: AppColors.ink600),
         ),
     appBarTheme: const AppBarTheme(
       backgroundColor: AppColors.surface,
@@ -63,6 +85,11 @@ ThemeData buildAppTheme() {
       elevation: 0,
       scrolledUnderElevation: 0.5,
       centerTitle: false,
+      titleTextStyle: TextStyle(
+          fontSize: 17,
+          fontWeight: FontWeight.w800,
+          letterSpacing: -0.3,
+          color: AppColors.ink950),
     ),
     filledButtonTheme: FilledButtonThemeData(
       style: FilledButton.styleFrom(
@@ -71,7 +98,8 @@ ThemeData buildAppTheme() {
         minimumSize: const Size(0, 48),
         padding: const EdgeInsets.symmetric(horizontal: 20),
         textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Radii.md)),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(Radii.md)),
       ),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
@@ -80,7 +108,8 @@ ThemeData buildAppTheme() {
         minimumSize: const Size(0, 48),
         side: const BorderSide(color: AppColors.border),
         textStyle: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Radii.md)),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(Radii.md)),
       ),
     ),
     textButtonTheme: TextButtonThemeData(
@@ -107,19 +136,26 @@ ThemeData buildAppTheme() {
         borderSide: const BorderSide(color: AppColors.brand, width: 1.6),
       ),
     ),
-    dividerTheme: const DividerThemeData(color: AppColors.border, thickness: 1, space: 1),
+    dividerTheme:
+        const DividerThemeData(color: AppColors.border, thickness: 1, space: 1),
     chipTheme: base.chipTheme.copyWith(
       backgroundColor: AppColors.surface,
       side: const BorderSide(color: AppColors.border),
-      labelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: AppColors.ink700),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Radii.pill)),
+      labelStyle: const TextStyle(
+          fontSize: 13, fontWeight: FontWeight.w500, color: AppColors.ink700),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(Radii.pill)),
     ),
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor: AppColors.surface,
       selectedItemColor: AppColors.brand,
-      unselectedItemColor: AppColors.ink400,
+      unselectedItemColor: AppColors.ink600,
       type: BottomNavigationBarType.fixed,
       showUnselectedLabels: true,
+      selectedLabelStyle:
+          TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700),
+      unselectedLabelStyle:
+          TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600),
     ),
   );
 }
@@ -136,4 +172,5 @@ String money(num value) {
   return '${whole < 0 ? '-' : ''}\$$buffer';
 }
 
-int discountPercent(num mrp, num price) => mrp <= 0 ? 0 : (((mrp - price) / mrp) * 100).round();
+int discountPercent(num mrp, num price) =>
+    mrp <= 0 ? 0 : (((mrp - price) / mrp) * 100).round();

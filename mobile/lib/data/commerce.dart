@@ -77,8 +77,10 @@ class UpcomingOffer {
 }
 
 const upcomingOffers = <UpcomingOffer>[
-  UpcomingOffer('UP-1', 'Weekend Electronics Sale', 'Starts Saturday', 'Up to 25% off selected products'),
-  UpcomingOffer('UP-2', 'Travel Week', 'Starts 18 Aug', 'Bags, accessories and travel kit'),
+  UpcomingOffer('UP-1', 'Weekend Electronics Sale', 'Starts Saturday',
+      'Up to 25% off selected products'),
+  UpcomingOffer('UP-2', 'Travel Week', 'Starts 18 Aug',
+      'Bags, accessories and travel kit'),
 ];
 
 class PriceDrop {
@@ -95,9 +97,15 @@ const priceDrops = <PriceDrop>[
 ];
 
 int offerDiscount(Offer offer, int subtotal) {
-  if (subtotal < offer.minOrder) return 0;
-  if (offer.kind == OfferKind.shipping) return 0;
-  if (offer.kind == OfferKind.flat) return offer.value < subtotal ? offer.value : subtotal;
+  if (subtotal < offer.minOrder) {
+    return 0;
+  }
+  if (offer.kind == OfferKind.shipping) {
+    return 0;
+  }
+  if (offer.kind == OfferKind.flat) {
+    return offer.value < subtotal ? offer.value : subtotal;
+  }
   final raw = ((subtotal * offer.value) / 100).round();
   final cap = offer.maxDiscount;
   return cap == null ? raw : (raw < cap ? raw : cap);
@@ -113,7 +121,8 @@ Offer? bestOfferFor(int subtotal, {String? category}) {
   }).toList();
 
   if (eligible.isEmpty) return null;
-  eligible.sort((a, b) => offerDiscount(b, subtotal).compareTo(offerDiscount(a, subtotal)));
+  eligible.sort((a, b) =>
+      offerDiscount(b, subtotal).compareTo(offerDiscount(a, subtotal)));
   return eligible.first;
 }
 
@@ -121,7 +130,13 @@ Offer? bestOfferFor(int subtotal, {String? category}) {
 
 enum OrderStage { ordered, packed, shipped, outForDelivery, delivered }
 
-const orderStageLabels = <String>['Ordered', 'Packed', 'Shipped', 'Out for Delivery', 'Delivered'];
+const orderStageLabels = <String>[
+  'Ordered',
+  'Packed',
+  'Shipped',
+  'Out for Delivery',
+  'Delivered'
+];
 
 class OrderLine {
   const OrderLine(this.productId, this.variant, this.qty);
@@ -153,8 +168,8 @@ class CustomerOrder {
   final String? courier;
   final String? tracking;
 
-  int get subtotal =>
-      lines.fold(0, (sum, line) => sum + productById(line.productId).price * line.qty);
+  int get subtotal => lines.fold(
+      0, (sum, line) => sum + productById(line.productId).price * line.qty);
 
   int get total => subtotal - discount + shipping;
 
@@ -167,7 +182,10 @@ const customerOrders = <CustomerOrder>[
     placedOn: '12 Aug 2026',
     stage: OrderStage.shipped,
     estimate: 'Arriving 16 Aug',
-    lines: [OrderLine('SH-P-1042', 'Black', 1), OrderLine('SH-P-1056', 'Olive', 1)],
+    lines: [
+      OrderLine('SH-P-1042', 'Black', 1),
+      OrderLine('SH-P-1056', 'Olive', 1)
+    ],
     discount: 5,
     shipping: 5,
     courier: 'Delhivery',
@@ -281,7 +299,8 @@ class Match {
 /// Budget is a promise, not a preference — nothing over the cap is returned.
 /// The category only widens when it would otherwise leave the shopper with
 /// nothing, and then the reason says so out loud.
-List<Match> findMatches({String? category, String? budget, String? priority, int limit = 4}) {
+List<Match> findMatches(
+    {String? category, String? budget, String? priority, int limit = 4}) {
   final cap = (budget == null || budget == 'any') ? 1 << 30 : int.parse(budget);
   final affordable = products.where((p) => p.price <= cap).toList();
 
@@ -295,8 +314,13 @@ List<Match> findMatches({String? category, String? budget, String? priority, int
   pool.sort((a, b) {
     double score(Product p) {
       var value = 1.0;
-      if (p.price <= cap * 0.75) value += 1;
-      if (priority != null && (_qualities[p.id] ?? const []).contains(priority)) value += 4;
+      if (p.price <= cap * 0.75) {
+        value += 1;
+      }
+      if (priority != null &&
+          (_qualities[p.id] ?? const []).contains(priority)) {
+        value += 4;
+      }
       return value + (p.rating - 4);
     }
 
@@ -304,13 +328,23 @@ List<Match> findMatches({String? category, String? budget, String? priority, int
   });
 
   return pool.take(limit).map((product) {
-    if (widened) return Match(product, 'Nothing in that category in budget — this is close');
-    if (priority != null && (_qualities[product.id] ?? const []).contains(priority)) {
+    if (widened) {
+      return Match(
+          product, 'Nothing in that category in budget — this is close');
+    }
+    if (priority != null &&
+        (_qualities[product.id] ?? const []).contains(priority)) {
       return Match(product, _priorityWords[priority] ?? 'Good match');
     }
-    if (cap != 1 << 30 && product.price <= cap * 0.75) return Match(product, 'Comfortably within your budget');
-    if (cap != 1 << 30) return Match(product, 'Good match for your budget');
-    if (product.rating >= 4.5) return Match(product, 'Highly rated by shoppers');
+    if (cap != 1 << 30 && product.price <= cap * 0.75) {
+      return Match(product, 'Comfortably within your budget');
+    }
+    if (cap != 1 << 30) {
+      return Match(product, 'Good match for your budget');
+    }
+    if (product.rating >= 4.5) {
+      return Match(product, 'Highly rated by shoppers');
+    }
     return Match(product, product.shortDescription);
   }).toList();
 }
@@ -321,7 +355,8 @@ List<Match> searchProducts(String query, {int limit = 4}) {
   final q = query.toLowerCase().trim();
   if (q.isEmpty) return const [];
 
-  final priceMatch = RegExp(r'(?:under|below|less than)\s*\$?\s*(\d+)').firstMatch(q);
+  final priceMatch =
+      RegExp(r'(?:under|below|less than)\s*\$?\s*(\d+)').firstMatch(q);
   final cap = priceMatch != null ? int.parse(priceMatch.group(1)!) : 1 << 30;
   final words = q
       .replaceAll(RegExp(r'(?:under|below|less than)\s*\$?\s*\d+'), '')
@@ -332,7 +367,8 @@ List<Match> searchProducts(String query, {int limit = 4}) {
   final scored = <MapEntry<Product, int>>[];
   for (final product in products) {
     final haystack =
-        '${product.name} ${product.brand} ${product.category} ${product.shortDescription}'.toLowerCase();
+        '${product.name} ${product.brand} ${product.category} ${product.shortDescription}'
+            .toLowerCase();
     final hits = words.where(haystack.contains).length;
     if (words.isNotEmpty && hits == 0) continue;
     if (product.price > cap) continue;

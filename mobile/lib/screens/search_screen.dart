@@ -58,7 +58,8 @@ class _SearchScreenState extends State<SearchScreen> {
                 onSubmitted: _run,
                 decoration: InputDecoration(
                   hintText: 'Search products, brands or categories',
-                  prefixIcon: const Icon(Icons.search, size: 21, color: AppColors.ink400),
+                  prefixIcon: const Icon(Icons.search,
+                      size: 21, color: AppColors.ink400),
                   suffixIcon: _controller.text.isEmpty
                       ? null
                       : IconButton(
@@ -76,8 +77,10 @@ class _SearchScreenState extends State<SearchScreen> {
                 children: [
                   Expanded(
                     child: OutlinedButton.icon(
-                      style: OutlinedButton.styleFrom(minimumSize: const Size(0, 42)),
-                      onPressed: () => openAssistant(context, AssistantMode.photo),
+                      style: OutlinedButton.styleFrom(
+                          minimumSize: const Size(0, 42)),
+                      onPressed: () =>
+                          openAssistant(context, AssistantMode.photo),
                       icon: const Icon(Icons.photo_camera_outlined, size: 17),
                       label: const Text('Photo'),
                     ),
@@ -86,8 +89,10 @@ class _SearchScreenState extends State<SearchScreen> {
                   Expanded(
                     flex: 2,
                     child: FilledButton.icon(
-                      style: FilledButton.styleFrom(minimumSize: const Size(0, 42)),
-                      onPressed: () => openAssistant(context, AssistantMode.guide),
+                      style: FilledButton.styleFrom(
+                          minimumSize: const Size(0, 42)),
+                      onPressed: () =>
+                          openAssistant(context, AssistantMode.guide),
                       icon: const Icon(Icons.auto_awesome, size: 17),
                       label: const Text('Help me choose'),
                     ),
@@ -108,7 +113,8 @@ class _SearchScreenState extends State<SearchScreen> {
       padding: const EdgeInsets.all(16),
       children: [
         if (_recent.isNotEmpty) ...[
-          Text('Recent searches', style: Theme.of(context).textTheme.titleMedium),
+          Text('Recent searches',
+              style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 10),
           Wrap(
             spacing: 8,
@@ -116,7 +122,8 @@ class _SearchScreenState extends State<SearchScreen> {
             children: [
               for (final term in _recent)
                 ActionChip(
-                  avatar: const Icon(Icons.history, size: 15, color: AppColors.ink400),
+                  avatar: const Icon(Icons.history,
+                      size: 15, color: AppColors.ink400),
                   label: Text(term),
                   onPressed: () => _run(term),
                 ),
@@ -124,26 +131,34 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
           const SizedBox(height: 24),
         ],
-        Text('Try something like', style: Theme.of(context).textTheme.titleMedium),
+        Text('Try something like',
+            style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: 10),
         Wrap(
           spacing: 8,
           runSpacing: 8,
           children: [
             for (final example in searchExamples)
-              ActionChip(label: Text('“$example”'), onPressed: () => _run(example)),
+              ActionChip(
+                  label: Text('“$example”'), onPressed: () => _run(example)),
           ],
         ),
         const SizedBox(height: 24),
-        Text('Browse categories', style: Theme.of(context).textTheme.titleMedium),
+        Text('Browse categories',
+            style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: 10),
         for (final category in categories)
           ListTile(
             contentPadding: EdgeInsets.zero,
-            leading: ProductScene(glyph: category.glyph, tone: category.tone, size: 40),
-            title: Text(category.label, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
-            subtitle: Text('${category.count} items', style: Theme.of(context).textTheme.bodySmall),
-            trailing: const Icon(Icons.chevron_right, size: 20, color: AppColors.ink400),
+            leading: ProductScene(
+                glyph: category.glyph, tone: category.tone, size: 40),
+            title: Text(category.label,
+                style:
+                    const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+            subtitle: Text('${category.count} items',
+                style: Theme.of(context).textTheme.bodySmall),
+            trailing: const Icon(Icons.chevron_right,
+                size: 20, color: AppColors.ink400),
             onTap: () => _run(category.label),
           ),
       ],
@@ -155,7 +170,8 @@ class _SearchScreenState extends State<SearchScreen> {
       return EmptyState(
         icon: Icons.search_off,
         title: 'Nothing matched “${_controller.text}”',
-        body: 'Try fewer words, or let us ask you a couple of questions instead.',
+        body:
+            'Try fewer words, or let us ask you a couple of questions instead.',
         action: FilledButton(
           onPressed: () => openAssistant(context, AssistantMode.guide),
           child: const Text('Help me choose'),
@@ -169,7 +185,7 @@ class _SearchScreenState extends State<SearchScreen> {
         crossAxisCount: 2,
         crossAxisSpacing: 12,
         mainAxisSpacing: 12,
-        childAspectRatio: 0.54,
+        childAspectRatio: 0.48,
       ),
       itemCount: _results.length,
       itemBuilder: (context, index) => ProductCard(

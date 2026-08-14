@@ -10,7 +10,11 @@ import '../widgets/common.dart';
 /// charged until the shopper sees what they are buying, where it is going and
 /// which method pays for it, and presses the button themselves.
 class CheckoutScreen extends StatefulWidget {
-  const CheckoutScreen({super.key, required this.total, required this.discount, required this.shipping});
+  const CheckoutScreen(
+      {super.key,
+      required this.total,
+      required this.discount,
+      required this.shipping});
 
   final int total;
   final int discount;
@@ -94,7 +98,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       _confirmAndPay();
                     }
                   },
-                  child: Text(_step < 3 ? 'Continue' : 'Pay ${money(_payable)}'),
+                  child:
+                      Text(_step < 3 ? 'Continue' : 'Pay ${money(_payable)}'),
                 ),
               ),
             ],
@@ -105,7 +110,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   List<Widget> _addressStep() => [
-        Text('Where should it go?', style: Theme.of(context).textTheme.titleLarge),
+        Text('Where should it go?',
+            style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: 12),
         for (var i = 0; i < _addresses.length; i++)
           _SelectCard(
@@ -116,14 +122,16 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           ),
         const SizedBox(height: 8),
         OutlinedButton.icon(
-          onPressed: () => showToast(context, 'Add address', detail: 'Not wired up in this mockup'),
+          onPressed: () => showToast(context, 'Add address',
+              detail: 'Not wired up in this mockup'),
           icon: const Icon(Icons.add, size: 17),
           label: const Text('Add a new address'),
         ),
       ];
 
   List<Widget> _deliveryStep() => [
-        Text('How fast do you need it?', style: Theme.of(context).textTheme.titleLarge),
+        Text('How fast do you need it?',
+            style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: 12),
         for (var i = 0; i < _deliveryOptions.length; i++)
           _SelectCard(
@@ -145,7 +153,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           padding: const EdgeInsets.only(bottom: 4),
           child: Row(
             children: [
-              ProductScene(glyph: line.product.glyph, tone: line.product.tone, size: 44),
+              ProductScene(
+                  glyph: line.product.glyph, tone: line.product.tone, size: 44),
               const SizedBox(width: 10),
               Expanded(
                 child: Column(
@@ -155,47 +164,65 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                       line.product.name,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                      style: const TextStyle(
+                          fontSize: 13, fontWeight: FontWeight.w600),
                     ),
-                    Text('${line.variant} · Qty ${line.qty}', style: Theme.of(context).textTheme.bodySmall),
+                    Text('${line.variant} · Qty ${line.qty}',
+                        style: Theme.of(context).textTheme.bodySmall),
                   ],
                 ),
               ),
-              Text(money(line.lineTotal), style: const TextStyle(fontWeight: FontWeight.w700)),
+              Text(money(line.lineTotal),
+                  style: const TextStyle(fontWeight: FontWeight.w700)),
             ],
           ),
         ),
       const Divider(height: 28),
       _Line(label: 'Deliver to', value: _addresses[_address].$1),
-      _Line(label: 'Delivery', value: '${_deliveryOptions[_delivery].$1} · ${_deliveryOptions[_delivery].$2}'),
-      if (widget.discount > 0) _Line(label: 'Offer discount', value: '− ${money(widget.discount)}', good: true),
+      _Line(
+          label: 'Delivery',
+          value:
+              '${_deliveryOptions[_delivery].$1} · ${_deliveryOptions[_delivery].$2}'),
+      if (widget.discount > 0)
+        _Line(
+            label: 'Offer discount',
+            value: '− ${money(widget.discount)}',
+            good: true),
       _Line(label: 'Delivery charge', value: money(_deliveryFee)),
       const Divider(height: 28),
       Row(
         children: [
-          const Text('Total payable', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
+          const Text('Total payable',
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),
           const Spacer(),
-          Text(money(_payable), style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+          Text(money(_payable),
+              style:
+                  const TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
         ],
       ),
     ];
   }
 
   List<Widget> _paymentStep() => [
-        Text('How would you like to pay?', style: Theme.of(context).textTheme.titleLarge),
+        Text('How would you like to pay?',
+            style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: 12),
         for (var i = 0; i < _payments.length; i++)
           _SelectCard(
             selected: _payment == i,
             onTap: () => setState(() => _payment = i),
             title: _payments[i].$1,
-            subtitle: i == 0 ? 'Saved card · expires 08/29' : 'Pay the courier when it arrives',
+            subtitle: i == 0
+                ? 'Saved card · expires 08/29'
+                : 'Pay the courier when it arrives',
             icon: _payments[i].$2,
           ),
         const SizedBox(height: 14),
         Container(
           padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(color: AppColors.ink100, borderRadius: BorderRadius.circular(Radii.md)),
+          decoration: BoxDecoration(
+              color: AppColors.ink100,
+              borderRadius: BorderRadius.circular(Radii.md)),
           child: const Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -204,7 +231,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               Expanded(
                 child: Text(
                   'Handled by our payment provider. SafalMarketHub never stores your card number.',
-                  style: TextStyle(fontSize: 12, height: 1.4, color: AppColors.ink500),
+                  style: TextStyle(
+                      fontSize: 12, height: 1.4, color: AppColors.ink500),
                 ),
               ),
             ],
@@ -218,7 +246,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     showModalBottomSheet<void>(
       context: context,
       backgroundColor: AppColors.surface,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(Radii.xl))),
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(Radii.xl))),
       builder: (sheetContext) => SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(20),
@@ -228,16 +257,22 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             children: [
               const Row(
                 children: [
-                  Icon(Icons.verified_user_outlined, size: 16, color: AppColors.teal),
+                  Icon(Icons.verified_user_outlined,
+                      size: 16, color: AppColors.teal),
                   SizedBox(width: 6),
                   Text(
                     'CONFIRM AND PAY',
-                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: 1, color: AppColors.teal),
+                    style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 1,
+                        color: AppColors.teal),
                   ),
                 ],
               ),
               const SizedBox(height: 12),
-              Text(money(_payable), style: Theme.of(context).textTheme.headlineLarge),
+              Text(money(_payable),
+                  style: Theme.of(context).textTheme.headlineLarge),
               const SizedBox(height: 14),
               _Line(label: 'Deliver to', value: _addresses[_address].$1),
               _Line(label: 'Paying with', value: _payments[_payment].$1),
@@ -293,7 +328,8 @@ class _Stepper extends StatelessWidget {
                     Container(
                       height: 4,
                       decoration: BoxDecoration(
-                        color: i <= current ? AppColors.brand : AppColors.ink200,
+                        color:
+                            i <= current ? AppColors.brand : AppColors.ink200,
                         borderRadius: BorderRadius.circular(Radii.pill),
                       ),
                     ),
@@ -302,8 +338,10 @@ class _Stepper extends StatelessWidget {
                       stages[i],
                       style: TextStyle(
                         fontSize: 10.5,
-                        fontWeight: i == current ? FontWeight.w700 : FontWeight.w400,
-                        color: i <= current ? AppColors.ink700 : AppColors.ink400,
+                        fontWeight:
+                            i == current ? FontWeight.w700 : FontWeight.w400,
+                        color:
+                            i <= current ? AppColors.ink700 : AppColors.ink400,
                       ),
                     ),
                   ],
@@ -342,31 +380,43 @@ class _SelectCard extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: selected ? AppColors.brandSoft.withOpacity(0.5) : AppColors.surface,
+          color: selected
+              ? AppColors.brandSoft.withValues(alpha: 0.5)
+              : AppColors.surface,
           borderRadius: BorderRadius.circular(Radii.md),
-          border: Border.all(color: selected ? AppColors.brand : AppColors.border, width: selected ? 1.5 : 1),
+          border: Border.all(
+              color: selected ? AppColors.brand : AppColors.border,
+              width: selected ? 1.5 : 1),
         ),
         child: Row(
           children: [
             Icon(
-              selected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+              selected
+                  ? Icons.radio_button_checked
+                  : Icons.radio_button_unchecked,
               size: 19,
               color: selected ? AppColors.brand : AppColors.ink400,
             ),
             const SizedBox(width: 12),
-            if (icon != null) ...[Icon(icon, size: 18, color: AppColors.ink500), const SizedBox(width: 10)],
+            if (icon != null) ...[
+              Icon(icon, size: 18, color: AppColors.ink500),
+              const SizedBox(width: 10)
+            ],
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+                  Text(title,
+                      style: const TextStyle(
+                          fontSize: 14, fontWeight: FontWeight.w600)),
                   const SizedBox(height: 2),
                   Text(subtitle, style: Theme.of(context).textTheme.bodySmall),
                 ],
               ),
             ),
             if (trailing != null)
-              Text(trailing!, style: const TextStyle(fontWeight: FontWeight.w700)),
+              Text(trailing!,
+                  style: const TextStyle(fontWeight: FontWeight.w700)),
           ],
         ),
       ),
@@ -387,7 +437,8 @@ class _Line extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
-          Text(label, style: const TextStyle(fontSize: 13, color: AppColors.ink500)),
+          Text(label,
+              style: const TextStyle(fontSize: 13, color: AppColors.ink500)),
           const Spacer(),
           Flexible(
             child: Text(
@@ -423,11 +474,14 @@ class _OrderPlaced extends StatelessWidget {
                 Container(
                   width: 64,
                   height: 64,
-                  decoration: const BoxDecoration(color: AppColors.tealSoft, shape: BoxShape.circle),
-                  child: const Icon(Icons.check_rounded, size: 32, color: AppColors.teal),
+                  decoration: const BoxDecoration(
+                      color: AppColors.tealSoft, shape: BoxShape.circle),
+                  child: const Icon(Icons.check_rounded,
+                      size: 32, color: AppColors.teal),
                 ),
                 const SizedBox(height: 20),
-                Text('Order placed 🎉', style: Theme.of(context).textTheme.headlineMedium),
+                Text('Order placed 🎉',
+                    style: Theme.of(context).textTheme.headlineMedium),
                 const SizedBox(height: 8),
                 Text(
                   '${money(total)} paid · arriving 16 Aug\nWe have emailed your confirmation.',
@@ -438,7 +492,8 @@ class _OrderPlaced extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton(
-                    onPressed: () => Navigator.of(context).popUntil((route) => route.isFirst),
+                    onPressed: () => Navigator.of(context)
+                        .popUntil((route) => route.isFirst),
                     child: const Text('Keep shopping'),
                   ),
                 ),

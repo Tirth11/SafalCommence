@@ -32,7 +32,8 @@ class _ListingScreenState extends State<ListingScreen> {
       if (_maxPrice != null && product.price > _maxPrice!) return false;
       if (_inStockOnly && product.stock == 0) return false;
       if (widget.query != null && widget.query!.isNotEmpty) {
-        final haystack = '${product.name} ${product.brand} ${product.category}'.toLowerCase();
+        final haystack = '${product.name} ${product.brand} ${product.category}'
+            .toLowerCase();
         if (!haystack.contains(widget.query!.toLowerCase())) return false;
       }
       return true;
@@ -57,7 +58,8 @@ class _ListingScreenState extends State<ListingScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.query != null ? 'Results' : _category ?? 'All products'),
+        title: Text(
+            widget.query != null ? 'Results' : _category ?? 'All products'),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(52),
           child: SizedBox(
@@ -75,13 +77,19 @@ class _ListingScreenState extends State<ListingScreen> {
                   label: _category ?? 'Category',
                   selected: _category != null,
                   onTap: _pickCategory,
-                  onClear: _category == null ? null : () => setState(() => _category = null),
+                  onClear: _category == null
+                      ? null
+                      : () => setState(() => _category = null),
                 ),
                 _FilterChip(
-                  label: _maxPrice == null ? 'Budget' : 'Under ${money(_maxPrice!)}',
+                  label: _maxPrice == null
+                      ? 'Budget'
+                      : 'Under ${money(_maxPrice!)}',
                   selected: _maxPrice != null,
                   onTap: _pickBudget,
-                  onClear: _maxPrice == null ? null : () => setState(() => _maxPrice = null),
+                  onClear: _maxPrice == null
+                      ? null
+                      : () => setState(() => _maxPrice = null),
                 ),
                 _FilterChip(
                   label: 'In stock',
@@ -97,7 +105,8 @@ class _ListingScreenState extends State<ListingScreen> {
           ? EmptyState(
               icon: Icons.search_off,
               title: 'No products found',
-              body: 'Nothing matches these filters. Try widening your price range.',
+              body:
+                  'Nothing matches these filters. Try widening your price range.',
               action: OutlinedButton(
                 onPressed: () => setState(() {
                   _category = null;
@@ -122,14 +131,16 @@ class _ListingScreenState extends State<ListingScreen> {
                 Expanded(
                   child: GridView.builder(
                     padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       crossAxisSpacing: 12,
                       mainAxisSpacing: 12,
-                      childAspectRatio: 0.56,
+                      childAspectRatio: 0.48,
                     ),
                     itemCount: results.length,
-                    itemBuilder: (context, index) => ProductCard(product: results[index]),
+                    itemBuilder: (context, index) =>
+                        ProductCard(product: results[index]),
                   ),
                 ),
               ],
@@ -147,26 +158,29 @@ class _ListingScreenState extends State<ListingScreen> {
   void _pickSort() {
     showModalBottomSheet<void>(
       context: context,
-      builder: (_) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            for (final option in _Sort.values)
-              RadioListTile<_Sort>(
-                value: option,
-                groupValue: _sort,
-                title: Text(switch (option) {
-                  _Sort.relevance => 'Relevance',
-                  _Sort.priceLow => 'Price: low to high',
-                  _Sort.priceHigh => 'Price: high to low',
-                  _Sort.rating => 'Top rated',
-                }),
-                onChanged: (value) {
-                  setState(() => _sort = value!);
-                  Navigator.of(context).pop();
-                },
-              ),
-          ],
+      builder: (sheetContext) => SafeArea(
+        child: RadioGroup<_Sort>(
+          groupValue: _sort,
+          onChanged: (value) {
+            if (value == null) return;
+            setState(() => _sort = value);
+            Navigator.of(sheetContext).pop();
+          },
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (final option in _Sort.values)
+                RadioListTile<_Sort>(
+                  value: option,
+                  title: Text(switch (option) {
+                    _Sort.relevance => 'Relevance',
+                    _Sort.priceLow => 'Price: low to high',
+                    _Sort.priceHigh => 'Price: high to low',
+                    _Sort.rating => 'Top rated',
+                  }),
+                ),
+            ],
+          ),
         ),
       ),
     );
@@ -181,9 +195,12 @@ class _ListingScreenState extends State<ListingScreen> {
           children: [
             for (final category in categories)
               ListTile(
-                leading: ProductScene(glyph: category.glyph, tone: category.tone, size: 36),
+                leading: ProductScene(
+                    glyph: category.glyph, tone: category.tone, size: 36),
                 title: Text(category.label),
-                trailing: _category == category.label ? const Icon(Icons.check, color: AppColors.brand) : null,
+                trailing: _category == category.label
+                    ? const Icon(Icons.check, color: AppColors.brand)
+                    : null,
                 onTap: () {
                   setState(() => _category = category.label);
                   Navigator.of(context).pop();
@@ -205,7 +222,9 @@ class _ListingScreenState extends State<ListingScreen> {
             for (final band in budgetBands)
               ListTile(
                 title: Text(band.label),
-                trailing: _maxPrice == band.max ? const Icon(Icons.check, color: AppColors.brand) : null,
+                trailing: _maxPrice == band.max
+                    ? const Icon(Icons.check, color: AppColors.brand)
+                    : null,
                 onTap: () {
                   setState(() => _maxPrice = band.max);
                   Navigator.of(context).pop();
@@ -219,7 +238,12 @@ class _ListingScreenState extends State<ListingScreen> {
 }
 
 class _FilterChip extends StatelessWidget {
-  const _FilterChip({required this.label, required this.onTap, this.selected = false, this.icon, this.onClear});
+  const _FilterChip(
+      {required this.label,
+      required this.onTap,
+      this.selected = false,
+      this.icon,
+      this.onClear});
 
   final String label;
   final VoidCallback onTap;
@@ -239,12 +263,16 @@ class _FilterChip extends StatelessWidget {
           decoration: BoxDecoration(
             color: selected ? AppColors.brandSoft : AppColors.surface,
             borderRadius: BorderRadius.circular(Radii.pill),
-            border: Border.all(color: selected ? AppColors.brand : AppColors.border),
+            border: Border.all(
+                color: selected ? AppColors.brand : AppColors.border),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (icon != null) ...[Icon(icon, size: 15, color: AppColors.ink500), const SizedBox(width: 5)],
+              if (icon != null) ...[
+                Icon(icon, size: 15, color: AppColors.ink500),
+                const SizedBox(width: 5)
+              ],
               Text(
                 label,
                 style: TextStyle(
@@ -257,7 +285,8 @@ class _FilterChip extends StatelessWidget {
                 const SizedBox(width: 5),
                 GestureDetector(
                   onTap: onClear,
-                  child: const Icon(Icons.close, size: 14, color: AppColors.brand),
+                  child:
+                      const Icon(Icons.close, size: 14, color: AppColors.brand),
                 ),
               ],
             ],

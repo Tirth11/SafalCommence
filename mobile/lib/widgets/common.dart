@@ -60,7 +60,7 @@ class ProductScene extends StatelessWidget {
             child: Icon(
               iconFor(glyph),
               size: box * iconScale,
-              color: _inks[tone]!.withOpacity(0.85),
+              color: _inks[tone]!.withValues(alpha: 0.85),
             ),
           ),
         );
@@ -72,7 +72,12 @@ class ProductScene extends StatelessWidget {
 /// Section heading with an optional trailing action — the rhythm every
 /// scrolling screen uses.
 class SectionHeader extends StatelessWidget {
-  const SectionHeader({super.key, required this.title, this.subtitle, this.actionLabel, this.onAction});
+  const SectionHeader(
+      {super.key,
+      required this.title,
+      this.subtitle,
+      this.actionLabel,
+      this.onAction});
 
   final String title;
   final String? subtitle;
@@ -84,7 +89,7 @@ class SectionHeader extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 24, 16, 12),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Expanded(
             child: Column(
@@ -93,8 +98,13 @@ class SectionHeader extends StatelessWidget {
                 Text(title, style: Theme.of(context).textTheme.titleLarge),
                 if (subtitle != null)
                   Padding(
-                    padding: const EdgeInsets.only(top: 2),
-                    child: Text(subtitle!, style: Theme.of(context).textTheme.bodySmall),
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Text(
+                      subtitle!,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
                   ),
               ],
             ),
@@ -140,13 +150,14 @@ class StatusPill extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.10),
+        color: color.withValues(alpha: 0.10),
         borderRadius: BorderRadius.circular(Radii.pill),
-        border: Border.all(color: color.withOpacity(0.25)),
+        border: Border.all(color: color.withValues(alpha: 0.25)),
       ),
       child: Text(
         label,
-        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: color),
+        style:
+            TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: color),
       ),
     );
   }
@@ -174,9 +185,13 @@ class ReasonChip extends StatelessWidget {
           Flexible(
             child: Text(
               text,
-              maxLines: 1,
+              maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.teal),
+              style: const TextStyle(
+                  fontSize: 11,
+                  height: 1.2,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.teal),
             ),
           ),
         ],
@@ -200,11 +215,15 @@ class RatingRow extends StatelessWidget {
         const SizedBox(width: 3),
         Text(
           rating.toStringAsFixed(1),
-          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.ink700),
+          style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w800,
+              color: AppColors.ink700),
         ),
         if (reviews != null) ...[
           const SizedBox(width: 4),
-          Text('($reviews)', style: const TextStyle(fontSize: 12, color: AppColors.ink500)),
+          Text('($reviews)',
+              style: const TextStyle(fontSize: 12, color: AppColors.ink600)),
         ],
       ],
     );
@@ -212,7 +231,8 @@ class RatingRow extends StatelessWidget {
 }
 
 class PriceRow extends StatelessWidget {
-  const PriceRow({super.key, required this.price, required this.mrp, this.large = false});
+  const PriceRow(
+      {super.key, required this.price, required this.mrp, this.large = false});
 
   final int price;
   final int mrp;
@@ -238,7 +258,7 @@ class PriceRow extends StatelessWidget {
           money(mrp),
           style: TextStyle(
             fontSize: large ? 15 : 12,
-            color: AppColors.ink400,
+            color: AppColors.ink600,
             decoration: TextDecoration.lineThrough,
           ),
         ),
@@ -258,7 +278,11 @@ class PriceRow extends StatelessWidget {
 
 /// A row of horizontally scrolling cards — used for offers and product rails.
 class HorizontalRail extends StatelessWidget {
-  const HorizontalRail({super.key, required this.children, this.height = 268, this.itemWidth = 168});
+  const HorizontalRail(
+      {super.key,
+      required this.children,
+      this.height = 430,
+      this.itemWidth = 168});
 
   final List<Widget> children;
   final double height;
@@ -273,14 +297,20 @@ class HorizontalRail extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         itemCount: children.length,
         separatorBuilder: (_, __) => const SizedBox(width: 12),
-        itemBuilder: (context, index) => SizedBox(width: itemWidth, child: children[index]),
+        itemBuilder: (context, index) =>
+            SizedBox(width: itemWidth, child: children[index]),
       ),
     );
   }
 }
 
 class EmptyState extends StatelessWidget {
-  const EmptyState({super.key, required this.icon, required this.title, required this.body, this.action});
+  const EmptyState(
+      {super.key,
+      required this.icon,
+      required this.title,
+      required this.body,
+      this.action});
 
   final IconData icon;
   final String title;
@@ -298,13 +328,18 @@ class EmptyState extends StatelessWidget {
             Container(
               width: 56,
               height: 56,
-              decoration: const BoxDecoration(color: AppColors.ink100, shape: BoxShape.circle),
+              decoration: const BoxDecoration(
+                  color: AppColors.ink100, shape: BoxShape.circle),
               child: Icon(icon, color: AppColors.ink400),
             ),
             const SizedBox(height: 16),
-            Text(title, style: Theme.of(context).textTheme.titleLarge, textAlign: TextAlign.center),
+            Text(title,
+                style: Theme.of(context).textTheme.titleLarge,
+                textAlign: TextAlign.center),
             const SizedBox(height: 6),
-            Text(body, style: Theme.of(context).textTheme.bodySmall, textAlign: TextAlign.center),
+            Text(body,
+                style: Theme.of(context).textTheme.bodySmall,
+                textAlign: TextAlign.center),
             if (action != null) ...[const SizedBox(height: 20), action!],
           ],
         ),
@@ -321,14 +356,17 @@ void showToast(BuildContext context, String message, {String? detail}) {
         behavior: SnackBarBehavior.floating,
         backgroundColor: AppColors.ink950,
         margin: const EdgeInsets.all(16),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Radii.md)),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(Radii.md)),
         content: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(message, style: const TextStyle(fontWeight: FontWeight.w600)),
             if (detail != null)
-              Text(detail, style: const TextStyle(fontSize: 12, color: Color(0xFFC9C7D6))),
+              Text(detail,
+                  style:
+                      const TextStyle(fontSize: 12, color: Color(0xFFC9C7D6))),
           ],
         ),
       ),

@@ -41,11 +41,15 @@ class AccountScreen extends StatelessWidget {
               Container(
                 width: 48,
                 height: 48,
-                decoration: const BoxDecoration(color: AppColors.brand, shape: BoxShape.circle),
+                decoration: const BoxDecoration(
+                    color: AppColors.brand, shape: BoxShape.circle),
                 child: Center(
                   child: Text(
                     state.customerName!.substring(0, 1),
-                    style: const TextStyle(color: Colors.white, fontSize: 19, fontWeight: FontWeight.w700),
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 19,
+                        fontWeight: FontWeight.w700),
                   ),
                 ),
               ),
@@ -54,38 +58,59 @@ class AccountScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(state.customerName!, style: Theme.of(context).textTheme.titleLarge),
-                    Text('rahul@gmail.com', style: Theme.of(context).textTheme.bodySmall),
+                    Text(state.customerName!,
+                        style: Theme.of(context).textTheme.titleLarge),
+                    Text('rahul@gmail.com',
+                        style: Theme.of(context).textTheme.bodySmall),
                   ],
                 ),
               ),
             ],
           ),
         ),
-
         const SectionHeader(title: 'Your orders'),
         for (final order in customerOrders.take(3)) _OrderRow(order: order),
-
         const SectionHeader(title: 'Shortcuts'),
         _MenuRow(
           icon: Icons.local_offer_outlined,
           label: 'My offers',
           detail: '${state.savedOffers.length} saved',
-          onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const OffersScreen())),
+          onTap: () => Navigator.of(context)
+              .push(MaterialPageRoute(builder: (_) => const OffersScreen())),
         ),
         _MenuRow(
           icon: Icons.favorite_border,
           label: 'Wishlist',
           detail: '${state.wishlist.length} items',
-          onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const _WishlistScreen())),
+          onTap: () => Navigator.of(context)
+              .push(MaterialPageRoute(builder: (_) => const _WishlistScreen())),
         ),
-        _MenuRow(icon: Icons.location_on_outlined, label: 'Addresses', detail: '2 saved', onTap: () => showToast(context, 'Addresses')),
-        _MenuRow(icon: Icons.credit_card, label: 'Payment methods', detail: 'Visa •••• 4242', onTap: () => showToast(context, 'Payment methods')),
-        _MenuRow(icon: Icons.replay_outlined, label: 'Returns & refunds', onTap: () => showToast(context, 'Returns')),
-        _MenuRow(icon: Icons.rate_review_outlined, label: 'My reviews', onTap: () => showToast(context, 'Reviews')),
-        _MenuRow(icon: Icons.notifications_none, label: 'Notifications', onTap: () => showToast(context, 'Notifications')),
-        _MenuRow(icon: Icons.help_outline, label: 'Help & support', onTap: () => showToast(context, 'Support')),
-
+        _MenuRow(
+            icon: Icons.location_on_outlined,
+            label: 'Addresses',
+            detail: '2 saved',
+            onTap: () => showToast(context, 'Addresses')),
+        _MenuRow(
+            icon: Icons.credit_card,
+            label: 'Payment methods',
+            detail: 'Visa •••• 4242',
+            onTap: () => showToast(context, 'Payment methods')),
+        _MenuRow(
+            icon: Icons.replay_outlined,
+            label: 'Returns & refunds',
+            onTap: () => showToast(context, 'Returns')),
+        _MenuRow(
+            icon: Icons.rate_review_outlined,
+            label: 'My reviews',
+            onTap: () => showToast(context, 'Reviews')),
+        _MenuRow(
+            icon: Icons.notifications_none,
+            label: 'Notifications',
+            onTap: () => showToast(context, 'Notifications')),
+        _MenuRow(
+            icon: Icons.help_outline,
+            label: 'Help & support',
+            onTap: () => showToast(context, 'Support')),
         const SectionHeader(title: 'Selling'),
         _MenuRow(
           icon: Icons.storefront_outlined,
@@ -93,7 +118,6 @@ class AccountScreen extends StatelessWidget {
           detail: 'Same account, no second login',
           onTap: () => showToast(context, 'Seller sign-up opens on the web'),
         ),
-
         const SizedBox(height: 20),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -153,7 +177,8 @@ class _OrderRow extends StatelessWidget {
                       Flexible(
                         child: Text(
                           order.id,
-                          style: const TextStyle(fontSize: 11.5, color: AppColors.ink500),
+                          style: const TextStyle(
+                              fontSize: 11.5, color: AppColors.ink500),
                         ),
                       ),
                     ],
@@ -163,9 +188,11 @@ class _OrderRow extends StatelessWidget {
                     product.name,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600),
+                    style: const TextStyle(
+                        fontSize: 13.5, fontWeight: FontWeight.w600),
                   ),
-                  Text(order.estimate, style: Theme.of(context).textTheme.bodySmall),
+                  Text(order.estimate,
+                      style: Theme.of(context).textTheme.bodySmall),
                 ],
               ),
             ),
@@ -178,7 +205,11 @@ class _OrderRow extends StatelessWidget {
 }
 
 class _MenuRow extends StatelessWidget {
-  const _MenuRow({required this.icon, required this.label, required this.onTap, this.detail});
+  const _MenuRow(
+      {required this.icon,
+      required this.label,
+      required this.onTap,
+      this.detail});
 
   final IconData icon;
   final String label;
@@ -187,12 +218,32 @@ class _MenuRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: Icon(icon, size: 21, color: AppColors.ink700),
-      title: Text(label, style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w500)),
-      subtitle: detail == null ? null : Text(detail!, style: Theme.of(context).textTheme.bodySmall),
-      trailing: const Icon(Icons.chevron_right, size: 20, color: AppColors.ink400),
-      onTap: onTap,
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+      child: Material(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(Radii.md),
+        child: ListTile(
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(Radii.md),
+            side: const BorderSide(color: AppColors.border),
+          ),
+          leading: Icon(icon, size: 21, color: AppColors.ink700),
+          title: Text(label,
+              style: const TextStyle(
+                  fontSize: 14.5,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.ink950)),
+          subtitle: detail == null
+              ? null
+              : Text(detail!, style: Theme.of(context).textTheme.bodySmall),
+          trailing: const Icon(Icons.chevron_right,
+              size: 20, color: AppColors.ink400),
+          onTap: onTap,
+        ),
+      ),
     );
   }
 }
@@ -219,10 +270,11 @@ class _WishlistScreen extends StatelessWidget {
                 crossAxisCount: 2,
                 crossAxisSpacing: 12,
                 mainAxisSpacing: 12,
-                childAspectRatio: 0.56,
+                childAspectRatio: 0.48,
               ),
               itemCount: saved.length,
-              itemBuilder: (context, index) => ProductCard(product: saved[index]),
+              itemBuilder: (context, index) =>
+                  ProductCard(product: saved[index]),
             ),
     );
   }

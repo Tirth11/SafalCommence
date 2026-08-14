@@ -68,8 +68,10 @@ Product imagery is generated — a glyph on a soft gradient, via
 `ProductScene` — rather than stock photography. Swapping in real
 photographs means changing that one widget.
 
-## Not built
+## Scope
 
-Sign-in is a single tap with no form, seller screens are web-only, and
-nothing persists across a restart. This is a mockup of the customer
-journey, not a client for a real API.
+This mobile mockup keeps customer shopping first and also includes
+light seller entry points for people who want to start selling.
+Full seller operations and Super Admin screens remain web-first for
+now. Sign-in is a single tap with no form, and nothing persists across
+a restart.

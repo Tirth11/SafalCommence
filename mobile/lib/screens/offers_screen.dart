@@ -16,8 +16,12 @@ class OffersScreen extends StatelessWidget {
     final state = AppScope.of(context);
     const usedIds = {'OF-203'};
 
-    final available = todayOffers.where((o) => !usedIds.contains(o.id)).toList();
-    final saved = todayOffers.where((o) => state.savedOffers.contains(o.id) && !usedIds.contains(o.id)).toList();
+    final available =
+        todayOffers.where((o) => !usedIds.contains(o.id)).toList();
+    final saved = todayOffers
+        .where(
+            (o) => state.savedOffers.contains(o.id) && !usedIds.contains(o.id))
+        .toList();
     final used = todayOffers.where((o) => usedIds.contains(o.id)).toList();
 
     return DefaultTabController(
@@ -41,10 +45,18 @@ class OffersScreen extends StatelessWidget {
         ),
         body: TabBarView(
           children: [
-            _OfferList(offers: available, empty: 'No offers are running for your account right now.'),
-            _OfferList(offers: saved, empty: 'Nothing saved yet. Tap the bookmark on an offer to keep it here.'),
+            _OfferList(
+                offers: available,
+                empty: 'No offers are running for your account right now.'),
+            _OfferList(
+                offers: saved,
+                empty:
+                    'Nothing saved yet. Tap the bookmark on an offer to keep it here.'),
             const _UpcomingList(),
-            _OfferList(offers: used, spent: true, empty: "You haven't used an offer yet."),
+            _OfferList(
+                offers: used,
+                spent: true,
+                empty: "You haven't used an offer yet."),
           ],
         ),
       ),
@@ -53,7 +65,8 @@ class OffersScreen extends StatelessWidget {
 }
 
 class _OfferList extends StatelessWidget {
-  const _OfferList({required this.offers, required this.empty, this.spent = false});
+  const _OfferList(
+      {required this.offers, required this.empty, this.spent = false});
 
   final List<Offer> offers;
   final String empty;
@@ -62,7 +75,8 @@ class _OfferList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (offers.isEmpty) {
-      return EmptyState(icon: Icons.local_offer_outlined, title: 'Nothing here', body: empty);
+      return EmptyState(
+          icon: Icons.local_offer_outlined, title: 'Nothing here', body: empty);
     }
 
     final state = AppScope.of(context);
@@ -96,16 +110,22 @@ class _OfferList extends StatelessWidget {
                         children: [
                           Text(
                             offer.headline,
-                            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700, letterSpacing: -0.4),
+                            style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: -0.4),
                           ),
                           const SizedBox(height: 4),
-                          Text(offer.detail, style: const TextStyle(fontSize: 13.5, color: AppColors.ink700)),
+                          Text(offer.detail,
+                              style: const TextStyle(
+                                  fontSize: 13.5, color: AppColors.ink700)),
                         ],
                       ),
                     ),
                     if (!spent)
                       IconButton(
-                        tooltip: isSaved ? 'Remove from saved' : 'Save for later',
+                        tooltip:
+                            isSaved ? 'Remove from saved' : 'Save for later',
                         icon: Icon(
                           isSaved ? Icons.bookmark : Icons.bookmark_border,
                           size: 20,
@@ -113,7 +133,11 @@ class _OfferList extends StatelessWidget {
                         ),
                         onPressed: () {
                           state.toggleSavedOffer(offer.id);
-                          showToast(context, isSaved ? 'Removed from saved' : 'Saved for later');
+                          showToast(
+                              context,
+                              isSaved
+                                  ? 'Removed from saved'
+                                  : 'Saved for later');
                         },
                       ),
                   ],
@@ -122,14 +146,18 @@ class _OfferList extends StatelessWidget {
                 if (offer.minOrder > 0)
                   _Detail(label: 'Minimum order', value: money(offer.minOrder)),
                 if (offer.maxDiscount != null)
-                  _Detail(label: 'Maximum discount', value: money(offer.maxDiscount!)),
-                _Detail(label: 'Valid', value: spent ? 'Used' : offer.endsLabel),
+                  _Detail(
+                      label: 'Maximum discount',
+                      value: money(offer.maxDiscount!)),
+                _Detail(
+                    label: 'Valid', value: spent ? 'Used' : offer.endsLabel),
                 const SizedBox(height: 12),
                 Row(
                   children: [
                     if (offer.code != null)
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 5),
                         decoration: BoxDecoration(
                           color: AppColors.ink100,
                           borderRadius: BorderRadius.circular(Radii.sm),
@@ -137,15 +165,21 @@ class _OfferList extends StatelessWidget {
                         ),
                         child: Text(
                           offer.code!,
-                          style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800, letterSpacing: 0.5),
+                          style: const TextStyle(
+                              fontSize: 12.5,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 0.5),
                         ),
                       ),
                     const Spacer(),
                     if (!spent)
                       FilledButton(
-                        style: FilledButton.styleFrom(minimumSize: const Size(0, 38)),
+                        style: FilledButton.styleFrom(
+                            minimumSize: const Size(0, 38)),
                         onPressed: () => Navigator.of(context).push(
-                          MaterialPageRoute(builder: (_) => ListingScreen(category: offer.category)),
+                          MaterialPageRoute(
+                              builder: (_) =>
+                                  ListingScreen(category: offer.category)),
                         ),
                         child: const Text('Shop offer'),
                       ),
@@ -194,7 +228,9 @@ class _UpcomingList extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 6),
-              Text(offer.title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+              Text(offer.title,
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.w700)),
               const SizedBox(height: 2),
               Text(offer.detail, style: Theme.of(context).textTheme.bodySmall),
               const SizedBox(height: 12),
@@ -202,9 +238,12 @@ class _UpcomingList extends StatelessWidget {
                 style: OutlinedButton.styleFrom(minimumSize: const Size(0, 40)),
                 onPressed: () {
                   state.toggleReminder(offer.id);
-                  showToast(context, on ? 'Reminder removed' : "We'll remind you", detail: on ? null : offer.title);
+                  showToast(
+                      context, on ? 'Reminder removed' : "We'll remind you",
+                      detail: on ? null : offer.title);
                 },
-                icon: Icon(on ? Icons.check : Icons.notifications_none, size: 17),
+                icon:
+                    Icon(on ? Icons.check : Icons.notifications_none, size: 17),
                 label: Text(on ? 'Reminder set' : 'Remind me'),
               ),
             ],
@@ -227,9 +266,12 @@ class _Detail extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
         children: [
-          Text(label, style: const TextStyle(fontSize: 12.5, color: AppColors.ink500)),
+          Text(label,
+              style: const TextStyle(fontSize: 12.5, color: AppColors.ink500)),
           const Spacer(),
-          Text(value, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700)),
+          Text(value,
+              style:
+                  const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700)),
         ],
       ),
     );
