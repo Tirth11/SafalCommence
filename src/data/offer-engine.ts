@@ -134,6 +134,57 @@ export type PlatformOffer = {
  */
 export type SellerOfferForm = 'product' | 'campaign'
 
+/**
+ * What a seller campaign covers. "All my products" is the common case for a
+ * seasonal sale and shouldn't require ticking every box — the seller owns
+ * their whole catalogue, so listing it back to them is busywork.
+ */
+export type SellerOfferScope = 'all' | 'category' | 'collection' | 'brand' | 'products'
+
+export const SELLER_SCOPE_LABELS: Record<SellerOfferScope, string> = {
+  all: 'Everything in my store',
+  category: 'Selected categories',
+  collection: 'Selected collections',
+  brand: 'Selected brands',
+  products: 'Selected products',
+}
+
+/**
+ * Even a storewide sale usually has things it shouldn't touch. Exclusions are
+ * part of the rule rather than a manual de-selection, so they keep holding as
+ * the catalogue grows.
+ */
+export type OfferExclusions = {
+  categories: string[]
+  brands: string[]
+  productIds: string[]
+  /** Leave products that already have their own promotion alone. */
+  alreadyDiscounted: boolean
+}
+
+export const NO_EXCLUSIONS: OfferExclusions = {
+  categories: [],
+  brands: [],
+  productIds: [],
+  alreadyDiscounted: false,
+}
+
+/**
+ * What happens when a product is caught by two of the same seller's offers —
+ * say a 15% product markdown and a 10% storewide sale.
+ *
+ * The default is deliberately `best-single`. Stacking them silently turns a
+ * 15% markdown into 23.5% off, which no seller intended when they ticked
+ * "10% off everything".
+ */
+export type DiscountConflictRule = 'best-single' | 'combine' | 'skip-discounted'
+
+export const CONFLICT_RULE_LABELS: Record<DiscountConflictRule, string> = {
+  'best-single': 'Give the customer the better single discount',
+  'combine': 'Allow both discounts to combine',
+  'skip-discounted': "Don't apply this to already-discounted products",
+}
+
 export type SellerOffer = {
   id: string
   source: 'seller'
@@ -144,7 +195,14 @@ export type SellerOffer = {
   name?: string
   displayName: string
   value: number
+  scope: SellerOfferScope
+  /** Category, collection or brand names, per `scope`. */
+  scopeValues?: string[]
+  /** Only when scope is 'products'. Empty for the other scopes. */
   productIds: string[]
+  exclusions?: OfferExclusions
+  /** How this behaves against the seller's other offers on the same product. */
+  conflictRule?: DiscountConflictRule
   startsAt: string
   endsAt: string
   status: OfferStatus
@@ -320,6 +378,7 @@ export const SELLER_OFFERS: SellerOffer[] = [
   {
     id: 'SO-4001',
     source: 'seller',
+    scope: 'products',
     seller: 'ABC Electronics',
     form: 'product',
     kind: 'percent',
@@ -334,6 +393,7 @@ export const SELLER_OFFERS: SellerOffer[] = [
   {
     id: 'SO-4002',
     source: 'seller',
+    scope: 'products',
     seller: 'ABC Electronics',
     form: 'product',
     kind: 'percent',
@@ -355,7 +415,8 @@ export const SELLER_OFFERS: SellerOffer[] = [
     kind: 'percent',
     displayName: 'Independence Day Sale — 10% off',
     value: 10,
-    productIds: ['SH-P-1042', 'SH-P-1044', 'SH-P-1054'],
+    scope: 'all',
+    productIds: [],
     startsAt: '2026-08-13T00:00',
     endsAt: '2026-08-18T23:59',
     status: 'live',
@@ -370,7 +431,9 @@ export const SELLER_OFFERS: SellerOffer[] = [
     kind: 'percent',
     displayName: 'Monsoon Audio Week — 15% off',
     value: 15,
-    productIds: ['SH-P-1042'],
+    scope: 'category',
+    scopeValues: ['Electronics'],
+    productIds: [],
     startsAt: '2026-08-24T00:00',
     endsAt: '2026-08-31T23:59',
     status: 'scheduled',
@@ -379,6 +442,7 @@ export const SELLER_OFFERS: SellerOffer[] = [
   {
     id: 'SO-3990',
     source: 'seller',
+    scope: 'products',
     seller: 'ABC Electronics',
     form: 'product',
     kind: 'flat',
@@ -425,6 +489,134 @@ export type Evaluation = {
 }
 
 const isActive = (offer: Offer) => statusOf(offer) === 'live'
+
+/**
+ * A seller offer only ever covers that seller's own listings — the scope
+ * widens which of their products it hits, never whose.
+ */
+export function sellerOfferCovers(offer: SellerOffer, product: ShopProduct) {
+  if (product.seller !== offer.seller) return false
+
+  const inScope = (() => {
+    switch (offer.scope) {
+      case 'all':
+        return true
+      case 'category':
+        return (offer.scopeValues ?? []).includes(product.category)
+      case 'collection':
+      case 'brand':
+        return (offer.scopeValues ?? []).includes(product.brand)
+      case 'products':
+        return offer.productIds.includes(product.id)
+    }
+  })()
+
+  if (!inScope) return false
+
+  // Exclusions are evaluated after scope, so "everything except X" needs no
+  // product list and keeps working as the catalogue grows.
+  const ex = offer.exclusions
+  if (!ex) return true
+  if (ex.categories.includes(product.category)) return false
+  if (ex.brands.includes(product.brand)) return false
+  if (ex.productIds.includes(product.id)) return false
+
+  return true
+}
+
+/**
+ * Every seller offer that catches this product, resolved down to what the
+ * customer actually gets.
+ *
+ * The default rule is the better single discount, not both. A 15% product
+ * markdown plus a 10% storewide sale is 23.5% off if you stack them — a
+ * number the seller never agreed to.
+ */
+function resolveSellerOffer(product: ShopProduct, subtotal: number): SellerOffer | undefined {
+  const matches = SELLER_OFFERS.filter((o) => isActive(o) && sellerOfferCovers(o, product))
+  if (matches.length <= 1) return matches[0]
+
+  // A product-specific markdown is the one that "already discounted" refers to.
+  const specific = matches.find((o) => o.scope === 'products')
+  const broad = matches.filter((o) => o.scope !== 'products')
+
+  for (const wide of broad) {
+    if (specific && wide.conflictRule === 'skip-discounted') return specific
+  }
+
+  const combining = matches.filter((o) => o.conflictRule === 'combine')
+  if (combining.length === matches.length) {
+    // Every offer opted into stacking — fold them into one synthetic line so
+    // the customer sees a single, honest total.
+    const total = matches.reduce((sum, o) => sum + amountFor(o, subtotal), 0)
+    return {
+      ...matches[0],
+      id: matches.map((o) => o.id).join('+'),
+      displayName: matches.map((o) => o.displayName).join(' + '),
+      kind: 'flat',
+      value: total,
+    }
+  }
+
+  return [...matches].sort((a, b) => amountFor(b, subtotal) - amountFor(a, subtotal))[0]
+}
+
+/** The products a seller campaign actually touches, for previews and counts. */
+export function productsCovered(offer: SellerOffer) {
+  return SHOP_PRODUCTS.filter((p) => sellerOfferCovers(offer, p))
+}
+
+/**
+ * What a storewide campaign would do, before it is published.
+ *
+ * A seller ticking "everything" has no idea how many listings that is or how
+ * many already carry a markdown, and those are exactly the two facts that
+ * decide whether the campaign is a good idea.
+ */
+export function campaignImpact(draft: {
+  seller: string
+  scope: SellerOfferScope
+  scopeValues?: string[]
+  productIds: string[]
+  exclusions?: OfferExclusions
+  percent: number
+}) {
+  const probe: SellerOffer = {
+    id: 'draft',
+    source: 'seller',
+    seller: draft.seller,
+    form: 'campaign',
+    kind: 'percent',
+    displayName: 'draft',
+    value: draft.percent,
+    scope: draft.scope,
+    scopeValues: draft.scopeValues,
+    productIds: draft.productIds,
+    exclusions: draft.exclusions,
+    startsAt: '2000-01-01T00:00',
+    endsAt: '2099-01-01T00:00',
+    status: 'live',
+    metrics: { views: 0, clicks: 0, customers: 0, orders: 0, gmv: 0, discountGiven: 0, assistantAssisted: 0 },
+  }
+
+  const affected = SHOP_PRODUCTS.filter((p) => sellerOfferCovers(probe, p))
+  const alreadyDiscounted = affected.filter((p) =>
+    SELLER_OFFERS.some((o) => isActive(o) && o.scope === 'products' && o.productIds.includes(p.id))
+  )
+
+  const averagePrice = affected.length
+    ? Math.round(affected.reduce((sum, p) => sum + p.price, 0) / affected.length)
+    : 0
+
+  return {
+    affected,
+    count: affected.length,
+    averagePrice,
+    alreadyDiscounted: alreadyDiscounted.length,
+    /** What the campaign would give away at current prices, per unit. */
+    averageDiscount: Math.round((averagePrice * draft.percent) / 100),
+  }
+}
 
 /** Does this offer cover this product at all? */
 function coversProduct(offer: PlatformOffer, product?: ShopProduct) {
@@ -492,9 +684,7 @@ export function evaluate(ctx: OfferContext): Evaluation {
   let freeDelivery = false
 
   /* 1 — seller offers on this product */
-  const sellerOffer = ctx.product
-    ? SELLER_OFFERS.find((o) => isActive(o) && o.productIds.includes(ctx.product!.id))
-    : undefined
+  const sellerOffer = ctx.product ? resolveSellerOffer(ctx.product, running) : undefined
 
   if (sellerOffer) {
     const amount = amountFor(sellerOffer, running)
