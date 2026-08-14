@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from '@tanstack/react-router'
-import { Bell, ChevronDown, Menu, Plus, Search, ShoppingBag, Store } from 'lucide-react'
+import { Bell, ChevronDown, Menu, Plus, Search, Store } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { AdminLink, adminLinkProps } from '@/components/admin/admin-link'
@@ -29,9 +29,14 @@ export function SellerShell({ children }: { children: React.ReactNode }) {
   const [searchOpen, setSearchOpen] = useState(false)
   const location = useLocation()
   const storeName = useSellerStore((s) => s.storeName)
+  const context = useAccountStore((s) => s.context)
+  const primaryOrgId = useAccountStore((s) => s.memberships[0]?.id)
   const switchContext = useAccountStore((s) => s.switchContext)
 
   useEffect(() => setMenuOpen(false), [location.pathname])
+  useEffect(() => {
+    if (context === 'personal' && primaryOrgId) switchContext(primaryOrgId)
+  }, [context, primaryOrgId, switchContext])
 
   return (
     <SellerAssistantProvider>
@@ -86,13 +91,6 @@ export function SellerShell({ children }: { children: React.ReactNode }) {
           </button>
 
           <div className="ml-auto flex items-center gap-1">
-            {/* Same account, other side of the marketplace */}
-            <Button variant="ghost" size="sm" className="hidden md:inline-flex" asChild>
-              <AdminLink to="/shop" onClick={() => switchContext('personal')}>
-                <ShoppingBag className="size-4" />
-                Shop SafalMarketHub
-              </AdminLink>
-            </Button>
             <Button size="sm" className="hidden xl:inline-flex" asChild>
               <AdminLink to="/seller/products/new">
                 <Plus className="size-4" />

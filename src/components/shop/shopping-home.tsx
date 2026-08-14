@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
-import { ArrowRight, Bell, Camera, Check, Package, Search, Sparkles, Tag, Truck } from 'lucide-react'
+import { ArrowRight, Bell, Camera, Check, Package, Search, Sparkles, Tag, Truck, X } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { AdminLink, adminLinkProps } from '@/components/admin/admin-link'
@@ -413,16 +413,110 @@ function Heading({ title, sub, cta }: { title: string; sub?: string; cta?: { lab
 /** Small, corner-anchored, and never covering the page. */
 export function AssistantFab() {
   const assistant = useAssistant()
+  const user = useAccountStore((s) => s.user)
+  const [open, setOpen] = useState(true)
+  const offer = TODAY_OFFERS[0]
+  const personal = user ? PERSONAL_OFFERS.map((item) => ({ item, product: productFor(item.productId) })).find((entry) => entry.product) : null
+  const order = user ? CUSTOMER_ORDERS.find((item) => ['Shipped', 'Out for Delivery', 'Processing'].includes(item.status)) : null
+  const shipment = order?.shipments.find((item) => item.estimate.toLowerCase().includes('today')) ?? order?.shipments[0]
 
   return (
-    <button
-      type="button"
-      onClick={() => assistant.open('chat')}
-      className="fixed bottom-24 right-5 z-40 inline-flex items-center gap-2 rounded-full bg-ink-950 py-3 pl-4 pr-5 text-[14px] font-semibold text-white shadow-lg transition-transform hover:-translate-y-0.5 sm:bottom-[76px] sm:right-7 dark:bg-white dark:text-ink-950"
-    >
-      <Sparkles className="size-4" />
-      Need help?
-    </button>
+    <div className="fixed inset-x-4 bottom-20 z-40 flex flex-col items-end gap-3 sm:inset-x-auto sm:bottom-[76px] sm:right-7 sm:w-[320px]">
+      {open && (
+        <section className="w-full overflow-hidden rounded-2xl border bg-card shadow-xl sm:w-[320px]">
+          <div className="flex items-start gap-3 px-3.5 py-3">
+            <span className="grid size-9 shrink-0 place-items-center rounded-full bg-ink-950 text-[12px] font-bold text-white dark:bg-white dark:text-ink-950">
+              {user ? user.firstName.slice(0, 1).toUpperCase() : <Sparkles className="size-4" />}
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-[13px] font-bold text-ink-950 dark:text-white">
+                {user ? `Hi ${user.firstName}, what's new` : 'Today on SafalHub'}
+              </p>
+              <p className="mt-0.5 line-clamp-2 text-[11px] leading-snug text-ink-500">
+                {user ? 'Quick updates picked for your shopping.' : 'Offers and shopping help, ready when you are.'}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              className="rounded-full p-1 text-ink-400 transition-colors hover:bg-muted hover:text-ink-700"
+              aria-label="Hide SafalAssistant preview"
+            >
+              <X className="size-3.5" />
+            </button>
+          </div>
+
+          {user && shipment && order ? (
+            <AdminLink to={`/account/orders/${order.id}`} className="group flex items-center gap-3 border-y px-3.5 py-2.5 transition-colors hover:bg-muted/70">
+              <span className="grid size-8 shrink-0 place-items-center rounded-full bg-teal-50 text-teal-600 dark:bg-teal-950/40 dark:text-teal-300">
+                <Truck className="size-4" />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-[10px] font-bold uppercase tracking-[0.08em] text-ink-400">Order update</span>
+                <span className="block truncate text-[12px] font-bold text-ink-900 dark:text-white">{shipment.estimate}</span>
+                <span className="block truncate text-[11px] text-ink-500">{shipment.items[0]?.name ?? 'Your order'}</span>
+              </span>
+              <ArrowRight className="size-3.5 shrink-0 text-ink-300 transition-transform group-hover:translate-x-0.5" />
+            </AdminLink>
+          ) : (
+            <button
+              type="button"
+              onClick={() => document.getElementById('offers')?.scrollIntoView({ block: 'start' })}
+              className="group flex w-full items-center gap-3 border-y px-3.5 py-2.5 text-left transition-colors hover:bg-muted/70"
+            >
+              <span className="grid size-8 shrink-0 place-items-center rounded-full bg-brand-50 text-brand-600 dark:bg-brand-950 dark:text-brand-300">
+                <Tag className="size-4" />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-[10px] font-bold uppercase tracking-[0.08em] text-ink-400">New today</span>
+                <span className="block truncate text-[12px] font-bold text-ink-900 dark:text-white">
+                  {offer.headline} · {offer.detail}
+                </span>
+                <span className="block text-[11px] text-ink-500">{offer.endsLabel}</span>
+              </span>
+              <ArrowRight className="size-3.5 shrink-0 text-ink-300 transition-transform group-hover:translate-x-0.5" />
+            </button>
+          )}
+
+          <div className="flex flex-wrap gap-1.5 px-3.5 py-2.5">
+            <button
+              type="button"
+              onClick={() => document.getElementById('offers')?.scrollIntoView({ block: 'start' })}
+              className="inline-flex max-w-full items-center gap-1.5 rounded-full bg-brand-50 px-2.5 py-1 text-[11px] font-semibold text-brand-700 transition-colors hover:bg-brand-100 dark:bg-brand-950 dark:text-brand-200"
+            >
+              <Tag className="size-3" />
+              <span className="truncate">{offer.headline}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => assistant.open(user ? 'chat' : 'guide')}
+              className="inline-flex max-w-full items-center gap-1.5 rounded-full bg-gold-50 px-2.5 py-1 text-[11px] font-semibold text-gold-800 transition-colors hover:bg-gold-100 dark:bg-gold-950/40 dark:text-gold-200"
+            >
+              {user && personal?.product ? <Bell className="size-3" /> : <Sparkles className="size-3" />}
+              <span className="truncate">{user && personal?.product ? `Saved deal ${money(personal.product.price)}` : 'Help me choose'}</span>
+            </button>
+          </div>
+
+          <div className="flex gap-2 bg-muted/35 p-3 pt-0">
+            <Button size="sm" className="h-8 flex-1 text-[12px]" onClick={() => assistant.open(user ? 'chat' : 'guide')}>
+              {user ? 'Ask now' : 'Start'}
+            </Button>
+            <Button size="sm" variant="outline" className="h-8 flex-1 text-[12px]" onClick={() => document.getElementById('offers')?.scrollIntoView({ block: 'start' })}>
+              Offers
+            </Button>
+          </div>
+        </section>
+      )}
+
+      <button
+        type="button"
+        onClick={() => assistant.open('chat')}
+        className="inline-flex items-center gap-2 rounded-full bg-ink-950 py-3 pl-4 pr-5 text-[14px] font-semibold text-white shadow-lg transition-transform hover:-translate-y-0.5 dark:bg-white dark:text-ink-950"
+      >
+        <Sparkles className="size-4" />
+        SafalAssistant
+      </button>
+    </div>
   )
 }
 

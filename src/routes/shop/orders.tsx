@@ -588,7 +588,7 @@ export function OrderDetailPage() {
             </div>
           </Panel>
 
-          <Panel title="Need help?">
+          <Panel title="SafalAssistant">
             <p className="text-[13px] leading-relaxed text-ink-600 dark:text-ink-300">
               Something wrong with this order? Raise a request and we'll look into it with the seller.
             </p>

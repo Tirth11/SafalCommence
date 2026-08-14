@@ -47,7 +47,7 @@ export function ShopHero() {
                 </span>
               </>
             ) : (
-              <>Find it. Love it. Buy it.</>
+              <>Find it. Buy it.</>
             )}
           </h1>
 

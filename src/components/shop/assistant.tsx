@@ -98,7 +98,7 @@ function AssistantDialog({
         {mode === 'search' && <SearchResults query={query} />}
         {mode === 'chat' && (
           <>
-            <DialogTitle className="sr-only">Shopping assistant</DialogTitle>
+            <DialogTitle className="sr-only">SafalAssistant</DialogTitle>
             {placed ? (
               <OrderPlaced order={placed} onClose={() => onOpenChange(false)} />
             ) : paying ? (

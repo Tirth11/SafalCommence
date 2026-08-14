@@ -9,7 +9,8 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { ADMIN_ORDERS, ADMIN_PRODUCTS, SELLERS, SETTLEMENTS, TRANSACTIONS } from '@/data/admin'
+import { ADMIN_ORDERS, ADMIN_PRODUCTS, AUDIT_LOG, SELLERS, SETTLEMENTS, TICKETS, TRANSACTIONS } from '@/data/admin'
+import { AI_ACTIONS, INVENTORY_ALERTS, PRICING_ALERTS } from '@/data/admin-control'
 import { money } from '@/lib/utils'
 
 const CHANGE_REASONS = [
@@ -46,9 +47,15 @@ const TABS = [
   { value: 'banking', label: 'Banking' },
   { value: 'products', label: 'Products' },
   { value: 'orders', label: 'Orders' },
+  { value: 'inventory', label: 'Inventory' },
+  { value: 'reviews', label: 'Reviews' },
+  { value: 'pricing', label: 'Pricing' },
   { value: 'payments', label: 'Payments' },
   { value: 'settlements', label: 'Settlements' },
+  { value: 'ai', label: 'AI Activity' },
+  { value: 'support', label: 'Support' },
   { value: 'activity', label: 'Activity' },
+  { value: 'audit', label: 'Audit' },
 ]
 
 export function SellerDetailPage() {
@@ -81,6 +88,13 @@ export function SellerDetailPage() {
     o.subOrders.filter((so) => so.sellerId === seller.id).map((so) => ({ ...so, parent: o }))
   )
   const settlements = SETTLEMENTS.filter((s) => s.sellerId === seller.id)
+  const aiActions = AI_ACTIONS.filter((action) => action.user === seller.storeName || action.userType === 'Seller').slice(0, 5)
+  const sellerTickets = TICKETS.filter((ticket) => ticket.user === seller.storeName || ticket.userType === 'Seller').slice(0, 5)
+  const auditEntries = AUDIT_LOG.filter((entry) => entry.target.includes(seller.id) || entry.target.includes(seller.storeName)).slice(0, 5)
+  const pricingAlerts = PRICING_ALERTS.filter((alert) => alert.seller === seller.storeName).slice(0, 4)
+  const inventoryAlerts = INVENTORY_ALERTS.filter((alert) =>
+    products.some((product) => alert.product.toLowerCase().includes(product.name.split(' ')[0]?.toLowerCase() ?? ''))
+  )
 
   const tab = search.tab ?? 'overview'
   function setTab(value: string) {
@@ -245,7 +259,7 @@ export function SellerDetailPage() {
       )}
 
       <Tabs value={tab} onValueChange={setTab}>
-        <TabsList className="mb-5">
+        <TabsList className="mb-5 flex h-auto flex-wrap justify-start gap-1">
           {TABS.map((t) => (
             <TabsTrigger key={t.value} value={t.value}>
               {t.label}
@@ -547,6 +561,151 @@ export function SellerDetailPage() {
           </Panel>
         </TabsContent>
 
+        <TabsContent value="inventory">
+          <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+            <Panel title="Inventory by product" description="Stock levels, low-stock risk and potential overselling issues." padded={false}>
+              {products.length === 0 ? (
+                <EmptyState title="No inventory yet" body="Inventory appears once the seller lists products." />
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Product</TableHead>
+                      <TableHead className="text-right">Stock</TableHead>
+                      <TableHead>State</TableHead>
+                      <TableHead>Signal</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {products.map((p) => (
+                      <TableRow key={p.id}>
+                        <TableCell>
+                          <AdminLink to={`/admin/products/${p.id}`} className="font-semibold text-ink-900 hover:text-brand-700 dark:text-white">
+                            {p.name}
+                          </AdminLink>
+                          <span className="block text-[11px] text-ink-500 tabular">{p.id}</span>
+                        </TableCell>
+                        <TableCell className="text-right tabular">{p.stock}</TableCell>
+                        <TableCell>
+                          <StatusBadge status={p.state} />
+                        </TableCell>
+                        <TableCell className="text-[12px] text-ink-500">{p.stock <= 5 ? 'Restock risk' : p.stock > 80 ? 'High inventory' : 'Healthy'}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </Panel>
+
+            <Panel title="Inventory intelligence" description="Marketplace-level signals that mention this seller's catalogue.">
+              {inventoryAlerts.length === 0 ? (
+                <p className="text-[13px] text-ink-500">No active inventory intelligence alerts for this seller.</p>
+              ) : (
+                <ul className="grid gap-2.5">
+                  {inventoryAlerts.map((alert) => (
+                    <li key={alert.id} className="rounded-lg border bg-background p-3">
+                      <p className="text-[13px] font-semibold text-ink-900 dark:text-white">{alert.product}</p>
+                      <p className="mt-1 text-[12px] text-ink-500">{alert.stock} · {alert.salesVelocity}</p>
+                      <StatusBadge status={alert.status} className="mt-2" />
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </Panel>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="reviews">
+          <div className="grid gap-4 lg:grid-cols-[0.8fr_1.2fr]">
+            <Panel title="Seller health" description="Rules-based score for cancellation, fulfilment, returns, rating, complaints and KYC.">
+              <p className="text-[32px] font-bold tracking-[-0.04em] text-ink-950 dark:text-white">89 / 100</p>
+              <StatusBadge status="Good" className="mt-2" />
+              <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+                <div>
+                  <p className="text-[12px] font-bold uppercase tracking-[0.08em] text-teal-600 dark:text-teal-100">Good</p>
+                  <ul className="mt-2 grid gap-1.5 text-[13px] text-ink-700 dark:text-ink-200">
+                    <li>Fast fulfilment</li>
+                    <li>Strong customer ratings</li>
+                  </ul>
+                </div>
+                <div>
+                  <p className="text-[12px] font-bold uppercase tracking-[0.08em] text-gold-600 dark:text-gold-400">Needs attention</p>
+                  <ul className="mt-2 grid gap-1.5 text-[13px] text-ink-700 dark:text-ink-200">
+                    <li>Return rate rising</li>
+                    <li>3 recent packaging complaints</li>
+                  </ul>
+                </div>
+              </div>
+            </Panel>
+
+            <Panel title="Customer feedback" description="Product reviews, seller ratings and delivery feedback stay separate.">
+              <div className="grid gap-3 sm:grid-cols-3">
+                <Field label="Seller rating" value={`${seller.kyc === 'Verified' ? '4.5' : '—'}★`} />
+                <Field label="Return rate" value={seller.status === 'Payout Hold' ? '9.8%' : '3.1%'} />
+                <Field label="Cancellation rate" value={seller.status === 'Suspended' ? '8.4%' : '1.7%'} />
+              </div>
+              <div className="mt-5 rounded-lg border bg-background p-3">
+                <p className="text-[13px] font-semibold text-ink-900 dark:text-white">Top signals</p>
+                <ul className="mt-2 grid gap-1.5 text-[13px] text-ink-600 dark:text-ink-300">
+                  <li>Packaging complaints increased this week.</li>
+                  <li>Delivery feedback is not merged into seller rating.</li>
+                  <li>Original customer comments remain accessible from Customer Voice.</li>
+                </ul>
+              </div>
+            </Panel>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="pricing">
+          <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+            <Panel title="Pricing position" description="Super Admin sees marketplace-level pricing without exposing seller cost or margin." padded={false}>
+              {products.length === 0 ? (
+                <EmptyState title="No pricing data yet" body="Pricing intelligence appears after products are listed." />
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Product</TableHead>
+                      <TableHead className="text-right">Current</TableHead>
+                      <TableHead className="text-right">Lowest</TableHead>
+                      <TableHead className="text-right">Average</TableHead>
+                      <TableHead className="text-right">Highest</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {products.map((p) => (
+                      <TableRow key={p.id}>
+                        <TableCell className="font-semibold text-ink-900 dark:text-white">{p.name}</TableCell>
+                        <TableCell className="text-right tabular">{money(p.price)}</TableCell>
+                        <TableCell className="text-right tabular">{money(Math.max(1, Math.round(p.price * 0.9)))}</TableCell>
+                        <TableCell className="text-right tabular">{money(Math.round(p.price * 1.04))}</TableCell>
+                        <TableCell className="text-right tabular">{money(Math.round(p.price * 1.18))}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
+            </Panel>
+
+            <Panel title="Pricing alerts">
+              {pricingAlerts.length === 0 ? (
+                <p className="text-[13px] text-ink-500">No active pricing alerts for this seller.</p>
+              ) : (
+                <ul className="grid gap-2.5">
+                  {pricingAlerts.map((alert) => (
+                    <li key={alert.id} className="rounded-lg border bg-background p-3">
+                      <p className="text-[13px] font-semibold text-ink-900 dark:text-white">{alert.product}</p>
+                      <p className="mt-1 text-[12px] text-ink-500">{alert.signal}</p>
+                      <p className="mt-1 text-[12px] text-ink-500">Expected {alert.expectedRange} · current {alert.currentPrice}</p>
+                      <StatusBadge status={alert.status} className="mt-2" />
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </Panel>
+          </div>
+        </TabsContent>
+
         <TabsContent value="payments">
           <Panel title="Transactions linked to this seller" padded={false}>
             <Table>
@@ -615,6 +774,97 @@ export function SellerDetailPage() {
           </Panel>
         </TabsContent>
 
+        <TabsContent value="ai">
+          <Panel
+            title="Seller AI activity"
+            description="Every seller action performed through Safal Assistant is logged with old value, new value and confirmation state."
+            padded={false}
+          >
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Action</TableHead>
+                  <TableHead>Target</TableHead>
+                  <TableHead>Change</TableHead>
+                  <TableHead>Confirmation</TableHead>
+                  <TableHead>Result</TableHead>
+                  <TableHead>Date</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {aiActions.map((action) => (
+                  <TableRow key={action.id}>
+                    <TableCell>
+                      <span className="block font-semibold text-ink-900 dark:text-white">{action.requestedAction}</span>
+                      <span className="block text-[11px] text-ink-500 tabular">{action.id}</span>
+                    </TableCell>
+                    <TableCell>{action.target}</TableCell>
+                    <TableCell className="text-[12px]">
+                      <span className="block text-ink-500">Old: {action.previousValue}</span>
+                      <span className="block font-semibold text-ink-900 dark:text-white">New: {action.newValue}</span>
+                    </TableCell>
+                    <TableCell className="text-[12px]">
+                      Required {action.confirmationRequired} · Received {action.confirmationReceived}
+                    </TableCell>
+                    <TableCell>
+                      <StatusBadge status={action.result} />
+                    </TableCell>
+                    <TableCell className="whitespace-nowrap text-ink-500">{action.date}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            <div className="border-t px-5 py-3">
+              <Button variant="ghost" size="sm" asChild>
+                <AdminLink to="/admin/control-center" search={{ tab: 'ai' }}>Open AI actions log</AdminLink>
+              </Button>
+            </div>
+          </Panel>
+        </TabsContent>
+
+        <TabsContent value="support">
+          <Panel title="Seller support tickets" description="Seller-specific cases and escalations." padded={false}>
+            {sellerTickets.length === 0 ? (
+              <EmptyState title="No support tickets" body="Seller support tickets will appear here." />
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Ticket</TableHead>
+                    <TableHead>Subject</TableHead>
+                    <TableHead>Priority</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Created</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {sellerTickets.map((ticket) => (
+                    <TableRow key={ticket.id}>
+                      <TableCell className="font-semibold tabular text-ink-900 dark:text-white">{ticket.id}</TableCell>
+                      <TableCell>
+                        <span className="block font-semibold text-ink-900 dark:text-white">{ticket.subject}</span>
+                        <span className="block text-[11px] text-ink-500">{ticket.description}</span>
+                      </TableCell>
+                      <TableCell>
+                        <StatusBadge status={ticket.priority} />
+                      </TableCell>
+                      <TableCell>
+                        <StatusBadge status={ticket.status} />
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap text-ink-500">{ticket.created}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+            <div className="border-t px-5 py-3">
+              <Button variant="ghost" size="sm" asChild>
+                <AdminLink to="/admin/support">Open support center</AdminLink>
+              </Button>
+            </div>
+          </Panel>
+        </TabsContent>
+
         <TabsContent value="activity">
           <Panel title="Administrative activity" description="Actions performed by the SafalMarketHub team against this seller account." padded={false}>
             <ul className="divide-y">
@@ -634,6 +884,48 @@ export function SellerDetailPage() {
             <div className="border-t px-5 py-3">
               <Button variant="ghost" size="sm" asChild>
                 <AdminLink to="/admin/audit-logs">Open full audit trail</AdminLink>
+              </Button>
+            </div>
+          </Panel>
+        </TabsContent>
+
+        <TabsContent value="audit">
+          <Panel title="Seller audit trail" description="Important Super Admin, Operations Admin and system actions for this seller." padded={false}>
+            {auditEntries.length === 0 ? (
+              <EmptyState title="No matching audit entries" body="Audit entries are append-only and will appear here as actions occur." />
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Audit ID</TableHead>
+                    <TableHead>Action</TableHead>
+                    <TableHead>Change</TableHead>
+                    <TableHead>Admin</TableHead>
+                    <TableHead>At</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {auditEntries.map((entry) => (
+                    <TableRow key={entry.id}>
+                      <TableCell className="font-semibold tabular text-ink-900 dark:text-white">{entry.id}</TableCell>
+                      <TableCell>
+                        <span className="block font-semibold text-ink-900 dark:text-white">{entry.action}</span>
+                        <span className="block text-[11px] text-ink-500">{entry.module} · {entry.target}</span>
+                      </TableCell>
+                      <TableCell className="text-[12px]">
+                        <span className="block text-ink-500">Old: {entry.oldValue}</span>
+                        <span className="block font-semibold text-ink-900 dark:text-white">New: {entry.newValue}</span>
+                      </TableCell>
+                      <TableCell>{entry.admin}</TableCell>
+                      <TableCell className="whitespace-nowrap text-ink-500">{entry.at}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+            <div className="border-t px-5 py-3">
+              <Button variant="ghost" size="sm" asChild>
+                <AdminLink to="/admin/audit-logs">Open full audit logs</AdminLink>
               </Button>
             </div>
           </Panel>

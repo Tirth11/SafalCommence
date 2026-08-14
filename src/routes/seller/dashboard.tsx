@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ArrowRight, Boxes, CircleAlert, Package, PartyPopper, ShoppingBag, TriangleAlert, Wallet } from 'lucide-react'
+import { ArrowRight, Boxes, CircleAlert, Package, PartyPopper, ShoppingBag, Sparkles, Star, TriangleAlert, Wallet } from 'lucide-react'
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
 import { AdminLink } from '@/components/admin/admin-link'
@@ -7,10 +7,12 @@ import { AttentionCard, KpiGrid, type Kpi } from '@/components/admin/kpi'
 import { PageHeader, Panel } from '@/components/admin/primitives'
 import { StatusBadge } from '@/components/admin/status-badge'
 import { OnboardingChecklist } from '@/components/seller/seller-bits'
+import { useSellerAssistant } from '@/components/seller/seller-assistant'
 import { SellerStatusBanner, SellerStatusPill } from '@/components/seller/status-banner'
 import { Button } from '@/components/ui/button'
 import { ProductScene } from '@/components/marketing/scene'
 import { SELLER_ORDERS, SELLER_PRODUCTS, SELLER_SALES_7D, SELLER_TRANSACTIONS } from '@/data/seller'
+import { priceInsightFor, REVIEW_SUMMARIES } from '@/data/seller-assistant'
 import { cn, money } from '@/lib/utils'
 import { useOnboardingProgress, useSellerStore } from '@/store/seller-store'
 import { usePlan } from '@/store/storefront-store'
@@ -19,6 +21,7 @@ const PERIODS = ['7 Days', '30 Days', 'Custom'] as const
 
 export function SellerDashboardPage() {
   const [period, setPeriod] = useState<(typeof PERIODS)[number]>('7 Days')
+  const assistant = useSellerAssistant()
   const { storeName, status, kyc } = useSellerStore()
   const plan = usePlan()
   const { isComplete, percent } = useOnboardingProgress()
@@ -28,12 +31,25 @@ export function SellerDashboardPage() {
   const lowStock = SELLER_PRODUCTS.filter((p) => p.available > 0 && p.available <= p.lowStockAt)
   const outOfStock = SELLER_PRODUCTS.filter((p) => p.available === 0)
   const changesRequired = SELLER_PRODUCTS.filter((p) => p.status === 'Changes Required')
+  const listingNeeds = SELLER_PRODUCTS.filter((p) => p.status === 'Changes Required' || p.images < 3 || p.status === 'Draft')
   const activeProducts = SELLER_PRODUCTS.filter((p) => p.status === 'Active').length
   const recentOrders = SELLER_ORDERS.slice(0, 5)
+  const returnCases = SELLER_ORDERS.filter((o) => o.returnCase)
+  const settlementDue = SELLER_TRANSACTIONS.filter((t) => t.status !== 'Settled').reduce((sum, t) => sum + t.earnings, 0)
 
   const onboarding = status === 'Onboarding' || (status === 'Pending Review' && !isComplete)
 
   const bestSellers = [...SELLER_PRODUCTS].sort((a, b) => b.sold - a.sold).slice(0, 4)
+  const spotlightProduct = bestSellers[0]
+  const voiceProduct = SELLER_PRODUCTS.find((p) => REVIEW_SUMMARIES[p.id]?.trend) ?? spotlightProduct
+  const voiceSummary = voiceProduct ? REVIEW_SUMMARIES[voiceProduct.id] : undefined
+  const overpriced = SELLER_PRODUCTS.filter((p) => (priceInsightFor(p)?.difference ?? 0) > 2)
+  const productAttention = [
+    { label: 'Low stock', value: String(lowStock.length + outOfStock.length), to: '/seller/inventory' },
+    { label: 'Slow moving', value: String(SELLER_PRODUCTS.filter((p) => p.available > 20 && p.sold < 12).length), to: '/seller/marketing' },
+    { label: 'Pricing', value: String(overpriced.length), to: '/seller/products' },
+    { label: 'Listing health', value: String(listingNeeds.length), to: '/seller/products' },
+  ]
 
   // Sales by the channel that produced them — the number that justifies the plan.
   const marketplaceSales = SELLER_TRANSACTIONS.filter((t) => t.channel === 'marketplace').reduce((s, t) => s + t.gross, 0)
@@ -74,7 +90,7 @@ export function SellerDashboardPage() {
       attention: lowStock.length + outOfStock.length > 0,
       target: { to: '/seller/inventory', search: { filter: 'Low Stock' } },
     },
-    { label: 'Pending Settlement', value: '$540', hint: 'Eligible on 16 Aug', target: { to: '/seller/settlements' } },
+    { label: 'Pending Settlement', value: money(settlementDue), hint: 'Expected on 18 Aug', target: { to: '/seller/settlements' } },
   ]
 
   return (
@@ -85,10 +101,6 @@ export function SellerDashboardPage() {
         actions={
           <>
             <SellerStatusPill className="hidden sm:inline-flex" />
-            {/* Same account — buying doesn't need a different login */}
-            <Button variant="outline" size="sm" asChild>
-              <AdminLink to="/shop">Shop SafalMarketHub</AdminLink>
-            </Button>
             <Button size="sm" asChild>
               <AdminLink to="/seller/products/new">Add Product</AdminLink>
             </Button>
@@ -136,65 +148,98 @@ export function SellerDashboardPage() {
         </div>
       ) : (
         <>
-          <KpiGrid items={kpis.slice(0, 4)} />
-          <KpiGrid items={kpis.slice(4)} className="mt-3 lg:grid-cols-4" />
+          <div className="grid gap-4 xl:grid-cols-[1.6fr_0.9fr]">
+            <Panel
+              title="Here's what needs your attention today"
+              description="The work queue SafalHub thinks you should clear first."
+              actions={
+                <Button size="sm" variant="outline" onClick={() => assistant.open('What should I do today?')}>
+                  <Sparkles className="size-4" />
+                  Ask SafalHub
+                </Button>
+              }
+            >
+              <div className="grid gap-3 sm:grid-cols-2">
+                {[
+                  {
+                    icon: ShoppingBag,
+                    count: String(newOrders.length),
+                    label: newOrders.length === 1 ? 'New order' : 'New orders',
+                    detail: 'Ready to process',
+                    tone: 'brand' as const,
+                    target: { to: '/seller/orders', search: { tab: 'New' } },
+                  },
+                  {
+                    icon: Boxes,
+                    count: String(lowStock.length + outOfStock.length),
+                    label: 'Products low on stock',
+                    detail: lowStock[0] ? `${lowStock[0].name} may run out soon` : 'Inventory is in a good place',
+                    tone: 'gold' as const,
+                    target: { to: '/seller/inventory', search: { filter: 'Low Stock' } },
+                  },
+                  {
+                    icon: TriangleAlert,
+                    count: String(listingNeeds.length),
+                    label: 'Listings need changes',
+                    detail: changesRequired[0]?.name ?? 'Images or listing basics need attention',
+                    tone: changesRequired.length ? ('danger' as const) : ('gold' as const),
+                    target: { to: '/seller/products' },
+                  },
+                  {
+                    icon: Star,
+                    count: '3',
+                    label: 'New review signals',
+                    detail: voiceSummary?.trend ?? 'Customer feedback is steady',
+                    tone: 'brand' as const,
+                    target: { to: '/seller/products' },
+                  },
+                  {
+                    icon: Package,
+                    count: String(returnCases.length),
+                    label: returnCases.length === 1 ? 'Return opened' : 'Returns opened',
+                    detail: returnCases[0]?.returnCase?.reason ?? 'No return exceptions',
+                    tone: returnCases.length ? ('gold' as const) : ('brand' as const),
+                    target: { to: '/seller/orders' },
+                  },
+                  {
+                    icon: Wallet,
+                    count: money(settlementDue),
+                    label: 'Settlement due',
+                    detail: 'Expected on 18 Aug',
+                    tone: status === 'Payout Hold' ? ('danger' as const) : ('brand' as const),
+                    target: { to: '/seller/settlements' },
+                  },
+                ].map((item) => (
+                  <AttentionCard key={item.label} {...item} />
+                ))}
+              </div>
+            </Panel>
 
-          {/* Action centre */}
-          <section className="mt-7">
-            <h2 className="text-[17px] font-semibold">Requires your attention</h2>
-            <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-              {lowStock.length + outOfStock.length > 0 && (
-                <AttentionCard
-                  icon={Boxes}
-                  count={String(lowStock.length + outOfStock.length)}
-                  label={lowStock.length + outOfStock.length === 1 ? 'Low stock product' : 'Low stock products'}
-                  detail={lowStock[0] ? `${lowStock[0].name} · ${lowStock[0].available} left` : 'Restock to stay listed'}
-                  tone="gold"
-                  target={{ to: '/seller/inventory', search: { filter: 'Low Stock' } }}
-                />
-              )}
-              {newOrders.length > 0 && (
-                <AttentionCard
-                  icon={ShoppingBag}
-                  count={String(newOrders.length)}
-                  label={newOrders.length === 1 ? 'New order' : 'New orders'}
-                  detail="Accept them to start fulfilment"
-                  tone="brand"
-                  target={{ to: '/seller/orders', search: { tab: 'New' } }}
-                />
-              )}
-              {changesRequired.length > 0 && (
-                <AttentionCard
-                  icon={TriangleAlert}
-                  count={String(changesRequired.length)}
-                  label={changesRequired.length === 1 ? 'Product requires changes' : 'Products require changes'}
-                  detail={changesRequired[0].name}
-                  tone="danger"
-                  target={{ to: `/seller/products/${changesRequired[0].id}` }}
-                />
-              )}
-              {SELLER_ORDERS.some((o) => o.returnCase) && (
-                <AttentionCard
-                  icon={Package}
-                  count="1"
-                  label="Return request"
-                  detail="RET-2208 · awaiting your response"
-                  tone="gold"
-                  target={{ to: '/seller/orders/SH-100098-01' }}
-                />
-              )}
-              {(status === 'Payout Hold' || kyc !== 'Approved') && (
-                <AttentionCard
-                  icon={Wallet}
-                  count="1"
-                  label={status === 'Payout Hold' ? 'Settlement on hold' : 'Verification pending'}
-                  detail={status === 'Payout Hold' ? 'Payouts paused pending review' : `KYC status: ${kyc}`}
-                  tone="danger"
-                  target={{ to: status === 'Payout Hold' ? '/seller/settlements' : '/seller/setup' }}
-                />
-              )}
-            </div>
-          </section>
+            <Panel title="Ask SafalHub" description="Tell it what you want to know or do.">
+              <div className="grid gap-2">
+                {[
+                  'Help me price this',
+                  'Why is this product not selling?',
+                  'What should I restock?',
+                  'Explain my next settlement',
+                  'What should I improve?',
+                ].map((prompt) => (
+                  <button
+                    key={prompt}
+                    type="button"
+                    onClick={() => assistant.open(prompt)}
+                    className="flex items-center justify-between gap-3 rounded-sm border px-3 py-2.5 text-left text-[13px] font-semibold transition-colors hover:border-brand-200 hover:bg-brand-50/50 dark:hover:bg-brand-950/30"
+                  >
+                    <span>{prompt}</span>
+                    <ArrowRight className="size-4 shrink-0 text-ink-300" />
+                  </button>
+                ))}
+              </div>
+            </Panel>
+          </div>
+
+          <KpiGrid items={kpis.slice(0, 4)} className="mt-6" />
+          <KpiGrid items={kpis.slice(4)} className="mt-3 lg:grid-cols-4" />
 
           {/* The two questions a KPI row can't answer: where did the money come
               from, and what is actually selling. */}
@@ -250,6 +295,89 @@ export function SellerDashboardPage() {
                       <span className="block text-[14px] font-bold tabular text-ink-950 dark:text-white">{product.sold}</span>
                       <span className="block text-[11px] text-ink-500">sold</span>
                     </span>
+                  </li>
+                ))}
+              </ul>
+            </Panel>
+          </div>
+
+          <div className="mt-6 grid gap-4 xl:grid-cols-3">
+            {spotlightProduct && (
+              <Panel
+                title="Product health"
+                description={spotlightProduct.name}
+                actions={
+                  <Button variant="ghost" size="sm" onClick={() => assistant.open(`How are my ${spotlightProduct.name} doing?`)}>
+                    Ask
+                  </Button>
+                }
+              >
+                <dl className="grid grid-cols-2 gap-4">
+                  {[
+                    ['Sold', `${spotlightProduct.sold} units`],
+                    ['Revenue', money(spotlightProduct.sold * spotlightProduct.price)],
+                    ['Stock', `${spotlightProduct.available} left`],
+                    ['Rating', REVIEW_SUMMARIES[spotlightProduct.id] ? `${REVIEW_SUMMARIES[spotlightProduct.id].rating} ★` : '—'],
+                  ].map(([label, value]) => (
+                    <div key={label}>
+                      <dt className="text-[10px] font-bold uppercase tracking-[0.08em] text-ink-400">{label}</dt>
+                      <dd className="mt-1 text-[18px] font-bold tabular text-ink-950 dark:text-white">{value}</dd>
+                    </div>
+                  ))}
+                </dl>
+                <div className="mt-4 grid gap-2 border-t pt-4">
+                  {productAttention.map((item) => (
+                    <AdminLink key={item.label} to={item.to} className="flex items-center justify-between gap-3 rounded-sm px-2 py-1.5 text-[12px] hover:bg-muted">
+                      <span className="font-medium text-ink-700 dark:text-ink-200">{item.label}</span>
+                      <span className="font-bold tabular text-ink-950 dark:text-white">{item.value}</span>
+                    </AdminLink>
+                  ))}
+                </div>
+              </Panel>
+            )}
+
+            <Panel title="Customer voice" description={voiceProduct?.name ?? 'Recent products'}>
+              {voiceSummary ? (
+                <>
+                  <p className="flex items-center gap-2 text-[15px] font-bold text-ink-950 dark:text-white">
+                    <Star className="size-4 fill-gold-400 text-gold-400" />
+                    {voiceSummary.rating} average · {voiceSummary.count} reviews
+                  </p>
+                  <div className="mt-4 grid gap-3">
+                    <VoiceList title="Customers love" items={voiceSummary.likes.slice(0, 3)} tone="good" />
+                    <VoiceList title="Needs attention" items={voiceSummary.dislikes.slice(0, 3)} tone="warn" />
+                  </div>
+                  {voiceSummary.trend && (
+                    <p className="mt-4 rounded-sm bg-gold-50 p-3 text-[12px] font-medium text-gold-800 dark:bg-gold-950/40 dark:text-gold-200">
+                      {voiceSummary.trend}
+                    </p>
+                  )}
+                </>
+              ) : (
+                <p className="text-[13px] text-ink-500">No review signals yet.</p>
+              )}
+            </Panel>
+
+            <Panel title="Store health" description="A compact operating score.">
+              <div className="flex items-end justify-between gap-4">
+                <div>
+                  <p className="text-[34px] font-bold leading-none tracking-[-0.04em] text-ink-950 dark:text-white">92</p>
+                  <p className="mt-1 text-[12px] font-semibold text-teal-700 dark:text-teal-100">Excellent</p>
+                </div>
+                <Button size="sm" variant="outline" onClick={() => assistant.open('How is my store doing?')}>
+                  Improve
+                </Button>
+              </div>
+              <ul className="mt-5 grid gap-2 text-[12px]">
+                {[
+                  ['Order cancellation', 'Good'],
+                  ['Late shipping', '3 orders need care'],
+                  ['Return rate', `${returnCases.length} open case`],
+                  ['KYC status', kyc],
+                ].map(([label, value]) => (
+                  <li key={label} className="flex items-center justify-between gap-3 border-t pt-2 first:border-t-0 first:pt-0">
+                    <span className="text-ink-500">{label}</span>
+                    <span className="font-semibold text-ink-900 dark:text-white">{value}</span>
                   </li>
                 ))}
               </ul>
@@ -381,5 +509,22 @@ export function SellerDashboardPage() {
         </>
       )}
     </>
+  )
+}
+
+function VoiceList({ title, items, tone }: { title: string; items: string[]; tone: 'good' | 'warn' }) {
+  return (
+    <div>
+      <p className={cn('text-[11px] font-bold uppercase tracking-[0.08em]', tone === 'good' ? 'text-teal-700 dark:text-teal-100' : 'text-gold-700 dark:text-gold-300')}>
+        {title}
+      </p>
+      <ul className="mt-1 grid gap-1">
+        {items.map((item) => (
+          <li key={item} className="text-[12px] text-ink-700 dark:text-ink-200">
+            {item}
+          </li>
+        ))}
+      </ul>
+    </div>
   )
 }

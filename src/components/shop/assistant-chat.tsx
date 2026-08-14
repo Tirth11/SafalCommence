@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { ArrowUp, Camera, Check, CreditCard, Lock, MapPin, ShieldCheck, Sparkles, Star, ThumbsDown, ThumbsUp } from 'lucide-react'
+import { ArrowUp, Camera, Check, CreditCard, Lock, MapPin, Mic, ShieldCheck, Sparkles, Star, ThumbsDown, ThumbsUp } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { AdminLink } from '@/components/admin/admin-link'
@@ -15,7 +15,7 @@ import {
   searchProducts,
   type Match,
 } from '@/data/discovery'
-import { SHOP_PRODUCTS, type ShopProduct } from '@/data/shop'
+import { CUSTOMER_ORDERS, SHOP_PRODUCTS, type Shipment, type ShopProduct } from '@/data/shop'
 import { useAccountStore } from '@/store/account-store'
 import { useCartStore } from '@/store/cart-store'
 import { cn, money } from '@/lib/utils'
@@ -35,6 +35,12 @@ type Bubble =
   | { id: number; from: 'bot'; text: string }
   | { id: number; from: 'bot'; text: string; matches: Match[]; rateable?: boolean }
   | { id: number; from: 'bot'; text: string; compare: ShopProduct[] }
+  | { id: number; from: 'bot'; text: string; offer: OfferInsight }
+  | { id: number; from: 'bot'; text: string; reviews: ReviewIntel }
+  | { id: number; from: 'bot'; text: string; returnHelp: ReturnHelp }
+  | { id: number; from: 'bot'; text: string; vault: VaultItem[] }
+  | { id: number; from: 'bot'; text: string; preferences: PreferencePreview }
+  | { id: number; from: 'bot'; text: string; voice: VoicePreview }
   | { id: number; from: 'bot'; text: string; checkout: CheckoutDraft }
   | { id: number; from: 'bot'; text: string; placed: { orderId: string; total: number; product: ShopProduct } }
 
@@ -49,11 +55,65 @@ type CheckoutDraft = {
   payment: string
 }
 
+type OfferInsight = {
+  product?: ShopProduct
+  headline: string
+  detail: string
+  discount: number
+  subtotal: number
+  delivery: number
+  total: number
+}
+
+type ReviewIntel = {
+  product: ShopProduct
+  likes: string[]
+  concerns: string[]
+  bestFor: string
+}
+
+type ReturnHelp = {
+  orderId: string
+  placedOn: string
+  status: string
+  seller: string
+  item: Shipment['items'][number]
+  estimate: string
+  issue: string
+  returnableUntil?: string
+}
+
+type VaultItem = {
+  orderId: string
+  purchased: string
+  seller: string
+  item: Shipment['items'][number]
+  status: string
+  paymentMethod: string
+  warranty: string
+  returnableUntil?: string
+}
+
+type PreferencePreview = {
+  size: string
+  colour: string
+  address: string
+  budget: string
+  payment: string
+  bestOffer: boolean
+  priceDrops: boolean
+}
+
+type VoicePreview = {
+  examples: string[]
+}
+
 const SUGGESTIONS = [
-  'Find a smartwatch under $150',
-  "Show today's offers",
-  'Show cheaper ones',
+  'Find headphones under $80 for travel',
+  'Upload photo to match a product',
   'Compare the first two',
+  'I received the wrong colour',
+  'Show my purchase vault',
 ]
 
 /** Omit over a union has to distribute, or every variant collapses to the first. */
@@ -74,7 +134,7 @@ export function AssistantChat({ onRequestPayment }: { onRequestPayment: (draft: 
     {
       id: next(),
       from: 'bot',
-      text: `Hi ${user?.firstName ?? 'there'} 👋 Tell me what you're after — a budget and roughly what it's for is plenty.`,
+      text: `Hi ${user?.firstName ?? 'there'} 👋 I can search by words or photo, compare options, find offers, prepare checkout, and help with orders. What are you shopping for today?`,
     },
   ])
 
@@ -101,6 +161,85 @@ export function AssistantChat({ onRequestPayment }: { onRequestPayment: (draft: 
   const respond = (text: string) => {
     const q = text.toLowerCase()
 
+    if (/\b(photo|image|screenshot|picture|similar|match a product)\b/.test(q)) {
+      const matches = photoMatches(3)
+      setResults(matches.map((m) => m.product))
+      return say({
+        from: 'bot',
+        text: 'Photo search is ready. I matched this like a product screenshot:',
+        matches,
+        rateable: true,
+      })
+    }
+
+    if (/\b(voice|speak|mic|microphone|hindi|multilingual|language)\b/.test(q)) {
+      return say({
+        from: 'bot',
+        text: 'Voice shopping can understand natural requests before turning them into product matches.',
+        voice: voicePreview(),
+      })
+    }
+
+    if (isMultilingualQuery(q)) {
+      const cap = budgetIn(q)
+      const wantsFitness = /\b(run|running|shoe|shoes|fitness)\b/.test(q)
+      const matches = wantsFitness
+        ? findMatches({ category: 'Sports', budget: cap ? String(cap) : 'any', priority: 'value' }, 3)
+        : searchProducts(normaliseShoppingQuery(text), 3)
+      setResults(matches.map((m) => m.product))
+      if (matches.length) {
+        return say({
+          from: 'bot',
+          text: wantsFitness
+            ? `I understood that as fitness shopping${cap ? ` under ${money(cap)}` : ''}. Shoes are not in this demo catalogue yet, so here is the closest SafalHub stock.`
+            : 'I understood the mixed-language request and found these:',
+          matches,
+          rateable: true,
+        })
+      }
+    }
+
+    if (/\b(wrong|damaged|broken|return|replace|refund|support|problem|colour|color)\b/.test(q) && /\b(order|received|return|replace|refund|support|problem|wrong|damaged|colour|color)\b/.test(q)) {
+      return say({
+        from: 'bot',
+        text: 'I found the order most likely connected to that issue. Pick the next step — nothing is submitted until you confirm it.',
+        returnHelp: returnHelpFor(q),
+      })
+    }
+
+    if (/\b(purchase vault|my purchases|warranty|invoice|return window|buy again|bought items?)\b/.test(q)) {
+      return say({
+        from: 'bot',
+        text: 'Here is your purchase vault — orders, invoices, warranty and return windows in one place.',
+        vault: purchaseVault(),
+      })
+    }
+
+    if (/\b(review|reviews|buyers saying|customers saying|people say|feedback|concerns|best for)\b/.test(q)) {
+      const product = resolveProductFromContext(q, results)
+      setResults([product])
+      return say({
+        from: 'bot',
+        text: `Here is the review summary for ${product.name}:`,
+        reviews: reviewIntelFor(product),
+      })
+    }
+
+    if (/\b(preference|preferences|usual size|preferred colour|preferred color|price-drop|price drop|always look for best offer)\b/.test(q)) {
+      return say({
+        from: 'bot',
+        text: 'These preferences let SafalAssistant ask fewer questions while staying editable by the customer.',
+        preferences: preferencePreview(),
+      })
+    }
+
+    if (/\b(passkey|fingerprint|face id|device pin|login)\b/.test(q)) {
+      return say({
+        from: 'bot',
+        text: 'SafalHub can keep login simple with passkeys: continue using fingerprint, Face ID, or device PIN instead of repeated password resets.',
+      })
+    }
+
     // "add the second one" / "add it to my cart"
     const ordinal = matchOrdinal(q)
     if (/\badd\b/.test(q) && (ordinal !== null || results.length === 1)) {
@@ -126,7 +265,7 @@ export function AssistantChat({ onRequestPayment }: { onRequestPayment: (draft: 
 
     // "any offers?"
     if (/\boffer|discount|coupon|deal|cheaper price\b/.test(q)) {
-      const product = results[0]
+      const product = results[0] ?? productFromText(q)
       const subtotal = product?.price ?? 0
       const offer = bestOfferFor(subtotal, product?.category)
       if (!offer) {
@@ -138,11 +277,19 @@ export function AssistantChat({ onRequestPayment }: { onRequestPayment: (draft: 
         })
       }
       const off = offerDiscount(offer, subtotal)
+      const delivery = subtotal - off >= 99 ? 0 : 5
       return say({
         from: 'bot',
-        text: `Yes 🎉 ${offer.code ?? offer.headline} — ${offer.detail}. That takes ${money(off)} off, so ${money(
-          subtotal
-        )} becomes ${money(subtotal - off)}.`,
+        text: product ? 'Best eligible offer found before checkout:' : 'Best offer available right now:',
+        offer: {
+          product,
+          headline: offer.code ?? offer.headline,
+          detail: offer.detail,
+          discount: off,
+          subtotal,
+          delivery,
+          total: subtotal - off + delivery,
+        },
       })
     }
 
@@ -198,7 +345,7 @@ export function AssistantChat({ onRequestPayment }: { onRequestPayment: (draft: 
     setThinking(true)
     window.setTimeout(() => {
       setThinking(false)
-      const matches = findSimilarToPhoto(3)
+      const matches = photoMatches(3)
       setResults(matches.map((m) => m.product))
       say({ from: 'bot', text: 'Here is what looks closest to your photo:', matches, rateable: true })
     }, 1100)
@@ -271,7 +418,7 @@ export function AssistantChat({ onRequestPayment }: { onRequestPayment: (draft: 
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Ask for anything…"
-            aria-label="Message the shopping assistant"
+            aria-label="Message SafalAssistant"
             className="h-11 min-w-0 flex-1 bg-transparent px-4 text-[14px] outline-none"
           />
           <button
@@ -281,6 +428,14 @@ export function AssistantChat({ onRequestPayment }: { onRequestPayment: (draft: 
             className="grid size-9 shrink-0 place-items-center rounded-full text-ink-500 transition-colors hover:bg-muted hover:text-ink-900 dark:hover:text-white"
           >
             <Camera className="size-[18px]" />
+          </button>
+          <button
+            type="button"
+            onClick={() => send('Voice shopping')}
+            aria-label="Use voice shopping"
+            className="grid size-9 shrink-0 place-items-center rounded-full text-ink-500 transition-colors hover:bg-muted hover:text-ink-900 dark:hover:text-white"
+          >
+            <Mic className="size-[17px]" />
           </button>
         </div>
         <Button type="submit" size="icon" className="size-11 shrink-0 rounded-full" disabled={!input.trim()} aria-label="Send">
@@ -350,6 +505,18 @@ function BubbleView({
 
       {'compare' in bubble && <CompareTable products={bubble.compare} onAdd={onAdd} />}
 
+      {'offer' in bubble && <OfferFinderCard insight={bubble.offer} />}
+
+      {'reviews' in bubble && <ReviewSummaryCard intel={bubble.reviews} onAsk={onAsk} />}
+
+      {'returnHelp' in bubble && <ReturnHelpCard help={bubble.returnHelp} />}
+
+      {'vault' in bubble && <PurchaseVaultCard items={bubble.vault} />}
+
+      {'preferences' in bubble && <PreferenceCard preferences={bubble.preferences} />}
+
+      {'voice' in bubble && <VoiceShoppingCard preview={bubble.voice} onAsk={onAsk} />}
+
       {'checkout' in bubble && <CheckoutCard draft={bubble.checkout} onPay={onPay} />}
 
       {'placed' in bubble && (
@@ -375,6 +542,255 @@ function BubbleView({
           </div>
         </div>
       )}
+    </div>
+  )
+}
+
+/* ---------------------------------------------------------- smart offer --- */
+function OfferFinderCard({ insight }: { insight: OfferInsight }) {
+  const label = insight.product ? insight.product.name : 'Eligible cart'
+
+  return (
+    <div className="rounded-xl border bg-card p-4">
+      <p className="text-[13px] font-semibold text-ink-900 dark:text-white">Smart offer finder</p>
+      <p className="mt-1 text-[12px] text-ink-500">SafalAssistant only shows offers this item actually qualifies for.</p>
+
+      {insight.product && (
+        <div className="mt-3 flex gap-3">
+          <ProductScene glyph={insight.product.glyph} tone={insight.product.tone} className="size-14 shrink-0 rounded-lg" grain={false} />
+          <div className="min-w-0">
+            <p className="line-clamp-1 text-[13px] font-semibold text-ink-900 dark:text-white">{label}</p>
+            <p className="text-[12px] text-ink-500">{insight.product.seller}</p>
+          </div>
+        </div>
+      )}
+
+      <dl className="mt-3.5 grid gap-1.5 border-t pt-3 text-[12px]">
+        <Row label="Product price" value={money(insight.subtotal)} />
+        <Row label={`Offer ${insight.headline}`} value={`− ${money(insight.discount)}`} good />
+        <Row label="Delivery" value={insight.delivery === 0 ? 'Free' : money(insight.delivery)} />
+        <div className="mt-1 flex items-baseline justify-between gap-3 border-t pt-2">
+          <dt className="text-[13px] font-semibold text-ink-900 dark:text-white">Final pay</dt>
+          <dd className="text-[15px] font-bold tabular text-ink-950 dark:text-white">{money(insight.total)}</dd>
+        </div>
+      </dl>
+
+      <p className="mt-3 rounded-lg bg-teal-50 px-3 py-2 text-[12px] font-medium text-teal-800 dark:bg-teal-600/15 dark:text-teal-100">
+        {insight.detail}
+      </p>
+    </div>
+  )
+}
+
+/* ------------------------------------------------------- review summary --- */
+function ReviewSummaryCard({ intel, onAsk }: { intel: ReviewIntel; onAsk: (text: string) => void }) {
+  return (
+    <div className="rounded-xl border bg-card p-4">
+      <div className="flex gap-3">
+        <ProductScene glyph={intel.product.glyph} tone={intel.product.tone} className="size-14 shrink-0 rounded-lg" grain={false} />
+        <div className="min-w-0">
+          <p className="line-clamp-1 text-[13px] font-semibold text-ink-900 dark:text-white">{intel.product.name}</p>
+          <p className="mt-0.5 flex items-center gap-1.5 text-[12px] text-ink-500">
+            <Star className="size-3 fill-gold-400 text-gold-400" />
+            <span className="font-semibold tabular text-ink-700 dark:text-ink-300">{intel.product.rating}</span>
+            <span aria-hidden>·</span>
+            <span>{intel.product.reviews} reviews</span>
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-3 grid gap-3 rounded-xl bg-muted/50 p-3 text-[12px]">
+        <section>
+          <p className="font-semibold text-ink-900 dark:text-white">What buyers are saying</p>
+          <ul className="mt-1.5 grid gap-1 text-ink-600 dark:text-ink-300">
+            {intel.likes.map((item) => (
+              <li key={item}>• {item}</li>
+            ))}
+          </ul>
+        </section>
+
+        <section>
+          <p className="font-semibold text-ink-900 dark:text-white">Common concerns</p>
+          <ul className="mt-1.5 grid gap-1 text-ink-600 dark:text-ink-300">
+            {intel.concerns.map((item) => (
+              <li key={item}>• {item}</li>
+            ))}
+          </ul>
+        </section>
+      </div>
+
+      <p className="mt-3 rounded-lg bg-brand-50 px-3 py-2 text-[12px] font-medium text-brand-800 dark:bg-brand-600/15 dark:text-brand-100">
+        Best for: {intel.bestFor}
+      </p>
+
+      <div className="mt-3 flex flex-wrap gap-2">
+        <Button size="sm" variant="outline" className="h-8 text-[12px]" onClick={() => onAsk('Compare the first two')}>
+          Compare for me
+        </Button>
+        <Button size="sm" className="h-8 text-[12px]" onClick={() => onAsk('Find best offer')}>
+          Find best offer
+        </Button>
+      </div>
+    </div>
+  )
+}
+
+/* ------------------------------------------------------------- returns --- */
+function ReturnHelpCard({ help }: { help: ReturnHelp }) {
+  return (
+    <div className="rounded-xl border bg-card p-4">
+      <p className="text-[13px] font-semibold text-ink-900 dark:text-white">Smart order assistant</p>
+      <p className="mt-1 text-[12px] text-ink-500">
+        {help.orderId} · Purchased {help.placedOn} · {help.status} · {help.estimate}
+      </p>
+
+      <div className="mt-3 flex gap-3 rounded-xl bg-muted/50 p-3">
+        <ProductScene glyph={help.item.glyph} tone={help.item.tone} className="size-14 shrink-0 rounded-lg" grain={false} />
+        <div className="min-w-0">
+          <p className="line-clamp-1 text-[13px] font-semibold text-ink-900 dark:text-white">{help.item.name}</p>
+          <p className="mt-0.5 text-[12px] text-ink-500">
+            {help.item.variant} · Sold by {help.seller}
+          </p>
+          <p className="mt-1 text-[12px] font-medium text-ink-700 dark:text-ink-200">Issue: {help.issue}</p>
+        </div>
+      </div>
+
+      <p className="mt-3 text-[12px] text-ink-600 dark:text-ink-300">
+        {help.returnableUntil
+          ? `Return available until ${help.returnableUntil}.`
+          : 'This item may need support review before a return can be started.'}
+      </p>
+
+      <div className="mt-3 flex flex-wrap gap-2">
+        <Button size="sm" className="h-8 text-[12px]" asChild>
+          <AdminLink to={`/account/orders/${help.orderId}`} search={{ action: 'return' }}>
+            Replace product
+          </AdminLink>
+        </Button>
+        <Button size="sm" variant="outline" className="h-8 text-[12px]" asChild>
+          <AdminLink to="/account/returns">Return product</AdminLink>
+        </Button>
+        <Button size="sm" variant="ghost" className="h-8 text-[12px]" asChild>
+          <AdminLink to="/account/support" search={{ view: 'new', order: help.orderId, topic: 'Return / Refund' }}>
+            Talk to support
+          </AdminLink>
+        </Button>
+      </div>
+    </div>
+  )
+}
+
+/* --------------------------------------------------------- purchase vault -- */
+function PurchaseVaultCard({ items }: { items: VaultItem[] }) {
+  return (
+    <div className="rounded-xl border bg-card p-4">
+      <p className="text-[13px] font-semibold text-ink-900 dark:text-white">Purchase & warranty vault</p>
+      <p className="mt-1 text-[12px] text-ink-500">Everything the customer needs after buying, without digging through email.</p>
+
+      <ul className="mt-3 grid gap-2.5">
+        {items.map((entry) => (
+          <li key={`${entry.orderId}-${entry.item.productId}`} className="rounded-xl border p-3">
+            <div className="flex gap-3">
+              <ProductScene glyph={entry.item.glyph} tone={entry.item.tone} className="size-14 shrink-0 rounded-lg" grain={false} />
+              <div className="min-w-0 flex-1">
+                <p className="line-clamp-1 text-[13px] font-semibold text-ink-900 dark:text-white">{entry.item.name}</p>
+                <p className="mt-0.5 text-[12px] text-ink-500">
+                  {entry.orderId} · Purchased {entry.purchased}
+                </p>
+              </div>
+            </div>
+
+            <dl className="mt-3 grid gap-1 text-[12px] text-ink-600 dark:text-ink-300">
+              <Row label="Status" value={entry.status} />
+              <Row label="Payment" value={entry.paymentMethod} />
+              <Row label="Seller" value={entry.seller} />
+              <Row label="Warranty" value={entry.warranty} />
+              <Row label="Return eligible until" value={entry.returnableUntil ?? 'Window closed'} />
+            </dl>
+
+            <div className="mt-3 flex flex-wrap gap-2">
+              <Button size="sm" variant="outline" className="h-8 text-[12px]" asChild>
+                <AdminLink to={`/account/orders/${entry.orderId}`}>View invoice</AdminLink>
+              </Button>
+              <Button size="sm" variant="outline" className="h-8 text-[12px]" asChild>
+                <AdminLink to="/account/support" search={{ view: 'new', order: entry.orderId, topic: 'My Order' }}>
+                  Get support
+                </AdminLink>
+              </Button>
+              <Button size="sm" className="h-8 text-[12px]" asChild>
+                <AdminLink to={`/product/${entry.item.productId}`}>Buy again</AdminLink>
+              </Button>
+            </div>
+          </li>
+        ))}
+      </ul>
+
+      <Button variant="ghost" size="sm" className="mt-3 h-8 text-[12px]" asChild>
+        <AdminLink to="/account/orders">View all purchases</AdminLink>
+      </Button>
+    </div>
+  )
+}
+
+/* ---------------------------------------------------------- preferences --- */
+function PreferenceCard({ preferences }: { preferences: PreferencePreview }) {
+  const rows = [
+    ['Usual size', preferences.size],
+    ['Preferred colour', preferences.colour],
+    ['Default address', preferences.address],
+    ['Budget preference', preferences.budget],
+    ['Preferred payment', preferences.payment],
+    ['Always look for best offer', preferences.bestOffer ? 'On' : 'Off'],
+    ['Price-drop alerts', preferences.priceDrops ? 'On' : 'Off'],
+  ]
+
+  return (
+    <div className="rounded-xl border bg-card p-4">
+      <p className="text-[13px] font-semibold text-ink-900 dark:text-white">My shopping preferences</p>
+      <p className="mt-1 text-[12px] text-ink-500">SafalAssistant can remember these only if the customer can edit or remove them.</p>
+
+      <dl className="mt-3 grid gap-1.5 text-[12px]">
+        {rows.map(([label, value]) => (
+          <Row key={label} label={label} value={value} />
+        ))}
+      </dl>
+
+      <div className="mt-3 flex flex-wrap gap-2">
+        <Button size="sm" className="h-8 text-[12px]" asChild>
+          <AdminLink to="/account/shopping">Manage preferences</AdminLink>
+        </Button>
+        <Button size="sm" variant="outline" className="h-8 text-[12px]" asChild>
+          <AdminLink to="/account/profile">Security settings</AdminLink>
+        </Button>
+      </div>
+    </div>
+  )
+}
+
+/* --------------------------------------------------------------- voice --- */
+function VoiceShoppingCard({ preview, onAsk }: { preview: VoicePreview; onAsk: (text: string) => void }) {
+  return (
+    <div className="rounded-xl border bg-card p-4">
+      <p className="flex items-center gap-2 text-[13px] font-semibold text-ink-900 dark:text-white">
+        <Mic className="size-4 text-brand-600 dark:text-brand-300" />
+        Voice shopping
+      </p>
+      <p className="mt-1 text-[12px] text-ink-500">
+        Speak naturally, including mixed-language requests. The assistant turns it into search, compare, offer, and checkout steps.
+      </p>
+
+      <div className="mt-3 flex flex-wrap gap-1.5">
+        {preview.examples.map((example) => (
+          <button
+            key={example}
+            type="button"
+            onClick={() => onAsk(example)}
+            className="rounded-full border px-2.5 py-1 text-[11px] font-medium text-ink-600 transition-colors hover:border-brand-400 hover:text-ink-900 dark:text-ink-300 dark:hover:text-white"
+          >
+            {example}
+          </button>
+        ))}
+      </div>
     </div>
   )
 }
@@ -609,6 +1025,168 @@ export function PaymentSheet({
 export type { CheckoutDraft }
 
 /* --------------------------------------------------------------- parsing -- */
+function isText(value: string | null | undefined): value is string {
+  return Boolean(value)
+}
+
+function photoMatches(limit = 3): Match[] {
+  const labels = ['Closest match', 'Cheaper alternative', 'Premium style']
+  return findSimilarToPhoto(limit).map((match, i) => ({
+    ...match,
+    reason: `${labels[i] ?? 'Similar style'} · ${match.reason}`,
+  }))
+}
+
+function reviewIntelFor(product: ShopProduct): ReviewIntel {
+  const facts = factsFor(product.id)
+  const likes = [
+    `${product.rating} average from ${product.reviews} shopper reviews`,
+    product.highlights[0] ?? facts.note,
+    product.highlights[1] ?? `Sold by ${product.seller}, rated ${product.sellerRating}`,
+  ].filter(isText)
+
+  const concerns = [
+    product.stock === 0 ? 'Currently out of stock' : null,
+    product.returnWindowDays === 0 ? 'No easy return window, so confirm before checkout' : null,
+    product.bulky ? 'Bulkier delivery; check your PIN code before payment' : null,
+    product.category === 'Fashion' ? 'Fit can vary, so check size before buying' : null,
+    product.category === 'Beauty' ? 'Patch test advised for skincare products' : null,
+    product.rating < 4.5 ? 'Compare recent seller feedback before deciding' : null,
+  ].filter(isText)
+
+  return {
+    product,
+    likes,
+    concerns: concerns.length ? concerns : ['Check colour, size, and return window before payment'],
+    bestFor: facts.needs.map(titleCase).join(', '),
+  }
+}
+
+function returnHelpFor(q: string): ReturnHelp {
+  const entries = CUSTOMER_ORDERS.flatMap((order) =>
+    order.shipments.flatMap((shipment) => shipment.items.map((item) => ({ order, shipment, item })))
+  )
+  const fallback = {
+    order: CUSTOMER_ORDERS[0]!,
+    shipment: CUSTOMER_ORDERS[0]!.shipments[0]!,
+    item: CUSTOMER_ORDERS[0]!.shipments[0]!.items[0]!,
+  }
+  const colourIssue = /\b(colou?r|variant|wrong)\b/.test(q)
+  const chosen =
+    (colourIssue
+      ? entries.find((entry) => /\b(black|white|olive|titanium|blue|sand|slate|charcoal|tan|ecru)\b/i.test(entry.item.variant))
+      : entries.find((entry) => entry.shipment.returnableUntil)) ?? fallback
+
+  const issue = /\bdamaged|broken\b/.test(q)
+    ? 'Damaged product'
+    : /\brefund\b/.test(q)
+      ? 'Refund help'
+      : colourIssue
+        ? 'Wrong colour or variant received'
+        : 'Order help'
+
+  return {
+    orderId: chosen.order.id,
+    placedOn: chosen.order.placedOn,
+    status: chosen.shipment.status,
+    seller: chosen.shipment.seller,
+    item: chosen.item,
+    estimate: chosen.shipment.estimate,
+    issue,
+    returnableUntil: chosen.shipment.returnableUntil,
+  }
+}
+
+function purchaseVault(): VaultItem[] {
+  return CUSTOMER_ORDERS.flatMap((order) =>
+    order.shipments.flatMap((shipment) =>
+      shipment.items.map((item) => {
+        const product = SHOP_PRODUCTS.find((p) => p.id === item.productId)
+        return {
+          orderId: order.id,
+          purchased: order.placedOn,
+          seller: shipment.seller,
+          item,
+          status: shipment.status,
+          paymentMethod: order.paymentMethod,
+          warranty: warrantyFor(product),
+          returnableUntil: shipment.returnableUntil,
+        }
+      })
+    )
+  ).slice(0, 4)
+}
+
+function warrantyFor(product?: ShopProduct) {
+  const warranty = product?.highlights.find((highlight) => /warranty/i.test(highlight))
+  if (warranty) return warranty
+  if (product?.category === 'Electronics' || product?.category === 'Accessories') return '1 Year seller support'
+  if (product?.category === 'Home & Living' || product?.category === 'Sports') return '6 Months seller support'
+  return 'Not a warranty item'
+}
+
+function preferencePreview(): PreferencePreview {
+  return {
+    size: 'M',
+    colour: 'Black',
+    address: 'Home',
+    budget: 'Value for money',
+    payment: 'Visa •••• 4242',
+    bestOffer: true,
+    priceDrops: true,
+  }
+}
+
+function voicePreview(): VoicePreview {
+  return {
+    examples: [
+      'Headphones under $80 for travel',
+      'Mujhe 3,000 ke andar fitness item dikhao',
+      'Add the second one and prepare checkout',
+    ],
+  }
+}
+
+function resolveProductFromContext(q: string, results: ShopProduct[]) {
+  const ordinal = matchOrdinal(q)
+  if (ordinal !== null && results[ordinal]) return results[ordinal]
+
+  return productFromText(q) ?? results[0] ?? SHOP_PRODUCTS[0]!
+}
+
+function productFromText(q: string) {
+  return SHOP_PRODUCTS.find((product) => {
+    const terms = [
+      product.name,
+      product.brand,
+      product.category,
+      ...product.categoryPath,
+      ...product.name.split(/\W+/).filter((word) => word.length > 4),
+    ]
+    return terms.some((term) => {
+      const clean = term.toLowerCase()
+      return q.includes(clean) || (clean.endsWith('s') && q.includes(clean.slice(0, -1)))
+    })
+  })
+}
+
+function isMultilingualQuery(q: string) {
+  return /\b(mujhe|dikhao|dikhaiye|andar|chahiye|achhe|achha|ke andar)\b/.test(q)
+}
+
+function normaliseShoppingQuery(text: string) {
+  return text
+    .replace(/mujhe/gi, 'show me')
+    .replace(/dikhao|dikhaiye/gi, 'show')
+    .replace(/achhe|achha/gi, 'good')
+    .replace(/ke andar|andar/gi, 'under')
+    .replace(/chahiye/gi, 'need')
+}
+
+function titleCase(value: string) {
+  return value.charAt(0).toUpperCase() + value.slice(1)
+}
+
 function matchOrdinal(q: string): number | null {
   if (/\b(first|1st|one|option 1)\b/.test(q)) return 0
   if (/\b(second|2nd|two|option 2)\b/.test(q)) return 1
@@ -617,8 +1195,11 @@ function matchOrdinal(q: string): number | null {
 }
 
 function budgetIn(q: string): number | null {
-  const m = q.match(/(?:under|below|less than|upto|up to)\s*\$?\s*(\d+)/)
-  return m ? Number(m[1]) : null
+  const m = q.match(
+    /(?:under|below|less than|upto|up to|within|ke andar|andar)\s*(?:\$|₹|rs\.?\s*)?([\d,]+)|(?:\$|₹|rs\.?\s*)\s*([\d,]+)\s*(?:under|below|ke andar|andar)?/
+  )
+  const value = m?.[1] ?? m?.[2]
+  return value ? Number(value.replace(/,/g, '')) : null
 }
 
 /** Exposed for the quick-action buttons on the shopping home. */
