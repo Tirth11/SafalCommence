@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../data/catalog.dart';
 import '../data/commerce.dart';
+import '../data/offer_engine.dart';
 import '../state/app_state.dart';
 import '../theme/app_theme.dart';
 import '../widgets/common.dart';
@@ -30,6 +31,7 @@ class HomeScreen extends StatelessWidget {
     return CustomScrollView(
       slivers: [
         SliverToBoxAdapter(child: _Hero(onOpenTab: onOpenTab)),
+        const SliverToBoxAdapter(child: _CampaignBanner()),
         if (order != null)
           SliverToBoxAdapter(child: _ActiveOrderCard(order: order)),
         const SliverToBoxAdapter(
@@ -265,6 +267,64 @@ class _QuickAction extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Announcement strip for whatever seller campaign is running.
+///
+/// Driven by the offer engine's dates, so it appears when a campaign goes
+/// live and disappears when it ends — no theme edit, nothing to clean up.
+class _CampaignBanner extends StatelessWidget {
+  const _CampaignBanner();
+
+  @override
+  Widget build(BuildContext context) {
+    final campaigns = liveCampaigns();
+    if (campaigns.isEmpty) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+      child: Column(
+        children: [
+          for (final campaign in campaigns)
+            Container(
+              margin: const EdgeInsets.only(bottom: 8),
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(Radii.lg),
+                gradient: const LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: [Color(0xFF543BCB), Color(0xFF7A63E0)],
+                ),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.celebration_outlined, size: 20, color: Colors.white),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          campaign.name!,
+                          style: const TextStyle(
+                              fontSize: 14.5, fontWeight: FontWeight.w700, color: Colors.white),
+                        ),
+                        Text(
+                          '${campaign.percent}% off · ${campaign.seller}',
+                          style: const TextStyle(fontSize: 12, color: Color(0xFFE4DEFB)),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Icon(Icons.chevron_right, size: 20, color: Colors.white),
+                ],
+              ),
+            ),
+        ],
       ),
     );
   }

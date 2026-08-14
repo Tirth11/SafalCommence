@@ -11,7 +11,8 @@ void main() {
     await tester.pump();
 
     expect(find.text('Find it. Buy it.'), findsOneWidget);
-    expect(find.text("Today's offers 🔥"), findsOneWidget);
+    // A live seller campaign announces itself at the top of the home screen.
+    expect(find.text('Independence Day Sale'), findsOneWidget);
   });
 
   testWidgets('bottom navigation switches tabs', (tester) async {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../data/commerce.dart';
+import '../data/offer_engine.dart';
 import '../state/app_state.dart';
 import '../theme/app_theme.dart';
 import '../widgets/common.dart';
@@ -16,9 +16,11 @@ class CartScreen extends StatelessWidget {
     final state = AppScope.of(context);
     final lines = state.lines;
     final subtotal = state.subtotal;
-    final offer = bestOfferFor(subtotal);
-    final discount = offer == null ? 0 : offerDiscount(offer, subtotal);
-    final shipping = subtotal - discount >= 99 || subtotal == 0 ? 0 : 5;
+    // Every line the cart shows comes from the same evaluation the product
+    // page and the assistant use, so the three can never disagree.
+    final result = evaluate(subtotal: subtotal, product: lines.isEmpty ? null : lines.first.product);
+    final discount = result.discount;
+    final shipping = result.freeDelivery || subtotal - discount >= 99 || subtotal == 0 ? 0 : 5;
     final total = subtotal - discount + shipping;
 
     return Scaffold(
@@ -38,8 +40,9 @@ class CartScreen extends StatelessWidget {
               children: [
                 for (final line in lines) _CartRow(line: line),
                 const SizedBox(height: 8),
-                if (offer != null)
+                for (final applied in result.applied)
                   Container(
+                    margin: const EdgeInsets.only(bottom: 8),
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
                       color: AppColors.tealSoft,
@@ -47,19 +50,32 @@ class CartScreen extends StatelessWidget {
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.check_circle_outline,
-                            size: 18, color: AppColors.teal),
+                        const Icon(Icons.check_circle_outline, size: 18, color: AppColors.teal),
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(
-                            'Best offer applied — ${offer.code ?? offer.headline} saves ${money(discount)}',
+                            applied.freeDelivery
+                                ? applied.label
+                                : '${applied.label} — saves ${money(applied.amount)}',
                             style: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.teal),
+                                fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.teal),
                           ),
                         ),
                       ],
+                    ),
+                  ),
+
+                // Say what is missing rather than silently omitting an offer.
+                for (final miss in result.nearMisses.take(1))
+                  Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: AppColors.ink100,
+                      borderRadius: BorderRadius.circular(Radii.md),
+                    ),
+                    child: Text(
+                      '${miss.label}: ${miss.reason.toLowerCase()}.',
+                      style: const TextStyle(fontSize: 12.5, color: AppColors.ink700),
                     ),
                   ),
                 const SizedBox(height: 20),
