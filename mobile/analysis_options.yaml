@@ -1,0 +1,7 @@
+include: package:flutter_lints/flutter.yaml
+
+linter:
+  rules:
+    # The mockup uses withOpacity deliberately: withValues needs Flutter 3.27+
+    # and this should open on whatever version is already installed.
+    deprecated_member_use: false
