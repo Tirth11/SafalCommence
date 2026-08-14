@@ -12,6 +12,7 @@ import { RegisterPage } from '@/routes/register'
 /* Super Admin portal */
 import { AdminLoginPage } from '@/routes/admin/admin-login'
 import { AdminDashboardPage } from '@/routes/admin/admin-dashboard'
+import { AdminControlCenterPage } from '@/routes/admin/control-center'
 import { SellersPage } from '@/routes/admin/sellers'
 import { SellerDetailPage } from '@/routes/admin/seller-detail'
 import { ProductsPage } from '@/routes/admin/products'
@@ -119,6 +120,7 @@ const adminLayoutRoute = createRoute({
 
 const adminRoutes = [
   createRoute({ getParentRoute: () => adminLayoutRoute, path: '/admin', component: AdminDashboardPage }),
+  createRoute({ getParentRoute: () => adminLayoutRoute, path: '/admin/control-center', component: AdminControlCenterPage }),
   createRoute({ getParentRoute: () => adminLayoutRoute, path: '/admin/sellers', component: () => <SellersPage /> }),
   createRoute({ getParentRoute: () => adminLayoutRoute, path: '/admin/sellers/$sellerId', component: SellerDetailPage }),
   createRoute({ getParentRoute: () => adminLayoutRoute, path: '/admin/kyc', component: () => <SellersPage mode="kyc" /> }),

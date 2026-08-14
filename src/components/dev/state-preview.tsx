@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Layers, X } from 'lucide-react'
 
+import { SIDE_PANEL_WIDTH, useSidePanelOpen } from '@/lib/panel-state'
 import { cn } from '@/lib/utils'
 
 type Item = { label: string; onSelect: () => void }
@@ -12,18 +13,20 @@ type Item = { label: string; onSelect: () => void }
 export function StatePreview({ label, items, note }: { label: string; items: Item[]; note?: string }) {
   const [open, setOpen] = useState(false)
   const [active, setActive] = useState(0)
+  const panelOpen = useSidePanelOpen()
 
   if (!import.meta.env.DEV) return null
 
   return (
     <div
       className={cn(
-        'state-preview fixed bottom-4 right-4 z-[120] transition-[right,opacity] print:hidden',
-        // Steps clear of the seller assistant panel rather than being buried
-        // under it; the panel is full width on small screens, so hide there.
-        "[body[data-assistant-open='true']_&]:right-[444px]",
-        "max-lg:[body[data-assistant-open='true']_&]:pointer-events-none max-lg:[body[data-assistant-open='true']_&]:opacity-0"
+        'fixed bottom-4 z-[120] transition-[right,opacity] duration-200 print:hidden',
+        // Steps aside for the assistant panel rather than being buried under
+        // it. On narrow screens the panel is full width, so it gets out of
+        // the way entirely.
+        panelOpen && 'max-lg:pointer-events-none max-lg:opacity-0'
       )}
+      style={{ right: panelOpen ? SIDE_PANEL_WIDTH + 24 : 16 }}
     >
       {open ? (
         <div className="w-[290px] rounded-md border bg-popover p-3.5 shadow-xl">

@@ -1,18 +1,24 @@
 import {
   BadgeIndianRupee,
   Banknote,
+  Bot,
   Boxes,
+  Brain,
   ClipboardList,
   CreditCard,
   FileText,
+  Image,
   LayoutDashboard,
   LifeBuoy,
+  Mic,
   Package,
   ScrollText,
   Settings,
   ShieldCheck,
   ShoppingBag,
   Store,
+  Tag,
+  UploadCloud,
   Users,
 } from 'lucide-react'
 
@@ -35,6 +41,29 @@ export type NavItem = {
 export const ADMIN_NAV: { section?: string; items: NavItem[] }[] = [
   {
     items: [{ label: 'Dashboard', to: '/admin', icon: LayoutDashboard }],
+  },
+  {
+    section: 'Control Center',
+    items: [
+      {
+        label: 'Control Center',
+        to: '/admin/control-center',
+        icon: Bot,
+        badge: 12,
+        children: [
+          { label: 'Overview', to: '/admin/control-center', search: { tab: 'overview' } },
+          { label: 'Customer Shopping AI', to: '/admin/control-center', search: { tab: 'ai' }, badge: 12 },
+          { label: 'Seller Assistant', to: '/admin/control-center', search: { tab: 'ai' } },
+          { label: 'AI Actions', to: '/admin/control-center', search: { tab: 'ai' } },
+          { label: 'Image Search', to: '/admin/control-center', search: { tab: 'ai' } },
+          { label: 'Voice Assistant', to: '/admin/control-center', search: { tab: 'ai' } },
+          { label: 'Seller Intelligence', to: '/admin/control-center', search: { tab: 'intelligence' } },
+          { label: 'Offers & Promotions', to: '/admin/control-center', search: { tab: 'offers' } },
+          { label: 'Customer Voice', to: '/admin/control-center', search: { tab: 'voice' } },
+          { label: 'Bulk Uploads', to: '/admin/control-center', search: { tab: 'uploads' } },
+        ],
+      },
+    ],
   },
   {
     section: 'Marketplace',
@@ -137,4 +166,9 @@ export const KIND_ICON = {
   payment: CreditCard,
   return: Boxes,
   order: ClipboardList,
+  ai: Brain,
+  image: Image,
+  voice: Mic,
+  offer: Tag,
+  upload: UploadCloud,
 } as const

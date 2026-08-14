@@ -31,6 +31,7 @@ import {
   suggestedActions,
   topSellers,
 } from '@/data/seller-assistant'
+import { setSidePanelOpen } from '@/lib/panel-state'
 import { usePlan } from '@/store/storefront-store'
 import { cn, money } from '@/lib/utils'
 
@@ -159,12 +160,10 @@ function AssistantPanel({ seed, onClose }: { seed?: string; onClose: () => void 
     scroller.current?.scrollTo({ top: scroller.current.scrollHeight })
   }, [messages, thinking])
 
-  // Lets the dev state-preview pill move out from under the panel.
+  // Anything anchored bottom-right (the dev state pill) moves aside for us.
   useEffect(() => {
-    document.body.dataset.assistantOpen = 'true'
-    return () => {
-      delete document.body.dataset.assistantOpen
-    }
+    setSidePanelOpen(true)
+    return () => setSidePanelOpen(false)
   }, [])
 
   const say = (msg: DistributiveOmit<Msg, 'id'>) => setMessages((m) => [...m, { ...msg, id: nextId() } as Msg])
@@ -391,10 +390,10 @@ function AssistantPanel({ seed, onClose }: { seed?: string; onClose: () => void 
   return (
     <>
       {/* Dimmed, but the dashboard stays visible behind the panel. */}
-      <div className="fixed inset-0 z-[125] bg-ink-950/20 backdrop-blur-[1px] lg:hidden" onClick={onClose} aria-hidden />
+      <div className="fixed inset-0 z-[119] bg-ink-950/20 backdrop-blur-[1px] lg:hidden" onClick={onClose} aria-hidden />
 
       <aside
-        className="fixed inset-y-0 right-0 z-[130] flex w-full max-w-[420px] flex-col border-l bg-background shadow-2xl"
+        className="fixed inset-y-0 right-0 z-[121] flex w-full max-w-[420px] flex-col border-l bg-background shadow-2xl"
         aria-label="Safal Assistant"
       >
         <header className="flex items-center gap-3 border-b px-5 py-4">

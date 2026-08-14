@@ -1,9 +1,13 @@
 import { useState } from 'react'
 import {
+  AlertTriangle,
   Banknote,
+  Bot,
   CreditCard,
+  MessageSquareWarning,
   Package,
   RotateCcw,
+  ShieldAlert,
   Store,
   Undo2,
 } from 'lucide-react'
@@ -31,9 +35,9 @@ import { money } from '@/lib/utils'
 const PERIODS = ['Today', '7 Days', '30 Days', 'Custom'] as const
 
 const PRIMARY_KPIS: Kpi[] = [
-  { label: 'Gross Merchandise Value', value: '$30,600', hint: 'Total order value', delta: { value: '+12.4%', direction: 'up' } },
-  { label: 'Platform Revenue', value: '$2,700', hint: 'Commission + fees', delta: { value: '+9.1%', direction: 'up' } },
-  { label: 'Total Orders', value: '4,286', hint: 'All time', delta: { value: '+128 today', direction: 'up' } },
+  { label: 'GMV', value: '₹24.5L', hint: 'Today · gross marketplace value', delta: { value: '+12.4%', direction: 'up' } },
+  { label: 'Platform Revenue', value: '₹2.4L', hint: 'Commission + fees', delta: { value: '+9.1%', direction: 'up' } },
+  { label: 'Orders Today', value: '428', hint: 'vs 386 yesterday', delta: { value: '+10.9%', direction: 'up' } },
   { label: 'Active Sellers', value: '485', hint: '9 suspended', delta: { value: '+39 this month', direction: 'up' } },
 ]
 
@@ -41,23 +45,40 @@ const QUEUE_KPIS: Kpi[] = [
   { label: 'Pending Seller Approvals', value: '24', hint: 'Oldest waiting 3 days', attention: true, target: { to: '/admin/sellers', search: { status: 'Pending Review' } } },
   { label: 'Pending Product Approvals', value: '52', hint: '12 submitted today', attention: true, target: { to: '/admin/products', search: { status: 'In Review' } } },
   { label: 'Refund Requests', value: '18', hint: '$530exposure', attention: true, target: { to: '/admin/refunds' } },
-  { label: 'Pending Settlements', value: '$9,300', hint: '2 batches eligible', attention: true, target: { to: '/admin/settlements', search: { status: 'Eligible' } } },
+  { label: 'Pending Settlements', value: '₹7.45L', hint: '2 batches eligible', attention: true, target: { to: '/admin/settlements', search: { status: 'Eligible' } } },
 ]
 
 const SECONDARY_KPIS: Kpi[] = [
-  { label: 'Orders Today', value: '128', hint: 'vs 114 yesterday', delta: { value: '+12.3%', direction: 'up' } },
-  { label: 'Registered Buyers', value: '18,560', hint: '1,980 this month' },
-  { label: 'Active Products', value: '12,450', hint: '312 out of stock' },
-  { label: 'Failed Payments', value: '6', hint: 'Last 24 hours', delta: { value: '+2', direction: 'down' } },
+  { label: 'Active Customers', value: '18,560', hint: '1,980 this month' },
+  { label: 'Products Live', value: '12,450', hint: '312 out of stock' },
+  { label: 'Refunds Pending', value: '18', hint: '3 require Super Admin sign-off', target: { to: '/admin/refunds' } },
+  { label: 'Failed Payments', value: '6', hint: 'Last 24 hours', delta: { value: '+2', direction: 'down' }, target: { to: '/admin/payments', search: { status: 'Failed' } } },
 ]
 
 const ATTENTION = [
   { icon: Store, count: '24', label: 'Sellers awaiting approval', detail: 'Urban Threads, HomeCraft Studio, SoundPro India + 21 more', tone: 'gold' as const, target: { to: '/admin/sellers', search: { status: 'Pending Review' } } },
   { icon: Package, count: '52', label: 'Products awaiting approval', detail: '1 flagged for counterfeit concern', tone: 'gold' as const, target: { to: '/admin/products', search: { status: 'In Review' } } },
-  { icon: Undo2, count: '18', label: 'Refund requests', detail: '3 above $62need Super Admin sign-off', tone: 'danger' as const, target: { to: '/admin/refunds' } },
-  { icon: Banknote, count: '$9,300', label: 'Settlement pending', detail: '2 eligible batches · 1 on hold', tone: 'brand' as const, target: { to: '/admin/settlements', search: { status: 'Eligible' } } },
+  { icon: Undo2, count: '18', label: 'Refund requests', detail: '3 high-value refunds need Super Admin sign-off', tone: 'danger' as const, target: { to: '/admin/refunds' } },
+  { icon: Banknote, count: '₹4.5L', label: 'Settlements ready', detail: 'Eligible and ready for payout processing', tone: 'brand' as const, target: { to: '/admin/settlements', search: { status: 'Eligible' } } },
   { icon: CreditCard, count: '6', label: 'Failed payment cases', detail: 'Awaiting gateway reconciliation', tone: 'danger' as const, target: { to: '/admin/payments', search: { status: 'Failed' } } },
   { icon: RotateCcw, count: '12', label: 'Return requests', detail: '4 in quality check', tone: 'gold' as const, target: { to: '/admin/returns' } },
+  { icon: Bot, count: '12', label: 'AI conversations need review', detail: 'Negative feedback: price mismatch and relevance', tone: 'gold' as const, target: { to: '/admin/control-center', search: { tab: 'ai' } } },
+  { icon: AlertTriangle, count: '7', label: 'Unusual cancellation rates', detail: 'Sellers above category baseline', tone: 'gold' as const, target: { to: '/admin/control-center', search: { tab: 'intelligence' } } },
+  { icon: ShieldAlert, count: '3', label: 'Product safety complaints', detail: 'Original comments attached for moderation', tone: 'danger' as const, target: { to: '/admin/control-center', search: { tab: 'voice' } } },
+]
+
+const AI_SNAPSHOT: Kpi[] = [
+  { label: 'AI Conversations Today', value: '8,452', hint: 'Customer + seller assistants', target: { to: '/admin/control-center', search: { tab: 'ai' } } },
+  { label: 'Purchases Assisted', value: '1,180', hint: 'Checkout prepared, customer confirmed', target: { to: '/admin/control-center', search: { tab: 'ai' } } },
+  { label: 'Helpful Rating', value: '87%', hint: '13% negative feedback', target: { to: '/admin/control-center', search: { tab: 'ai' } } },
+  { label: 'Image Searches', value: '3,210', hint: '6.8% no-match rate', target: { to: '/admin/control-center', search: { tab: 'ai' } } },
+]
+
+const CUSTOMER_VOICE: Kpi[] = [
+  { label: 'Overall Satisfaction', value: '82%', hint: 'Across product, seller, delivery and support', target: { to: '/admin/control-center', search: { tab: 'voice' } } },
+  { label: 'Delivery Satisfaction', value: '89%', hint: 'Courier feedback', target: { to: '/admin/control-center', search: { tab: 'voice' } } },
+  { label: 'Support Resolution', value: '84%', hint: 'Closed tickets', target: { to: '/admin/control-center', search: { tab: 'voice' } } },
+  { label: 'Packaging Complaints', value: '+34%', hint: 'Trending issue this week', target: { to: '/admin/control-center', search: { tab: 'voice' } } },
 ]
 
 const chartAxis = { tickLine: false, axisLine: false, tick: { fontSize: 11, fill: 'var(--ink-400)' } } as const
@@ -79,7 +100,7 @@ export function AdminDashboardPage() {
     <>
       <PageHeader
         title="Platform dashboard"
-        description="Marketplace health and everything waiting on the SafalMarketHub team, as of 12 Aug 2026."
+        description="Marketplace health, AI control, customer voice, payments and everything waiting on the SafalMarketHub team."
         actions={
           <Button variant="outline" size="sm" asChild>
             <AdminLink to="/admin/reports">View reports</AdminLink>
@@ -189,7 +210,7 @@ export function AdminDashboardPage() {
 
       {/* Row 5 — pending actions */}
       <section className="mt-8">
-        <h2 className="text-[17px] font-semibold">Requires your attention</h2>
+        <h2 className="text-[17px] font-semibold">Needs your attention</h2>
         <p className="mt-1 text-[13px] text-ink-500">Each card opens the matching work queue.</p>
         <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {ATTENTION.map((a) => (
@@ -197,6 +218,36 @@ export function AdminDashboardPage() {
           ))}
         </div>
       </section>
+
+      <div className="mt-6 grid gap-4 xl:grid-cols-2">
+        <Panel
+          title="AI control snapshot"
+          description="What customer and seller assistants are doing, with flagged activity separated from normal successful sessions."
+          actions={
+            <Button variant="ghost" size="sm" asChild>
+              <AdminLink to="/admin/control-center" search={{ tab: 'ai' }}>Open control center</AdminLink>
+            </Button>
+          }
+        >
+          <KpiGrid items={AI_SNAPSHOT} />
+        </Panel>
+
+        <Panel
+          title="Reviews & customer voice"
+          description="Product reviews, seller ratings, delivery feedback, platform feedback and AI feedback."
+          actions={
+            <Button variant="ghost" size="sm" asChild>
+              <AdminLink to="/admin/control-center" search={{ tab: 'voice' }}>View feedback</AdminLink>
+            </Button>
+          }
+        >
+          <KpiGrid items={CUSTOMER_VOICE} />
+          <p className="mt-3 flex items-start gap-2 rounded-lg bg-gold-50 px-3 py-2 text-[12px] font-semibold text-gold-700 dark:bg-gold-600/15 dark:text-gold-400">
+            <MessageSquareWarning className="mt-0.5 size-4 shrink-0" />
+            Trending issue: packaging complaints increased 34% this week.
+          </p>
+        </Panel>
+      </div>
 
       {/* Row 6 — recent activity */}
       <div className="mt-6 grid gap-4 xl:grid-cols-[1.4fr_1fr]">

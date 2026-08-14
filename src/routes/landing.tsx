@@ -3,7 +3,6 @@ import { SiteHeader } from '@/components/layout/site-header'
 import {
   CantDecide,
   ContactBand,
-  PhotoSearchBand,
   ProductRail,
   SellerFooterCta,
   ShopByBudget,
@@ -79,7 +78,6 @@ function ShoppingHome() {
       <ProductRail title="Popular right now" sub="What shoppers are buying this week." products={popular} />
       <ComingSoon />
       <CantDecide />
-      <PhotoSearchBand />
       <ShopWithConfidence />
       <ContactBand />
       <SellerFooterCta />
@@ -94,12 +92,12 @@ function MarketingHome() {
   return (
     <>
       <ShopHero />
+      <TodaysOffers />
       <ShopByCategory />
       <ShopByNeed />
       <ShopByBudget />
       <ProductRail title="Popular right now" sub="What shoppers are buying this week." products={popular} />
       <CantDecide />
-      <PhotoSearchBand />
       <ShopWithConfidence />
       <ContactBand />
       <SellerFooterCta />

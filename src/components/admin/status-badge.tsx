@@ -87,6 +87,15 @@ const STATUS_TONE: Record<string, Tone> = {
   'Reminder Sent': 'info',
   Included: 'success',
   'Pending DNS': 'warning',
+  // Control center / intelligence
+  Good: 'success',
+  Completed: 'success',
+  Prepared: 'progress',
+  'Restock Risk': 'warning',
+  'Slow Moving': 'warning',
+  'Oversell Risk': 'danger',
+  Imported: 'success',
+  'Partially Imported': 'warning',
   // Priority
   Low: 'muted',
   Medium: 'info',
