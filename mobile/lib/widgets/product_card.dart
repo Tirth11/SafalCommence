@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../data/catalog.dart';
+import '../data/offer_engine.dart';
 import '../screens/product_screen.dart';
 import '../state/app_state.dart';
 import '../theme/app_theme.dart';
@@ -20,6 +21,8 @@ class ProductCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final state = AppScope.of(context);
     final saved = state.isSaved(product.id);
+    // What the customer would actually pay, per the offer engine.
+    final sale = saleBadgeFor(product);
 
     return InkWell(
       borderRadius: BorderRadius.circular(Radii.lg),
@@ -108,7 +111,14 @@ class ProductCard extends StatelessWidget {
                   const SizedBox(height: 6),
                   RatingRow(rating: product.rating, reviews: product.reviews),
                   const SizedBox(height: 8),
-                  PriceRow(price: product.price, mrp: product.mrp),
+                  if (sale != null)
+                    PriceRow(price: sale.price, mrp: product.price)
+                  else
+                    PriceRow(price: product.price, mrp: product.mrp),
+                  if (sale != null) ...[
+                    const SizedBox(height: 6),
+                    ReasonChip(text: sale.label),
+                  ],
                   if (reason != null) ...[
                     const SizedBox(height: 8),
                     ReasonChip(text: reason!),

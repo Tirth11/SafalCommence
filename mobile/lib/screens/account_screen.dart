@@ -114,9 +114,12 @@ class AccountScreen extends StatelessWidget {
         const SectionHeader(title: 'Selling'),
         _MenuRow(
           icon: Icons.storefront_outlined,
-          label: 'Sell on SafalMarketHub',
-          detail: 'Same account, no second login',
-          onTap: () => showToast(context, 'Seller sign-up opens on the web'),
+          label: 'Switch to selling',
+          detail: 'ABC Electronics · same account, no second login',
+          onTap: () {
+            state.setSellingMode(true);
+            showToast(context, 'Switched to your seller portal');
+          },
         ),
         const SizedBox(height: 20),
         Padding(

@@ -11,7 +11,30 @@ void main() {
     await tester.pump();
 
     expect(find.text('Find it. Buy it.'), findsOneWidget);
-    expect(find.text("Today's offers 🔥"), findsOneWidget);
+    // A live seller campaign announces itself at the top of the home screen.
+    expect(find.text('Independence Day Sale'), findsOneWidget);
+  });
+
+  testWidgets('one account switches into the seller portal', (tester) async {
+    await tester.pumpWidget(const SafalMarketHubApp());
+    await tester.pump();
+
+    // Sign in, then switch — never a second login.
+    await tester.tap(find.byIcon(Icons.person_outline));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Sign in'));
+    await tester.pumpAndSettle();
+
+    await tester.dragUntilVisible(
+      find.text('Switch to selling'),
+      find.byType(ListView).first,
+      const Offset(0, -120),
+    );
+    await tester.tap(find.text('Switch to selling'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Hi ABC Electronics 👋'), findsOneWidget);
+    expect(find.text('Dashboard'), findsWidgets);
   });
 
   testWidgets('bottom navigation switches tabs', (tester) async {

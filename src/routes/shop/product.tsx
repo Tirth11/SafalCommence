@@ -22,6 +22,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { OfferLines } from '@/components/shop/offer-lines'
 import { getProduct, SERVICEABLE_PINS, SHOP_PRODUCTS } from '@/data/shop'
 import { useCartStore } from '@/store/cart-store'
 import { cn, money } from '@/lib/utils'
@@ -184,6 +185,9 @@ export function ProductDetailPage() {
             <Price price={product.price} mrp={product.mrp} size="lg" />
             <p className="mt-1.5 text-[12px] text-ink-500">{product.taxNote}</p>
             <StockPill stock={product.stock} className="mt-3" />
+            {/* Whatever the offer engine says applies here — the seller's own
+                discount first, then any platform campaign that permits it. */}
+            <OfferLines product={product} />
           </div>
 
           {/* Variants */}

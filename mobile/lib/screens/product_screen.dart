@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../data/catalog.dart';
-import '../data/commerce.dart';
+import '../data/offer_engine.dart';
 import '../state/app_state.dart';
 import '../theme/app_theme.dart';
 import '../widgets/common.dart';
@@ -34,7 +34,7 @@ class _ProductScreenState extends State<ProductScreen> {
     final product = widget.product;
     final state = AppScope.of(context);
     final saved = state.isSaved(product.id);
-    final offer = bestOfferFor(product.price, category: product.category);
+    final result = evaluate(subtotal: product.price, product: product);
 
     return Scaffold(
       appBar: AppBar(
@@ -92,31 +92,47 @@ class _ProductScreenState extends State<ProductScreen> {
                 const Text('Inclusive of all taxes',
                     style: TextStyle(fontSize: 12, color: AppColors.ink500)),
 
-                // Only shown when it genuinely applies to this price.
-                if (offer != null) ...[
+                // Only what the engine says applies here — the seller's own
+                // discount first, then any platform campaign on top.
+                if (result.hasAny) ...[
                   const SizedBox(height: 14),
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: AppColors.tealSoft,
-                      borderRadius: BorderRadius.circular(Radii.md),
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.local_offer_outlined,
-                            size: 17, color: AppColors.teal),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            '${offer.code ?? offer.headline} — saves ${money(offerDiscount(offer, product.price))} on this item',
-                            style: const TextStyle(
-                                fontSize: 12.5,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.teal),
+                  for (final applied in result.applied)
+                    Container(
+                      margin: const EdgeInsets.only(bottom: 6),
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: AppColors.tealSoft,
+                        borderRadius: BorderRadius.circular(Radii.md),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.local_offer_outlined, size: 17, color: AppColors.teal),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              applied.freeDelivery
+                                  ? applied.label
+                                  : '${applied.label} — saves ${money(applied.amount)}',
+                              style: const TextStyle(
+                                  fontSize: 12.5, fontWeight: FontWeight.w600, color: AppColors.teal),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
+                  if (result.discount > 0)
+                    Text(
+                      'Your price today: ${money(result.finalSubtotal)}',
+                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                    ),
+                ],
+
+                // One near-miss, and only the actionable kind.
+                if (result.nearMisses.isNotEmpty) ...[
+                  const SizedBox(height: 10),
+                  Text(
+                    '${result.nearMisses.first.label}: ${result.nearMisses.first.reason.toLowerCase()}.',
+                    style: const TextStyle(fontSize: 12, color: AppColors.ink500),
                   ),
                 ],
 

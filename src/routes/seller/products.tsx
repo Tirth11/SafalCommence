@@ -1,11 +1,13 @@
+import { useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
-import { Archive, Copy, Package, Pause, Pencil, Play } from 'lucide-react'
+import { Archive, Copy, Package, Pause, Pencil, Play, Tag } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { ActionDialog, useActionDialog } from '@/components/admin/action-dialog'
 import { AdminLink, adminLinkProps, useAdminSearch } from '@/components/admin/admin-link'
 import { DataTable, type Column } from '@/components/admin/data-table'
 import { AddProductMenu } from '@/components/seller/add-product-menu'
+import { ProductOfferDialog } from '@/components/seller/product-offer-dialog'
 import { EmptyState, PageHeader } from '@/components/admin/primitives'
 import { StatusBadge } from '@/components/admin/status-badge'
 import { ProductThumb } from '@/components/commerce/product-thumb'
@@ -28,6 +30,8 @@ export function SellerProductsPage() {
   const search = useAdminSearch()
   const navigate = useNavigate()
   const { config, open, setOpen, ask } = useActionDialog()
+  // Which product's quick-offer dialog is open, if any.
+  const [offerFor, setOfferFor] = useState<SellerProduct | null>(null)
 
   const activeFilters = { status: search.status ?? '', category: search.category ?? '' }
   function setFilter(key: string, value: string) {
@@ -119,6 +123,10 @@ export function SellerProductsPage() {
                 <Pencil />
                 {p.status === 'Changes Required' ? 'Edit & resubmit' : 'View / Edit'}
               </AdminLink>
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => setOfferFor(p)}>
+              <Tag />
+              Add offer
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <AdminLink to="/seller/inventory">
@@ -212,6 +220,14 @@ export function SellerProductsPage() {
           onFilterChange={setFilter}
           exportName="Products"
           empty={{ title: 'No products match', body: 'Try clearing a filter or searching a different SKU.' }}
+        />
+      )}
+
+      {offerFor && (
+        <ProductOfferDialog
+          product={offerFor}
+          open={offerFor !== null}
+          onOpenChange={(next) => !next && setOfferFor(null)}
         />
       )}
 

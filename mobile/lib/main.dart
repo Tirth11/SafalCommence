@@ -7,6 +7,7 @@ import 'screens/cart_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/listing_screen.dart';
 import 'screens/search_screen.dart';
+import 'screens/seller/seller_shell.dart';
 import 'state/app_state.dart';
 import 'theme/app_theme.dart';
 import 'widgets/common.dart';
@@ -60,6 +61,9 @@ class _RootShellState extends State<RootShell> {
   @override
   Widget build(BuildContext context) {
     final state = AppScope.of(context);
+
+    // One account, two portals. Switching is a state change, never a login.
+    if (state.sellingMode) return const SellerShell();
 
     final pages = [
       HomeScreen(onOpenTab: _openTab),
