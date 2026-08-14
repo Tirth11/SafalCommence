@@ -58,7 +58,7 @@ export const ADMIN_NAV: { section?: string; items: NavItem[] }[] = [
           { label: 'Image Search', to: '/admin/control-center', search: { tab: 'ai' } },
           { label: 'Voice Assistant', to: '/admin/control-center', search: { tab: 'ai' } },
           { label: 'Seller Intelligence', to: '/admin/control-center', search: { tab: 'intelligence' } },
-          { label: 'Offers & Promotions', to: '/admin/control-center', search: { tab: 'offers' } },
+          { label: 'Offers & Promotions', to: '/admin/offers' },
           { label: 'Customer Voice', to: '/admin/control-center', search: { tab: 'voice' } },
           { label: 'Bulk Uploads', to: '/admin/control-center', search: { tab: 'uploads' } },
         ],
@@ -93,6 +93,18 @@ export const ADMIN_NAV: { section?: string; items: NavItem[] }[] = [
           { label: 'Pending Approval', to: '/admin/products', search: { status: 'In Review' }, badge: 52 },
           { label: 'Categories', to: '/admin/catalogue', search: { tab: 'categories' } },
           { label: 'Brands', to: '/admin/catalogue', search: { tab: 'brands' } },
+        ],
+      },
+      {
+        label: 'Offers & Promotions',
+        to: '/admin/offers',
+        icon: Tag,
+        badge: 1,
+        children: [
+          { label: 'Platform Offers', to: '/admin/offers' },
+          { label: 'Seller Offers', to: '/admin/offers', search: { tab: 'seller' } },
+          { label: 'Needs Approval', to: '/admin/offers', search: { tab: 'approvals' }, badge: 1 },
+          { label: 'Create Offer', to: '/admin/offers/new' },
         ],
       },
       {

@@ -1,4 +1,5 @@
 import {
+  Tag,
   Banknote,
   Boxes,
   Building2,
@@ -71,6 +72,17 @@ export const SELLER_NAV: SellerNavItem[] = [
       { label: 'Products', to: '/seller/online-store', search: { tab: 'products' } },
       { label: 'Analytics', to: '/seller/online-store', search: { tab: 'analytics' } },
       { label: 'Domains', to: '/seller/online-store', search: { tab: 'domains' } },
+    ],
+  },
+  {
+    label: 'Promotions',
+    to: '/seller/promotions',
+    icon: Tag,
+    children: [
+      { label: 'Active', to: '/seller/promotions' },
+      { label: 'Scheduled', to: '/seller/promotions', search: { tab: 'scheduled' } },
+      { label: 'Awaiting approval', to: '/seller/promotions', search: { tab: 'pending' } },
+      { label: 'Create offer', to: '/seller/promotions/new' },
     ],
   },
   {

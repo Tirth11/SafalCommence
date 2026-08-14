@@ -68,6 +68,9 @@ import { SellerPlanPage } from '@/routes/seller/plan'
 import { SellerOnlineStorePage } from '@/routes/seller/online-store'
 import { SellerStoreSetupPage } from '@/routes/seller/store-setup'
 import { SellerProductImportPage } from '@/routes/seller/product-import'
+import { SellerPromotionFormPage, SellerPromotionsPage } from '@/routes/seller/promotions'
+import { AdminOfferDetailPage, AdminOffersPage } from '@/routes/admin/offers'
+import { AdminOfferFormPage } from '@/routes/admin/offer-form'
 import { SellerMarketingPage } from '@/routes/seller/marketing'
 import { AboutPage, ContactPage, HelpPage, LegalPage, PricingPage } from '@/routes/pages'
 import { MyOffersPage } from '@/routes/shop/offers'
@@ -121,6 +124,9 @@ const adminLayoutRoute = createRoute({
 const adminRoutes = [
   createRoute({ getParentRoute: () => adminLayoutRoute, path: '/admin', component: AdminDashboardPage }),
   createRoute({ getParentRoute: () => adminLayoutRoute, path: '/admin/control-center', component: AdminControlCenterPage }),
+  createRoute({ getParentRoute: () => adminLayoutRoute, path: '/admin/offers', component: AdminOffersPage }),
+  createRoute({ getParentRoute: () => adminLayoutRoute, path: '/admin/offers/new', component: AdminOfferFormPage }),
+  createRoute({ getParentRoute: () => adminLayoutRoute, path: '/admin/offers/$offerId', component: AdminOfferDetailPage }),
   createRoute({ getParentRoute: () => adminLayoutRoute, path: '/admin/sellers', component: () => <SellersPage /> }),
   createRoute({ getParentRoute: () => adminLayoutRoute, path: '/admin/sellers/$sellerId', component: SellerDetailPage }),
   createRoute({ getParentRoute: () => adminLayoutRoute, path: '/admin/kyc', component: () => <SellersPage mode="kyc" /> }),
@@ -198,6 +204,8 @@ const sellerRoutes = [
   createRoute({ getParentRoute: () => sellerLayoutRoute, path: '/seller/products', component: SellerProductsPage }),
   createRoute({ getParentRoute: () => sellerLayoutRoute, path: '/seller/products/$productId', component: SellerProductFormPage }),
   createRoute({ getParentRoute: () => sellerLayoutRoute, path: '/seller/products/import', component: SellerProductImportPage }),
+  createRoute({ getParentRoute: () => sellerLayoutRoute, path: '/seller/promotions', component: SellerPromotionsPage }),
+  createRoute({ getParentRoute: () => sellerLayoutRoute, path: '/seller/promotions/new', component: SellerPromotionFormPage }),
   createRoute({ getParentRoute: () => sellerLayoutRoute, path: '/seller/inventory', component: SellerInventoryPage }),
   createRoute({ getParentRoute: () => sellerLayoutRoute, path: '/seller/orders', component: SellerOrdersPage }),
   createRoute({ getParentRoute: () => sellerLayoutRoute, path: '/seller/orders/$orderId', component: SellerOrderDetailPage }),
