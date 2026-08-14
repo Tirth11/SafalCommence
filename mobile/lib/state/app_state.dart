@@ -26,12 +26,17 @@ class AppState extends ChangeNotifier {
   /// Signed out by default, so the app opens on the real first-run experience.
   String? _customerName;
 
+  /// One account carries both capabilities; this is which one is on screen.
+  /// Switching never asks for another login, exactly as on the web.
+  bool _sellingMode = false;
+
   List<CartLine> get lines => List.unmodifiable(_lines);
   Set<String> get wishlist => Set.unmodifiable(_wishlist);
   Set<String> get savedOffers => Set.unmodifiable(_savedOffers);
   Set<String> get reminders => Set.unmodifiable(_reminders);
   String? get customerName => _customerName;
   bool get isSignedIn => _customerName != null;
+  bool get sellingMode => _sellingMode;
 
   int get cartCount => _lines.fold(0, (sum, line) => sum + line.qty);
   int get subtotal => _lines.fold(0, (sum, line) => sum + line.lineTotal);
@@ -43,6 +48,12 @@ class AppState extends ChangeNotifier {
 
   void signOut() {
     _customerName = null;
+    _sellingMode = false;
+    notifyListeners();
+  }
+
+  void setSellingMode(bool value) {
+    _sellingMode = value;
     notifyListeners();
   }
 
