@@ -5,7 +5,7 @@ import '../../data/seller_data.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/common.dart';
 
-/// The Safal Assistant for sellers.
+/// The SafalAI for sellers.
 ///
 /// It reads freely — sales, stock, orders, reviews, settlements, pricing. It
 /// changes nothing without a preview and a confirm, because a mistyped stock
@@ -59,7 +59,8 @@ class _SellerAssistantSheetState extends State<_SellerAssistantSheet> {
   @override
   void initState() {
     super.initState();
-    _messages.add(_Msg.bot('Hi! What would you like to do with your store today?'));
+    _messages
+        .add(_Msg.bot('Hi! What would you like to do with your store today?'));
     if (widget.seed != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _send(widget.seed!));
     }
@@ -110,12 +111,18 @@ class _SellerAssistantSheetState extends State<_SellerAssistantSheet> {
     if (RegExp(r'add (a )?(new )?product|create a product').hasMatch(q)) {
       return _Msg.bot(
         "Let's add it. Tell me the name, price and stock — I won't guess those.",
-        node: const _NeedsCard(items: ['Product name', 'Selling price', 'Stock', 'At least one image']),
+        node: const _NeedsCard(items: [
+          'Product name',
+          'Selling price',
+          'Stock',
+          'At least one image'
+        ]),
       );
     }
 
     // ---- stock update: preview, then confirm
-    final stockMatch = RegExp(r'(?:set|make|update|change).*?to (\d+)').firstMatch(q);
+    final stockMatch =
+        RegExp(r'(?:set|make|update|change).*?to (\d+)').firstMatch(q);
     if (stockMatch != null) {
       final target = int.parse(stockMatch.group(1)!);
       final product = _findProduct(q) ?? sellerProducts.first;
@@ -124,10 +131,13 @@ class _SellerAssistantSheetState extends State<_SellerAssistantSheet> {
     }
 
     // ---- low stock
-    if (RegExp(r'low|running out|almost out|restock|out of stock').hasMatch(q)) {
-      final list = sellerProducts.where((p) => p.isLowStock || p.isOutOfStock).toList();
+    if (RegExp(r'low|running out|almost out|restock|out of stock')
+        .hasMatch(q)) {
+      final list =
+          sellerProducts.where((p) => p.isLowStock || p.isOutOfStock).toList();
       if (list.isEmpty) return _Msg.bot('Nothing needs restocking right now.');
-      return _Msg.bot('${list.length} products need attention.', node: _StockTable(products: list));
+      return _Msg.bot('${list.length} products need attention.',
+          node: _StockTable(products: list));
     }
 
     // ---- pricing
@@ -148,7 +158,9 @@ class _SellerAssistantSheetState extends State<_SellerAssistantSheet> {
     if (RegExp(r'review|customers say|complain|feedback').hasMatch(q)) {
       final product = _findProduct(q) ?? topSellers(1).first;
       final summary = reviewSummaries[product.id];
-      if (summary == null) return _Msg.bot('${product.name} has no reviews yet.');
+      if (summary == null) {
+        return _Msg.bot('${product.name} has no reviews yet.');
+      }
       return _Msg.bot("Here's the picture for ${product.name}.",
           node: _ReviewCard(name: product.name, summary: summary));
     }
@@ -156,20 +168,25 @@ class _SellerAssistantSheetState extends State<_SellerAssistantSheet> {
     // ---- orders
     if (RegExp(r'order|ship|pack|dispatch').hasMatch(q)) {
       final pending = sellerOrders.where((o) => o.needsAction).toList();
-      if (pending.isEmpty) return _Msg.bot('No orders are waiting — everything is dispatched.');
-      return _Msg.bot('You have ${pending.length} orders waiting.', node: _OrderList(orders: pending));
+      if (pending.isEmpty) {
+        return _Msg.bot('No orders are waiting — everything is dispatched.');
+      }
+      return _Msg.bot('You have ${pending.length} orders waiting.',
+          node: _OrderList(orders: pending));
     }
 
     // ---- settlement
     if (RegExp(r'settlement|payout|paid|money|earnings').hasMatch(q)) {
       final next = settlements.firstWhere((x) => !x.settled);
-      return _Msg.bot('Your next settlement is ${money(next.net)}, expected ${next.expected}.',
+      return _Msg.bot(
+          'Your next settlement is ${money(next.net)}, expected ${next.expected}.',
           node: _SettlementCard(settlement: next));
     }
 
     // ---- offers
     if (RegExp(r'offer|discount|sale|campaign|promotion').hasMatch(q)) {
-      final live = liveCampaigns().where((o) => o.seller == sellerName).toList();
+      final live =
+          liveCampaigns().where((o) => o.seller == sellerName).toList();
       return _Msg.bot(
         live.isEmpty
             ? 'No campaign is running. Create one from the Offers tab.'
@@ -191,7 +208,10 @@ class _SellerAssistantSheetState extends State<_SellerAssistantSheet> {
 
   SellerProduct? _findProduct(String q) {
     for (final p in sellerProducts) {
-      final words = p.name.toLowerCase().split(RegExp(r'[\s—-]+')).where((w) => w.length > 4);
+      final words = p.name
+          .toLowerCase()
+          .split(RegExp(r'[\s—-]+'))
+          .where((w) => w.length > 4);
       if (words.any(q.contains)) return p;
     }
     return null;
@@ -200,7 +220,8 @@ class _SellerAssistantSheetState extends State<_SellerAssistantSheet> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding:
+          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: Container(
         height: MediaQuery.of(context).size.height * 0.88,
         decoration: const BoxDecoration(
@@ -218,13 +239,16 @@ class _SellerAssistantSheetState extends State<_SellerAssistantSheet> {
                     Container(
                       width: 30,
                       height: 30,
-                      decoration: const BoxDecoration(color: AppColors.brandSoft, shape: BoxShape.circle),
-                      child: const Icon(Icons.auto_awesome, size: 16, color: AppColors.brand),
+                      decoration: const BoxDecoration(
+                          color: AppColors.brandSoft, shape: BoxShape.circle),
+                      child: const Icon(Icons.auto_awesome,
+                          size: 16, color: AppColors.brand),
                     ),
                     const SizedBox(width: 10),
                     const Expanded(
-                      child: Text('Safal Assistant',
-                          style: TextStyle(fontSize: 15.5, fontWeight: FontWeight.w700)),
+                      child: Text('SafalAI',
+                          style: TextStyle(
+                              fontSize: 15.5, fontWeight: FontWeight.w700)),
                     ),
                     IconButton(
                       icon: const Icon(Icons.close, size: 20),
@@ -234,7 +258,6 @@ class _SellerAssistantSheetState extends State<_SellerAssistantSheet> {
                 ),
               ),
               const Divider(height: 1),
-
               Expanded(
                 child: ListView.builder(
                   controller: _scroll,
@@ -247,7 +270,8 @@ class _SellerAssistantSheetState extends State<_SellerAssistantSheet> {
                         child: SizedBox(
                           width: 22,
                           height: 22,
-                          child: CircularProgressIndicator(strokeWidth: 2.2, color: AppColors.ink400),
+                          child: CircularProgressIndicator(
+                              strokeWidth: 2.2, color: AppColors.ink400),
                         ),
                       );
                     }
@@ -258,7 +282,8 @@ class _SellerAssistantSheetState extends State<_SellerAssistantSheet> {
                         alignment: Alignment.centerRight,
                         child: Container(
                           margin: const EdgeInsets.only(bottom: 10, left: 40),
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 14, vertical: 10),
                           decoration: const BoxDecoration(
                             color: AppColors.brand,
                             borderRadius: BorderRadius.only(
@@ -269,7 +294,8 @@ class _SellerAssistantSheetState extends State<_SellerAssistantSheet> {
                             ),
                           ),
                           child: Text(msg.text,
-                              style: const TextStyle(fontSize: 13.5, color: Colors.white)),
+                              style: const TextStyle(
+                                  fontSize: 13.5, color: Colors.white)),
                         ),
                       );
                     }
@@ -279,7 +305,8 @@ class _SellerAssistantSheetState extends State<_SellerAssistantSheet> {
                       children: [
                         Container(
                           margin: const EdgeInsets.only(bottom: 8, right: 30),
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 14, vertical: 10),
                           decoration: const BoxDecoration(
                             color: AppColors.ink100,
                             borderRadius: BorderRadius.only(
@@ -289,16 +316,19 @@ class _SellerAssistantSheetState extends State<_SellerAssistantSheet> {
                               bottomLeft: Radius.circular(Radii.sm),
                             ),
                           ),
-                          child: Text(msg.text, style: const TextStyle(fontSize: 13.5, height: 1.4)),
+                          child: Text(msg.text,
+                              style:
+                                  const TextStyle(fontSize: 13.5, height: 1.4)),
                         ),
                         if (msg.node != null)
-                          Padding(padding: const EdgeInsets.only(bottom: 12), child: msg.node!),
+                          Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: msg.node!),
                       ],
                     );
                   },
                 ),
               ),
-
               SizedBox(
                 height: 40,
                 child: ListView.separated(
@@ -307,12 +337,12 @@ class _SellerAssistantSheetState extends State<_SellerAssistantSheet> {
                   itemCount: _quickActions.length,
                   separatorBuilder: (_, __) => const SizedBox(width: 8),
                   itemBuilder: (context, i) => ActionChip(
-                    label: Text(_quickActions[i], style: const TextStyle(fontSize: 12)),
+                    label: Text(_quickActions[i],
+                        style: const TextStyle(fontSize: 12)),
                     onPressed: () => _send(_quickActions[i]),
                   ),
                 ),
               ),
-
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
                 child: Row(
@@ -322,7 +352,8 @@ class _SellerAssistantSheetState extends State<_SellerAssistantSheet> {
                         controller: _controller,
                         textInputAction: TextInputAction.send,
                         onSubmitted: _send,
-                        decoration: const InputDecoration(hintText: 'Ask about your store...'),
+                        decoration: const InputDecoration(
+                            hintText: 'Ask about your store...'),
                       ),
                     ),
                     const SizedBox(width: 10),
@@ -373,12 +404,15 @@ class _NeedsCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Still need', style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700)),
+          const Text('Still need',
+              style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700)),
           const SizedBox(height: 6),
           for (final item in items)
             Padding(
               padding: const EdgeInsets.only(bottom: 3),
-              child: Text('· $item', style: const TextStyle(fontSize: 12.5, color: AppColors.ink700)),
+              child: Text('· $item',
+                  style:
+                      const TextStyle(fontSize: 12.5, color: AppColors.ink700)),
             ),
         ],
       ),
@@ -410,9 +444,12 @@ class _StockPreviewState extends State<_StockPreview> {
           const SizedBox(height: 8),
           Row(
             children: [
-              Expanded(child: Text(widget.product.name, style: const TextStyle(fontSize: 12.5))),
+              Expanded(
+                  child: Text(widget.product.name,
+                      style: const TextStyle(fontSize: 12.5))),
               Text('${widget.product.available} → ${widget.to}',
-                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800)),
+                  style: const TextStyle(
+                      fontSize: 13, fontWeight: FontWeight.w800)),
             ],
           ),
           const SizedBox(height: 10),
@@ -422,7 +459,10 @@ class _StockPreviewState extends State<_StockPreview> {
                 Icon(Icons.check, size: 15, color: AppColors.teal),
                 SizedBox(width: 6),
                 Text('Inventory updated.',
-                    style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: AppColors.teal)),
+                    style: TextStyle(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.teal)),
               ],
             )
           else
@@ -430,7 +470,8 @@ class _StockPreviewState extends State<_StockPreview> {
               style: FilledButton.styleFrom(minimumSize: const Size(0, 34)),
               onPressed: () {
                 setState(() => _done = true);
-                showToast(context, 'Stock updated', detail: '${widget.product.name} → ${widget.to}');
+                showToast(context, 'Stock updated',
+                    detail: '${widget.product.name} → ${widget.to}');
               },
               child: const Text('Confirm update'),
             ),
@@ -456,13 +497,17 @@ class _StockTable extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(p.name,
-                        maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12.5)),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontSize: 12.5)),
                   ),
                   Text(p.isOutOfStock ? 'Out of stock' : '${p.available} left',
                       style: TextStyle(
                           fontSize: 12.5,
                           fontWeight: FontWeight.w800,
-                          color: p.isOutOfStock ? AppColors.danger : AppColors.gold)),
+                          color: p.isOutOfStock
+                              ? AppColors.danger
+                              : AppColors.gold)),
                 ],
               ),
             ),
@@ -498,12 +543,16 @@ class _PriceCard extends StatelessWidget {
                     child: Text(listing.seller,
                         style: TextStyle(
                             fontSize: 12.5,
-                            fontWeight: listing.isYou ? FontWeight.w700 : FontWeight.w400)),
+                            fontWeight: listing.isYou
+                                ? FontWeight.w700
+                                : FontWeight.w400)),
                   ),
                   Text('${listing.deliveryDays} · ${listing.rating}★  ',
-                      style: const TextStyle(fontSize: 11, color: AppColors.ink500)),
+                      style: const TextStyle(
+                          fontSize: 11, color: AppColors.ink500)),
                   Text(money(listing.price),
-                      style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700)),
+                      style: const TextStyle(
+                          fontSize: 12.5, fontWeight: FontWeight.w700)),
                 ],
               ),
             ),
@@ -511,13 +560,17 @@ class _PriceCard extends StatelessWidget {
           Row(
             children: [
               const Expanded(
-                  child: Text('You keep per sale', style: TextStyle(fontSize: 12.5, color: AppColors.ink500))),
+                  child: Text('You keep per sale',
+                      style:
+                          TextStyle(fontSize: 12.5, color: AppColors.ink500))),
               Text(money(margin.earnings),
-                  style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800)),
+                  style: const TextStyle(
+                      fontSize: 12.5, fontWeight: FontWeight.w800)),
             ],
           ),
           const SizedBox(height: 6),
-          const Text('Public listing details only — never another seller\'s costs or margins.',
+          const Text(
+              'Public listing details only — never another seller\'s costs or margins.',
               style: TextStyle(fontSize: 10.5, color: AppColors.ink400)),
         ],
       ),
@@ -538,31 +591,46 @@ class _ReviewCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.star_rounded, size: 16, color: Color(0xFFE0A82E)),
+              const Icon(Icons.star_rounded,
+                  size: 16, color: Color(0xFFE0A82E)),
               const SizedBox(width: 4),
               Text('${summary.rating} · ${summary.count} ratings',
-                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
+                  style: const TextStyle(
+                      fontSize: 13, fontWeight: FontWeight.w700)),
             ],
           ),
           const SizedBox(height: 10),
           const Text('CUSTOMERS LIKE',
               style: TextStyle(
-                  fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 0.5, color: AppColors.teal)),
+                  fontSize: 10,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.5,
+                  color: AppColors.teal)),
           for (final like in summary.likes)
-            Text('· $like', style: const TextStyle(fontSize: 12.5, color: AppColors.ink700)),
+            Text('· $like',
+                style:
+                    const TextStyle(fontSize: 12.5, color: AppColors.ink700)),
           const SizedBox(height: 8),
           const Text('CUSTOMERS DISLIKE',
               style: TextStyle(
-                  fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 0.5, color: AppColors.gold)),
+                  fontSize: 10,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.5,
+                  color: AppColors.gold)),
           for (final dislike in summary.dislikes)
-            Text('· $dislike', style: const TextStyle(fontSize: 12.5, color: AppColors.ink700)),
+            Text('· $dislike',
+                style:
+                    const TextStyle(fontSize: 12.5, color: AppColors.ink700)),
           if (summary.trend != null) ...[
             const SizedBox(height: 10),
             Container(
               padding: const EdgeInsets.all(9),
-              decoration: BoxDecoration(color: AppColors.goldSoft, borderRadius: BorderRadius.circular(Radii.sm)),
+              decoration: BoxDecoration(
+                  color: AppColors.goldSoft,
+                  borderRadius: BorderRadius.circular(Radii.sm)),
               child: Text(summary.trend!,
-                  style: const TextStyle(fontSize: 11.5, height: 1.4, color: AppColors.gold)),
+                  style: const TextStyle(
+                      fontSize: 11.5, height: 1.4, color: AppColors.gold)),
             ),
           ],
         ],
@@ -585,14 +653,18 @@ class _OrderList extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 3),
               child: Row(
                 children: [
-                  Text(order.id, style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600)),
+                  Text(order.id,
+                      style: const TextStyle(
+                          fontSize: 12.5, fontWeight: FontWeight.w600)),
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(sellerOrderLabels[order.status]!,
-                        style: const TextStyle(fontSize: 12, color: AppColors.ink500)),
+                        style: const TextStyle(
+                            fontSize: 12, color: AppColors.ink500)),
                   ),
                   Text(money(order.value),
-                      style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700)),
+                      style: const TextStyle(
+                          fontSize: 12.5, fontWeight: FontWeight.w700)),
                 ],
               ),
             ),
@@ -626,9 +698,14 @@ class _SettlementCard extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 2),
         child: Row(
           children: [
-            Expanded(child: Text(label, style: const TextStyle(fontSize: 12.5, color: AppColors.ink500))),
+            Expanded(
+                child: Text(label,
+                    style: const TextStyle(
+                        fontSize: 12.5, color: AppColors.ink500))),
             Text(value,
-                style: TextStyle(fontSize: 12.5, fontWeight: strong ? FontWeight.w800 : FontWeight.w600)),
+                style: TextStyle(
+                    fontSize: 12.5,
+                    fontWeight: strong ? FontWeight.w800 : FontWeight.w600)),
           ],
         ),
       );
@@ -647,7 +724,10 @@ class _TopSellers extends StatelessWidget {
         children: [
           const Text('BEST SELLERS',
               style: TextStyle(
-                  fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 0.5, color: AppColors.ink400)),
+                  fontSize: 10,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.5,
+                  color: AppColors.ink400)),
           const SizedBox(height: 6),
           for (final (i, p) in products.indexed)
             Padding(
@@ -655,13 +735,19 @@ class _TopSellers extends StatelessWidget {
               child: Row(
                 children: [
                   Text('${i + 1}  ',
-                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w800, color: AppColors.ink400)),
+                      style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.ink400)),
                   Expanded(
                     child: Text(p.name,
-                        maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12.5)),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontSize: 12.5)),
                   ),
                   Text('${p.sold} sold',
-                      style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700)),
+                      style: const TextStyle(
+                          fontSize: 12.5, fontWeight: FontWeight.w700)),
                 ],
               ),
             ),

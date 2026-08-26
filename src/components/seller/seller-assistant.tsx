@@ -36,7 +36,7 @@ import { usePlan } from '@/store/storefront-store'
 import { cn, money } from '@/lib/utils'
 
 /* ==========================================================================
-   Safal Assistant — the seller's side panel.
+   SafalAI — the seller's side panel.
 
    It reads freely: sales, orders, stock, reviews, settlements, pricing.
    It changes nothing without a preview and a confirm — stock edits, price
@@ -87,7 +87,7 @@ function AssistantFab() {
       className="fixed bottom-20 right-5 z-40 inline-flex items-center gap-2 rounded-full bg-ink-950 py-3 pl-4 pr-5 text-[14px] font-semibold text-white shadow-lg transition-transform hover:-translate-y-0.5 sm:bottom-[76px] sm:right-7 dark:bg-white dark:text-ink-950"
     >
       <Sparkles className="size-4" />
-      Safal Assistant
+      SafalAI
     </button>
   )
 }
@@ -394,13 +394,13 @@ function AssistantPanel({ seed, onClose }: { seed?: string; onClose: () => void 
 
       <aside
         className="fixed inset-y-0 right-0 z-[121] flex w-full max-w-[420px] flex-col border-l bg-background shadow-2xl"
-        aria-label="Safal Assistant"
+        aria-label="SafalAI"
       >
         <header className="flex items-center gap-3 border-b px-5 py-4">
           <span className="grid size-8 place-items-center rounded-full bg-brand-50 text-brand-600 dark:bg-brand-950 dark:text-brand-300">
             <Sparkles className="size-4" />
           </span>
-          <p className="min-w-0 flex-1 text-[15px] font-semibold">Safal Assistant</p>
+          <p className="min-w-0 flex-1 text-[15px] font-semibold">SafalAI</p>
           <Button variant="ghost" size="icon" aria-label="Close assistant" onClick={onClose}>
             <X className="size-4" />
           </Button>
@@ -458,7 +458,7 @@ function AssistantPanel({ seed, onClose }: { seed?: string; onClose: () => void 
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Ask about your store..."
-            aria-label="Ask the Safal Assistant"
+            aria-label="Ask the SafalAI"
             className="h-10 min-w-0 flex-1 rounded-full border bg-background px-4 text-[13px] outline-none focus:border-brand-500"
           />
           <Button type="submit" size="icon" className="size-10 shrink-0 rounded-full" disabled={!input.trim()} aria-label="Send">

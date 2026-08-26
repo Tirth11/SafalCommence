@@ -18,9 +18,14 @@ class CartScreen extends StatelessWidget {
     final subtotal = state.subtotal;
     // Every line the cart shows comes from the same evaluation the product
     // page and the assistant use, so the three can never disagree.
-    final result = evaluate(subtotal: subtotal, product: lines.isEmpty ? null : lines.first.product);
+    final result = evaluate(
+        subtotal: subtotal,
+        product: lines.isEmpty ? null : lines.first.product);
     final discount = result.discount;
-    final shipping = result.freeDelivery || subtotal - discount >= 99 || subtotal == 0 ? 0 : 5;
+    final shipping =
+        result.freeDelivery || subtotal - discount >= 99 || subtotal == 0
+            ? 0
+            : 5;
     final total = subtotal - discount + shipping;
 
     return Scaffold(
@@ -50,7 +55,8 @@ class CartScreen extends StatelessWidget {
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.check_circle_outline, size: 18, color: AppColors.teal),
+                        const Icon(Icons.check_circle_outline,
+                            size: 18, color: AppColors.teal),
                         const SizedBox(width: 10),
                         Expanded(
                           child: Text(
@@ -58,7 +64,9 @@ class CartScreen extends StatelessWidget {
                                 ? applied.label
                                 : '${applied.label} — saves ${money(applied.amount)}',
                             style: const TextStyle(
-                                fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.teal),
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.teal),
                           ),
                         ),
                       ],
@@ -75,7 +83,8 @@ class CartScreen extends StatelessWidget {
                     ),
                     child: Text(
                       '${miss.label}: ${miss.reason.toLowerCase()}.',
-                      style: const TextStyle(fontSize: 12.5, color: AppColors.ink700),
+                      style: const TextStyle(
+                          fontSize: 12.5, color: AppColors.ink700),
                     ),
                   ),
                 const SizedBox(height: 20),

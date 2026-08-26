@@ -151,7 +151,9 @@ bool sellerOfferCovers(SellerOffer offer, Product product) {
   final inScope = switch (offer.scope) {
     SellerOfferScope.all => true,
     SellerOfferScope.category => offer.scopeValues.contains(product.category),
-    SellerOfferScope.collection || SellerOfferScope.brand => offer.scopeValues.contains(product.brand),
+    SellerOfferScope.collection ||
+    SellerOfferScope.brand =>
+      offer.scopeValues.contains(product.brand),
     SellerOfferScope.products => offer.productIds.contains(product.id),
   };
   if (!inScope) return false;
@@ -166,31 +168,41 @@ bool sellerOfferCovers(SellerOffer offer, Product product) {
   return true;
 }
 
-int _sellerAmount(SellerOffer offer, int subtotal) => ((subtotal * offer.percent) / 100).round();
+int _sellerAmount(SellerOffer offer, int subtotal) =>
+    ((subtotal * offer.percent) / 100).round();
 
 /// Every seller offer catching this product, resolved to what the customer
 /// actually gets. Defaults to the better single discount rather than both.
 SellerOffer? resolveSellerOffer(Product product, int subtotal) {
-  final matches = sellerOffers.where((o) => _isLive(o) && sellerOfferCovers(o, product)).toList();
+  final matches = sellerOffers
+      .where((o) => _isLive(o) && sellerOfferCovers(o, product))
+      .toList();
   if (matches.isEmpty) return null;
   if (matches.length == 1) return matches.first;
 
-  final specific = matches.where((o) => o.scope == SellerOfferScope.products).toList();
+  final specific =
+      matches.where((o) => o.scope == SellerOfferScope.products).toList();
   final wide = matches.where((o) => o.scope != SellerOfferScope.products);
 
   // A campaign told to leave marked-down products alone does exactly that.
-  if (specific.isNotEmpty && wide.any((o) => o.conflictRule == DiscountConflictRule.skipDiscounted)) {
+  if (specific.isNotEmpty &&
+      wide.any((o) => o.conflictRule == DiscountConflictRule.skipDiscounted)) {
     return specific.first;
   }
 
-  matches.sort((a, b) => _sellerAmount(b, subtotal).compareTo(_sellerAmount(a, subtotal)));
+  matches.sort((a, b) =>
+      _sellerAmount(b, subtotal).compareTo(_sellerAmount(a, subtotal)));
   return matches.first;
 }
 
 /* ------------------------------------------------------------- evaluation */
 
 class AppliedOffer {
-  const AppliedOffer({required this.label, required this.amount, this.freeDelivery = false, this.fromSeller = false});
+  const AppliedOffer(
+      {required this.label,
+      required this.amount,
+      this.freeDelivery = false,
+      this.fromSeller = false});
 
   final String label;
   final int amount;
@@ -228,7 +240,8 @@ class Evaluation {
 /// first, then a platform campaign applies to what remains. An offer shown on
 /// one screen is one that survived every check here, which is the only way
 /// the same promise holds in the cart, on the product page and in chat.
-Evaluation evaluate({required int subtotal, Product? product, bool isNewCustomer = false}) {
+Evaluation evaluate(
+    {required int subtotal, Product? product, bool isNewCustomer = false}) {
   final applied = <AppliedOffer>[];
   final nearMisses = <NearMiss>[];
   var running = subtotal;
@@ -262,12 +275,14 @@ Evaluation evaluate({required int subtotal, Product? product, bool isNewCustomer
       continue;
     }
     if (running < offer.minOrder) {
-      nearMisses.add(NearMiss(offer.headline, 'Spend ${money(offer.minOrder - running)} more to use this'));
+      nearMisses.add(NearMiss(offer.headline,
+          'Spend ${money(offer.minOrder - running)} more to use this'));
       continue;
     }
     if (offer.kind == OfferKind.shipping) {
       freeDelivery = true;
-      applied.add(AppliedOffer(label: offer.headline, amount: 0, freeDelivery: true));
+      applied.add(
+          AppliedOffer(label: offer.headline, amount: 0, freeDelivery: true));
       continue;
     }
     // One platform discount per order, matching the web combination rules.
@@ -296,7 +311,9 @@ Evaluation evaluate({required int subtotal, Product? product, bool isNewCustomer
   if (!result.hasAny || result.discount <= 0) return null;
 
   final seller = result.applied.where((a) => a.fromSeller).toList();
-  final headline = seller.isNotEmpty ? seller.first.label.split(' · ').first : result.applied.first.label;
+  final headline = seller.isNotEmpty
+      ? seller.first.label.split(' · ').first
+      : result.applied.first.label;
   return (label: headline, price: result.finalSubtotal);
 }
 

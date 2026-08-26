@@ -158,11 +158,19 @@ const sellerProducts = <SellerProduct>[
   ),
 ];
 
-SellerProduct sellerProductById(String id) => sellerProducts.firstWhere((p) => p.id == id);
+SellerProduct sellerProductById(String id) =>
+    sellerProducts.firstWhere((p) => p.id == id);
 
 /* ------------------------------------------------------------------ orders */
 
-enum SellerOrderStatus { newOrder, processing, packed, shipped, delivered, returned }
+enum SellerOrderStatus {
+  newOrder,
+  processing,
+  packed,
+  shipped,
+  delivered,
+  returned
+}
 
 const sellerOrderLabels = <SellerOrderStatus, String>{
   SellerOrderStatus.newOrder: 'New',
@@ -194,17 +202,67 @@ class SellerOrder {
 
   SellerProduct get product => sellerProductById(productId);
   bool get needsAction =>
-      status == SellerOrderStatus.newOrder || status == SellerOrderStatus.processing;
+      status == SellerOrderStatus.newOrder ||
+      status == SellerOrderStatus.processing;
 }
 
 const sellerOrders = <SellerOrder>[
-  SellerOrder(id: 'SH-100152', customer: 'Rahul S.', placedOn: '14 Aug', status: SellerOrderStatus.newOrder, productId: 'SH-P-1042', qty: 1, value: 69),
-  SellerOrder(id: 'SH-100151', customer: 'Meera P.', placedOn: '14 Aug', status: SellerOrderStatus.newOrder, productId: 'SH-P-1058', qty: 2, value: 48),
-  SellerOrder(id: 'SH-100148', customer: 'Arjun K.', placedOn: '13 Aug', status: SellerOrderStatus.processing, productId: 'SH-P-1044', qty: 1, value: 120),
-  SellerOrder(id: 'SH-100145', customer: 'Divya R.', placedOn: '13 Aug', status: SellerOrderStatus.packed, productId: 'SH-P-1042', qty: 1, value: 69),
-  SellerOrder(id: 'SH-100142', customer: 'Sanjay M.', placedOn: '12 Aug', status: SellerOrderStatus.shipped, productId: 'SH-P-1070', qty: 3, value: 45),
-  SellerOrder(id: 'SH-100138', customer: 'Priya N.', placedOn: '11 Aug', status: SellerOrderStatus.delivered, productId: 'SH-P-1058', qty: 1, value: 24),
-  SellerOrder(id: 'SH-100131', customer: 'Vikram T.', placedOn: '10 Aug', status: SellerOrderStatus.returned, productId: 'SH-P-1077', qty: 1, value: 7),
+  SellerOrder(
+      id: 'SH-100152',
+      customer: 'Rahul S.',
+      placedOn: '14 Aug',
+      status: SellerOrderStatus.newOrder,
+      productId: 'SH-P-1042',
+      qty: 1,
+      value: 69),
+  SellerOrder(
+      id: 'SH-100151',
+      customer: 'Meera P.',
+      placedOn: '14 Aug',
+      status: SellerOrderStatus.newOrder,
+      productId: 'SH-P-1058',
+      qty: 2,
+      value: 48),
+  SellerOrder(
+      id: 'SH-100148',
+      customer: 'Arjun K.',
+      placedOn: '13 Aug',
+      status: SellerOrderStatus.processing,
+      productId: 'SH-P-1044',
+      qty: 1,
+      value: 120),
+  SellerOrder(
+      id: 'SH-100145',
+      customer: 'Divya R.',
+      placedOn: '13 Aug',
+      status: SellerOrderStatus.packed,
+      productId: 'SH-P-1042',
+      qty: 1,
+      value: 69),
+  SellerOrder(
+      id: 'SH-100142',
+      customer: 'Sanjay M.',
+      placedOn: '12 Aug',
+      status: SellerOrderStatus.shipped,
+      productId: 'SH-P-1070',
+      qty: 3,
+      value: 45),
+  SellerOrder(
+      id: 'SH-100138',
+      customer: 'Priya N.',
+      placedOn: '11 Aug',
+      status: SellerOrderStatus.delivered,
+      productId: 'SH-P-1058',
+      qty: 1,
+      value: 24),
+  SellerOrder(
+      id: 'SH-100131',
+      customer: 'Vikram T.',
+      placedOn: '10 Aug',
+      status: SellerOrderStatus.returned,
+      productId: 'SH-P-1077',
+      qty: 1,
+      value: 7),
 ];
 
 /* ------------------------------------------------------------- settlements */
@@ -234,12 +292,36 @@ class Settlement {
 }
 
 const settlements = <Settlement>[
-  Settlement(id: 'ST-2208', period: '08 – 14 Aug', gross: 1240, refunds: 62, commission: 149, deductions: 18, expected: '18 Aug', settled: false),
-  Settlement(id: 'ST-2207', period: '01 – 07 Aug', gross: 1860, refunds: 94, commission: 223, deductions: 22, expected: '11 Aug', settled: true),
-  Settlement(id: 'ST-2206', period: '25 – 31 Jul', gross: 1420, refunds: 0, commission: 170, deductions: 15, expected: '04 Aug', settled: true),
+  Settlement(
+      id: 'ST-2208',
+      period: '08 – 14 Aug',
+      gross: 1240,
+      refunds: 62,
+      commission: 149,
+      deductions: 18,
+      expected: '18 Aug',
+      settled: false),
+  Settlement(
+      id: 'ST-2207',
+      period: '01 – 07 Aug',
+      gross: 1860,
+      refunds: 94,
+      commission: 223,
+      deductions: 22,
+      expected: '11 Aug',
+      settled: true),
+  Settlement(
+      id: 'ST-2206',
+      period: '25 – 31 Jul',
+      gross: 1420,
+      refunds: 0,
+      commission: 170,
+      deductions: 15,
+      expected: '04 Aug',
+      settled: true),
 ];
 
-/// What SafalMarketHub takes on a marketplace sale, on the seller's plan.
+/// What SafalMarket takes on a marketplace sale, on the seller's plan.
 const commissionRate = 12;
 
 /* ---------------------------------------------------------------- reviews */
@@ -265,7 +347,11 @@ const reviewSummaries = <String, ReviewSummary>{
     rating: 4.3,
     count: 214,
     likes: ['Sound quality', 'Battery life', 'Comfortable for long wear'],
-    dislikes: ['Ear cushions get warm', 'Packaging', 'Bluetooth pairing on some phones'],
+    dislikes: [
+      'Ear cushions get warm',
+      'Packaging',
+      'Bluetooth pairing on some phones'
+    ],
     trend: 'Packaging complaints increased this month.',
   ),
   'SH-P-1044': ReviewSummary(
@@ -285,7 +371,9 @@ const reviewSummaries = <String, ReviewSummary>{
 /* ------------------------------------------------------- competitor prices */
 
 class CompetitorListing {
-  const CompetitorListing(this.seller, this.price, this.deliveryDays, this.rating, {this.isYou = false});
+  const CompetitorListing(
+      this.seller, this.price, this.deliveryDays, this.rating,
+      {this.isYou = false});
   final String seller;
   final int price;
   final String deliveryDays;
@@ -311,7 +399,11 @@ const competitorListings = <String, List<CompetitorListing>>{
 };
 
 class PriceInsight {
-  const PriceInsight({required this.low, required this.average, required this.high, required this.listings});
+  const PriceInsight(
+      {required this.low,
+      required this.average,
+      required this.high,
+      required this.listings});
   final int low;
   final int average;
   final int high;
@@ -325,8 +417,10 @@ PriceInsight? priceInsightFor(SellerProduct product) {
   if (others == null || others.isEmpty) return null;
 
   final prices = others.map((l) => l.price).toList();
-  final all = [...others, CompetitorListing('You', product.price, '3 days', 4.5, isYou: true)]
-    ..sort((a, b) => a.price.compareTo(b.price));
+  final all = [
+    ...others,
+    CompetitorListing('You', product.price, '3 days', 4.5, isYou: true)
+  ]..sort((a, b) => a.price.compareTo(b.price));
 
   return PriceInsight(
     low: prices.reduce((a, b) => a < b ? a : b),
@@ -337,7 +431,11 @@ PriceInsight? priceInsightFor(SellerProduct product) {
 }
 
 class MarginBreakdown {
-  const MarginBreakdown({required this.cost, required this.fee, required this.earnings, required this.percent});
+  const MarginBreakdown(
+      {required this.cost,
+      required this.fee,
+      required this.earnings,
+      required this.percent});
   final int cost;
   final int fee;
   final int earnings;
@@ -363,7 +461,7 @@ MarginBreakdown marginAt(SellerProduct product, int price) {
 
 /* ------------------------------------------------------------ offer policy */
 
-/// The limits SafalMarketHub sets for every seller. The promotion screens
+/// The limits SafalMarket sets for every seller. The promotion screens
 /// read these rather than hard-coding their own.
 class SellerOfferPolicy {
   const SellerOfferPolicy({
@@ -413,7 +511,8 @@ BusinessSnapshot businessSnapshot() {
   final pending = sellerOrders.where((o) => o.needsAction).length;
   final low = sellerProducts.where((p) => p.isLowStock).length;
   final out = sellerProducts.where((p) => p.isOutOfStock).length;
-  final due = settlements.where((s) => !s.settled).fold(0, (sum, s) => sum + s.net);
+  final due =
+      settlements.where((s) => !s.settled).fold(0, (sum, s) => sum + s.net);
 
   return BusinessSnapshot(
     todaySales: 310,
@@ -424,7 +523,9 @@ BusinessSnapshot businessSnapshot() {
     pendingOrders: pending,
     settlementDue: due,
     newReviews: 3,
-    needsChanges: sellerProducts.where((p) => p.status == ListingStatus.changesRequired).length,
+    needsChanges: sellerProducts
+        .where((p) => p.status == ListingStatus.changesRequired)
+        .length,
   );
 }
 

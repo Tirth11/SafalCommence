@@ -228,7 +228,7 @@ export function AssistantChat({ onRequestPayment }: { onRequestPayment: (draft: 
     if (/\b(preference|preferences|usual size|preferred colour|preferred color|price-drop|price drop|always look for best offer)\b/.test(q)) {
       return say({
         from: 'bot',
-        text: 'These preferences let SafalAssistant ask fewer questions while staying editable by the customer.',
+        text: 'These preferences let SafalAI ask fewer questions while staying editable by the customer.',
         preferences: preferencePreview(),
       })
     }
@@ -418,7 +418,7 @@ export function AssistantChat({ onRequestPayment }: { onRequestPayment: (draft: 
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Ask for anything…"
-            aria-label="Message SafalAssistant"
+            aria-label="Message SafalAI"
             className="h-11 min-w-0 flex-1 bg-transparent px-4 text-[14px] outline-none"
           />
           <button
@@ -553,7 +553,7 @@ function OfferFinderCard({ insight }: { insight: OfferInsight }) {
   return (
     <div className="rounded-xl border bg-card p-4">
       <p className="text-[13px] font-semibold text-ink-900 dark:text-white">Smart offer finder</p>
-      <p className="mt-1 text-[12px] text-ink-500">SafalAssistant only shows offers this item actually qualifies for.</p>
+      <p className="mt-1 text-[12px] text-ink-500">SafalAI only shows offers this item actually qualifies for.</p>
 
       {insight.product && (
         <div className="mt-3 flex gap-3">
@@ -747,7 +747,7 @@ function PreferenceCard({ preferences }: { preferences: PreferencePreview }) {
   return (
     <div className="rounded-xl border bg-card p-4">
       <p className="text-[13px] font-semibold text-ink-900 dark:text-white">My shopping preferences</p>
-      <p className="mt-1 text-[12px] text-ink-500">SafalAssistant can remember these only if the customer can edit or remove them.</p>
+      <p className="mt-1 text-[12px] text-ink-500">SafalAI can remember these only if the customer can edit or remove them.</p>
 
       <dl className="mt-3 grid gap-1.5 text-[12px]">
         {rows.map(([label, value]) => (

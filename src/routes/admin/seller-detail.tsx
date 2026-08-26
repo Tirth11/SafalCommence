@@ -777,7 +777,7 @@ export function SellerDetailPage() {
         <TabsContent value="ai">
           <Panel
             title="Seller AI activity"
-            description="Every seller action performed through Safal Assistant is logged with old value, new value and confirmation state."
+            description="Every seller action performed through SafalAI is logged with old value, new value and confirmation state."
             padded={false}
           >
             <Table>

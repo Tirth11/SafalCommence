@@ -45,8 +45,14 @@ class _SellerShellState extends State<SellerShell> {
             Container(
               width: 30,
               height: 30,
-              decoration: BoxDecoration(color: AppColors.brand, borderRadius: BorderRadius.circular(Radii.sm)),
-              child: const Icon(Icons.storefront_outlined, size: 17, color: Colors.white),
+              decoration:
+                  BoxDecoration(borderRadius: BorderRadius.circular(Radii.sm)),
+              clipBehavior: Clip.antiAlias,
+              child: Image.asset(
+                'assets/brand/safalmarket-mark.png',
+                fit: BoxFit.contain,
+                filterQuality: FilterQuality.high,
+              ),
             ),
             const SizedBox(width: 9),
             const Expanded(
@@ -54,8 +60,14 @@ class _SellerShellState extends State<SellerShell> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(sellerName, style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w700, height: 1.1)),
-                  Text('Seller', style: TextStyle(fontSize: 11, color: AppColors.ink500, height: 1.2)),
+                  Text(sellerName,
+                      style: TextStyle(
+                          fontSize: 14.5,
+                          fontWeight: FontWeight.w700,
+                          height: 1.1)),
+                  Text('Seller',
+                      style: TextStyle(
+                          fontSize: 11, color: AppColors.ink500, height: 1.2)),
                 ],
               ),
             ),
@@ -76,16 +88,20 @@ class _SellerShellState extends State<SellerShell> {
         foregroundColor: Colors.white,
         onPressed: () => openSellerAssistant(context),
         icon: const Icon(Icons.auto_awesome, size: 18),
-        label: const Text('Safal Assistant'),
+        label: const Text('SafalAI'),
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _index,
         onTap: (i) => setState(() => _index = i),
         items: [
           const BottomNavigationBarItem(
-              icon: Icon(Icons.dashboard_outlined), activeIcon: Icon(Icons.dashboard), label: 'Dashboard'),
+              icon: Icon(Icons.dashboard_outlined),
+              activeIcon: Icon(Icons.dashboard),
+              label: 'Dashboard'),
           const BottomNavigationBarItem(
-              icon: Icon(Icons.inventory_2_outlined), activeIcon: Icon(Icons.inventory_2), label: 'Products'),
+              icon: Icon(Icons.inventory_2_outlined),
+              activeIcon: Icon(Icons.inventory_2),
+              label: 'Products'),
           BottomNavigationBarItem(
             icon: Badge(
               isLabelVisible: snapshot.pendingOrders > 0,
@@ -96,7 +112,9 @@ class _SellerShellState extends State<SellerShell> {
             label: 'Orders',
           ),
           const BottomNavigationBarItem(
-              icon: Icon(Icons.local_offer_outlined), activeIcon: Icon(Icons.local_offer), label: 'Offers'),
+              icon: Icon(Icons.local_offer_outlined),
+              activeIcon: Icon(Icons.local_offer),
+              label: 'Offers'),
           const BottomNavigationBarItem(
               icon: Icon(Icons.account_balance_wallet_outlined),
               activeIcon: Icon(Icons.account_balance_wallet),
