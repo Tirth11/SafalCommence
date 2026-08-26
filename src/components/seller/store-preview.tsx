@@ -2,6 +2,7 @@ import { Lock, Search, ShoppingCart } from 'lucide-react'
 
 import { ProductScene } from '@/components/marketing/scene'
 import { SELLER_PRODUCTS } from '@/data/seller'
+import { SELLER_OFFERS, statusOf } from '@/data/offer-engine'
 import { usePlan, useStorefrontStore, useStoreUrl } from '@/store/storefront-store'
 import { money } from '@/lib/utils'
 
@@ -11,6 +12,12 @@ import { money } from '@/lib/utils'
  * "what will this look like?" without building a page builder to find out.
  */
 export function StorePreview({ device = 'desktop' }: { device?: 'desktop' | 'mobile' }) {
+  // A campaign inserts its own bar and hero while it runs, and removes them
+  // when it ends — the seller never edits the theme for a sale.
+  const liveSale = SELLER_OFFERS.find(
+    (offer) => offer.seller === 'ABC Electronics' && offer.form === 'campaign' && statusOf(offer) === 'live'
+  )
+
   const plan = usePlan()
   const { config, homepageSections, collections, status } = useStorefrontStore()
   const storeUrl = useStoreUrl()
@@ -64,6 +71,13 @@ export function StorePreview({ device = 'desktop' }: { device?: 'desktop' | 'mob
           </div>
         )}
 
+        {/* A live sale announces itself, ahead of the seller's own bar. */}
+        {liveSale && (
+          <div className="bg-ink-950 px-4 py-1.5 text-center text-[10px] font-semibold text-white">
+            {liveSale.name} — {liveSale.value}% OFF storewide · Shop now
+          </div>
+        )}
+
         {/* announcement bar */}
         {on('announcement') && config.announcement.on && config.announcement.text && (
           <div className="px-4 py-1.5 text-center text-[10px] font-semibold text-white" style={{ background: config.brandColor }}>
@@ -97,6 +111,27 @@ export function StorePreview({ device = 'desktop' }: { device?: 'desktop' | 'mob
         {ordered.map((section) => {
           switch (section.id) {
             case 'hero':
+              if (liveSale) {
+                return (
+                  <div
+                    key={section.id}
+                    className="px-4 py-7 text-center"
+                    style={{ background: `linear-gradient(140deg, ${config.brandColor}, ${config.brandColor}cc)` }}
+                  >
+                    <p className="text-[9px] font-bold uppercase tracking-[0.14em] text-white/75">
+                      {liveSale.name}
+                    </p>
+                    <p className="mt-1.5 text-[17px] font-bold leading-tight text-white">
+                      {liveSale.value}% OFF EVERYTHING*
+                    </p>
+                    <p className="mt-1 text-[9px] text-white/80">Ends {liveSale.endsAt.slice(5, 10)}</p>
+                    <span className="mt-3 inline-block rounded-md bg-white px-3 py-1.5 text-[10px] font-bold">
+                      Shop the sale
+                    </span>
+                    <p className="mt-2 text-[7.5px] text-white/60">*Applicable products. Terms apply.</p>
+                  </div>
+                )
+              }
               return (
                 <div
                   key={section.id}

@@ -30,6 +30,8 @@ import { DefinitionList, EmptyState, PageHeader, Panel } from '@/components/admi
 import { StatusBadge } from '@/components/admin/status-badge'
 import { ProductScene } from '@/components/marketing/scene'
 import { StorePreview } from '@/components/seller/store-preview'
+import { StoreOffersTab } from '@/components/seller/store-offers'
+import { CatalogueDisplayTab } from '@/components/seller/catalogue-display'
 import { StoreQr } from '@/components/seller/store-qr'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
@@ -56,6 +58,8 @@ const TABS = [
   { value: 'overview', label: 'Overview' },
   { value: 'customize', label: 'Customise' },
   { value: 'homepage', label: 'Homepage' },
+  { value: 'offers', label: 'Offers' },
+  { value: 'catalogue', label: 'Catalogue display' },
   { value: 'collections', label: 'Collections' },
   { value: 'products', label: 'Products' },
   { value: 'analytics', label: 'Analytics' },
@@ -261,6 +265,14 @@ export function SellerOnlineStorePage() {
         <TabsContent value="homepage">
           <StoreHomepage />
         </TabsContent>
+        <TabsContent value="offers">
+          <StoreOffersTab />
+        </TabsContent>
+
+        <TabsContent value="catalogue">
+          <CatalogueDisplayTab />
+        </TabsContent>
+
         <TabsContent value="collections">
           <StoreCollections />
         </TabsContent>

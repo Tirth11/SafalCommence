@@ -68,6 +68,8 @@ export const SELLER_NAV: SellerNavItem[] = [
       { label: 'Setup', to: '/seller/online-store/setup' },
       { label: 'Customise', to: '/seller/online-store', search: { tab: 'customize' } },
       { label: 'Homepage', to: '/seller/online-store', search: { tab: 'homepage' } },
+      { label: 'Offers', to: '/seller/online-store', search: { tab: 'offers' } },
+      { label: 'Catalogue Display', to: '/seller/online-store', search: { tab: 'catalogue' } },
       { label: 'Collections', to: '/seller/online-store', search: { tab: 'collections' } },
       { label: 'Products', to: '/seller/online-store', search: { tab: 'products' } },
       { label: 'Analytics', to: '/seller/online-store', search: { tab: 'analytics' } },
