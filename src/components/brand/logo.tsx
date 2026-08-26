@@ -13,39 +13,51 @@ type LogoProps = {
   className?: string
 }
 
+const MARK_SRC = '/safalmarket-mark.png'
+const WORDMARK_SRC = '/safalmarket-wordmark.png'
+
 /**
- * Brand mark: three ascending bars — growth, inventory, commerce.
- * Original identity; no resemblance to existing marketplace logos.
+ * SafalMarket mark from the approved brand artwork.
  */
-export function LogoMark({ className }: { className?: string }) {
+export function LogoMark({ className, onInk = false }: { className?: string; onInk?: boolean }) {
   return (
     <span
       className={cn(
-        'grid shrink-0 place-items-center bg-linear-145 from-brand-500 to-brand-700 shadow-[0_2px_8px_color-mix(in_oklab,var(--brand-600)_35%,transparent)]',
+        'grid shrink-0 place-items-center overflow-hidden rounded-[inherit]',
+        onInk && 'bg-white/95 shadow-sm',
         className
       )}
     >
-      <svg viewBox="0 0 24 24" className="size-[55%]" aria-hidden="true">
-        <rect x="4.6" y="14.5" width="3.4" height="5.5" rx="1.1" fill="#fff" fillOpacity=".62" />
-        <rect x="10.3" y="9.8" width="3.4" height="10.2" rx="1.1" fill="#fff" fillOpacity=".8" />
-        <rect x="16" y="4" width="3.4" height="16" rx="1.1" fill="#fff" />
-      </svg>
+      <img src={MARK_SRC} alt="" className="h-full w-full object-contain p-[2px]" draggable={false} />
     </span>
   )
 }
 
-export function Logo({ size = 'md', onInk = false, asLink = true, sub = 'Marketplace', to = '/', className }: LogoProps) {
-  const mark = { sm: 'size-8 rounded-[9px]', md: 'size-9 rounded-[10px]', lg: 'size-11 rounded-[13px]' }[size]
-  const name = { sm: 'text-[15px]', md: 'text-[17px]', lg: 'text-[19px]' }[size]
+function BrandTagline({ className }: { className?: string }) {
+  return (
+    <span className={cn('mt-0.5 text-[10px] font-black leading-none tracking-[-0.02em]', className)}>
+      <span className="text-brand-900 dark:text-brand-200">List.</span>
+      <span className="text-brand-400 dark:text-brand-300">Discover.</span>
+      <span className="text-brand-900 dark:text-brand-200">Connect</span>
+    </span>
+  )
+}
+
+export function Logo({ size = 'md', onInk = false, asLink = true, sub = 'List.Discover.Connect', to = '/', className }: LogoProps) {
+  const mark = { sm: 'size-9 rounded-[10px]', md: 'size-10 rounded-[12px]', lg: 'size-12 rounded-[15px]' }[size]
+  const wordmark = { sm: 'h-5 w-[112px]', md: 'h-6 w-[134px]', lg: 'h-7 w-[156px]' }[size]
+  const showBrandTagline = sub === 'List.Discover.Connect'
 
   const content = (
     <>
-      <LogoMark className={mark} />
-      <span className="flex flex-col leading-[1.05]">
-        <span className={cn('font-bold tracking-[-0.025em]', name, onInk ? 'text-white' : 'text-ink-950 dark:text-white')}>
-          Safal<span className={cn(onInk ? 'text-brand-300' : 'text-brand-600 dark:text-brand-300')}>MarketHub</span>
-        </span>
-        {sub && <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-ink-400">{sub}</span>}
+      <LogoMark className={mark} onInk={onInk} />
+      <span className={cn('flex flex-col leading-[1.05]', onInk && 'rounded-md bg-white/95 px-1.5 py-1 shadow-sm')}>
+        <img src={WORDMARK_SRC} alt="SafalMarket" className={cn('object-contain object-left', wordmark)} draggable={false} />
+        {showBrandTagline ? (
+          <BrandTagline />
+        ) : (
+          sub && <span className="mt-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-ink-500">{sub}</span>
+        )}
       </span>
     </>
   )
@@ -55,7 +67,7 @@ export function Logo({ size = 'md', onInk = false, asLink = true, sub = 'Marketp
   if (!asLink) return <span className={classes}>{content}</span>
 
   return (
-    <Link {...({ to } as unknown as LinkProps)} className={classes} aria-label="SafalMarketHub — home">
+    <Link {...({ to } as unknown as LinkProps)} className={classes} aria-label="SafalMarket — home">
       {content}
     </Link>
   )

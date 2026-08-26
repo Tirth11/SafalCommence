@@ -25,13 +25,14 @@ class SellerDashboardScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Hi $sellerName 👋', style: Theme.of(context).textTheme.headlineMedium),
+              Text('Hi $sellerName 👋',
+                  style: Theme.of(context).textTheme.headlineMedium),
               const SizedBox(height: 4),
-              Text("Here's what needs your attention today.", style: Theme.of(context).textTheme.bodySmall),
+              Text("Here's what needs your attention today.",
+                  style: Theme.of(context).textTheme.bodySmall),
             ],
           ),
         ),
-
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: GridView.count(
@@ -42,9 +43,18 @@ class SellerDashboardScreen extends StatelessWidget {
             mainAxisSpacing: 12,
             childAspectRatio: 1.9,
             children: [
-              _Kpi(label: "Today's sales", value: money(s.todaySales), note: '+18% vs last week'),
-              _Kpi(label: 'Orders', value: '${s.orders}', note: '${s.pendingOrders} need action'),
-              _Kpi(label: 'Products sold', value: '${s.unitsSold}', note: 'Last 30 days'),
+              _Kpi(
+                  label: "Today's sales",
+                  value: money(s.todaySales),
+                  note: '+18% vs last week'),
+              _Kpi(
+                  label: 'Orders',
+                  value: '${s.orders}',
+                  note: '${s.pendingOrders} need action'),
+              _Kpi(
+                  label: 'Products sold',
+                  value: '${s.unitsSold}',
+                  note: 'Last 30 days'),
               _Kpi(
                 label: 'Settlement due',
                 value: money(s.settlementDue),
@@ -54,7 +64,6 @@ class SellerDashboardScreen extends StatelessWidget {
             ],
           ),
         ),
-
         const SectionHeader(title: 'Needs your attention'),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -73,7 +82,8 @@ class SellerDashboardScreen extends StatelessWidget {
                   label: '${s.lowStock} products are low on stock',
                   action: 'Restock',
                   tone: AppColors.gold,
-                  onTap: () => openSellerAssistant(context, seed: 'Which products are running low on stock?'),
+                  onTap: () => openSellerAssistant(context,
+                      seed: 'Which products are running low on stock?'),
                 ),
               if (s.outOfStock > 0)
                 _AttentionRow(
@@ -95,12 +105,12 @@ class SellerDashboardScreen extends StatelessWidget {
                 icon: Icons.star_outline,
                 label: '${s.newReviews} new customer reviews',
                 action: 'View',
-                onTap: () => openSellerAssistant(context, seed: 'What are customers saying about my headphones?'),
+                onTap: () => openSellerAssistant(context,
+                    seed: 'What are customers saying about my headphones?'),
               ),
             ],
           ),
         ),
-
         const SectionHeader(title: 'Best sellers', subtitle: 'Last 30 days.'),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -119,9 +129,12 @@ class SellerDashboardScreen extends StatelessWidget {
                     children: [
                       Text('${i + 1}',
                           style: const TextStyle(
-                              fontSize: 13, fontWeight: FontWeight.w800, color: AppColors.ink400)),
+                              fontSize: 13,
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.ink400)),
                       const SizedBox(width: 12),
-                      ProductScene(glyph: product.glyph, tone: product.tone, size: 40),
+                      ProductScene(
+                          glyph: product.glyph, tone: product.tone, size: 40),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(
@@ -130,35 +143,42 @@ class SellerDashboardScreen extends StatelessWidget {
                             Text(product.name,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
-                            Text(money(product.price), style: Theme.of(context).textTheme.bodySmall),
+                                style: const TextStyle(
+                                    fontSize: 13, fontWeight: FontWeight.w600)),
+                            Text(money(product.price),
+                                style: Theme.of(context).textTheme.bodySmall),
                           ],
                         ),
                       ),
                       Text('${product.sold} sold',
-                          style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w700)),
+                          style: const TextStyle(
+                              fontSize: 12.5, fontWeight: FontWeight.w700)),
                     ],
                   ),
                 ),
             ],
           ),
         ),
-
-        const SectionHeader(title: 'Suggested actions', subtitle: 'From your own numbers.'),
+        const SectionHeader(
+            title: 'Suggested actions', subtitle: 'From your own numbers.'),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
             children: [
               _Suggestion(
-                title: 'Restock ${sellerProducts.firstWhere((p) => p.isLowStock).name}',
+                title:
+                    'Restock ${sellerProducts.firstWhere((p) => p.isLowStock).name}',
                 body:
                     'Only ${sellerProducts.firstWhere((p) => p.isLowStock).available} left and ${sellerProducts.firstWhere((p) => p.isLowStock).sold} sold in 30 days.',
-                onTap: () => openSellerAssistant(context, seed: 'Set headphones stock to 25'),
+                onTap: () => openSellerAssistant(context,
+                    seed: 'Set headphones stock to 25'),
               ),
               _Suggestion(
                 title: 'Consider promoting ${slowestSeller().name}',
-                body: '${slowestSeller().available} in stock but only ${slowestSeller().sold} sold recently.',
-                onTap: () => openSellerAssistant(context, seed: 'Create an offer'),
+                body:
+                    '${slowestSeller().available} in stock but only ${slowestSeller().sold} sold recently.',
+                onTap: () =>
+                    openSellerAssistant(context, seed: 'Create an offer'),
               ),
             ],
           ),
@@ -169,7 +189,11 @@ class SellerDashboardScreen extends StatelessWidget {
 }
 
 class _Kpi extends StatelessWidget {
-  const _Kpi({required this.label, required this.value, required this.note, this.tone});
+  const _Kpi(
+      {required this.label,
+      required this.value,
+      required this.note,
+      this.tone});
 
   final String label;
   final String value;
@@ -191,13 +215,22 @@ class _Kpi extends StatelessWidget {
         children: [
           Text(label.toUpperCase(),
               style: const TextStyle(
-                  fontSize: 10, fontWeight: FontWeight.w800, letterSpacing: 0.6, color: AppColors.ink400)),
+                  fontSize: 10,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.6,
+                  color: AppColors.ink400)),
           const SizedBox(height: 6),
           Text(value,
               style: TextStyle(
-                  fontSize: 20, fontWeight: FontWeight.w700, color: tone ?? AppColors.ink950, height: 1)),
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  color: tone ?? AppColors.ink950,
+                  height: 1)),
           const SizedBox(height: 4),
-          Text(note, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, color: AppColors.ink500)),
+          Text(note,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 11, color: AppColors.ink500)),
         ],
       ),
     );
@@ -236,8 +269,15 @@ class _AttentionRow extends StatelessWidget {
           children: [
             Icon(icon, size: 19, color: tone ?? AppColors.brand),
             const SizedBox(width: 12),
-            Expanded(child: Text(label, style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w500))),
-            Text(action, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.brand)),
+            Expanded(
+                child: Text(label,
+                    style: const TextStyle(
+                        fontSize: 13.5, fontWeight: FontWeight.w500))),
+            Text(action,
+                style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.brand)),
           ],
         ),
       ),
@@ -246,7 +286,8 @@ class _AttentionRow extends StatelessWidget {
 }
 
 class _Suggestion extends StatelessWidget {
-  const _Suggestion({required this.title, required this.body, required this.onTap});
+  const _Suggestion(
+      {required this.title, required this.body, required this.onTap});
 
   final String title;
   final String body;
@@ -264,7 +305,11 @@ class _Suggestion extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600)),
+          Text(title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style:
+                  const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600)),
           const SizedBox(height: 2),
           Text(body, style: Theme.of(context).textTheme.bodySmall),
           const SizedBox(height: 8),

@@ -12,16 +12,16 @@ import 'state/app_state.dart';
 import 'theme/app_theme.dart';
 import 'widgets/common.dart';
 
-void main() => runApp(const SafalMarketHubApp());
+void main() => runApp(const SafalMarketApp());
 
-class SafalMarketHubApp extends StatefulWidget {
-  const SafalMarketHubApp({super.key});
+class SafalMarketApp extends StatefulWidget {
+  const SafalMarketApp({super.key});
 
   @override
-  State<SafalMarketHubApp> createState() => _SafalMarketHubAppState();
+  State<SafalMarketApp> createState() => _SafalMarketAppState();
 }
 
-class _SafalMarketHubAppState extends State<SafalMarketHubApp> {
+class _SafalMarketAppState extends State<SafalMarketApp> {
   final _state = AppState();
 
   @override
@@ -35,7 +35,7 @@ class _SafalMarketHubAppState extends State<SafalMarketHubApp> {
     return AppScope(
       state: _state,
       child: MaterialApp(
-        title: 'SafalMarketHub',
+        title: 'SafalMarket',
         debugShowCheckedModeBanner: false,
         theme: buildAppTheme(),
         home: const RootShell(),
@@ -114,7 +114,7 @@ class _RootShellState extends State<RootShell> {
               foregroundColor: Colors.white,
               onPressed: () => openAssistant(context, AssistantMode.chat),
               icon: const Icon(Icons.auto_awesome, size: 18),
-              label: const Text('SafalAssistant'),
+              label: const Text('SafalAI'),
             )
           : null,
       bottomNavigationBar: _bottomBar(state.cartCount),
@@ -158,35 +158,60 @@ class _Wordmark extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: 30,
-          height: 30,
-          decoration: BoxDecoration(
-            color: AppColors.brand,
-            borderRadius: BorderRadius.circular(Radii.sm),
+    return Semantics(
+      label: 'SafalMarket',
+      image: true,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Image.asset(
+            'assets/brand/safalmarket-mark.png',
+            width: 36,
+            height: 36,
+            fit: BoxFit.contain,
+            filterQuality: FilterQuality.high,
           ),
-          child: const Icon(Icons.bar_chart_rounded,
-              size: 18, color: Colors.white),
-        ),
-        const SizedBox(width: 9),
-        RichText(
-          text: const TextSpan(
-            style: TextStyle(
-                fontSize: 16.5,
-                fontWeight: FontWeight.w800,
-                letterSpacing: -0.4,
-                color: AppColors.ink950),
+          const SizedBox(width: 8),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              TextSpan(text: 'Safal'),
-              TextSpan(
-                  text: 'MarketHub', style: TextStyle(color: AppColors.brand)),
+              Image.asset(
+                'assets/brand/safalmarket-wordmark.png',
+                height: 18,
+                fit: BoxFit.contain,
+                filterQuality: FilterQuality.high,
+              ),
+              const SizedBox(height: 2),
+              const _BrandTagline(),
             ],
           ),
-        ),
-      ],
+        ],
+      ),
+    );
+  }
+}
+
+class _BrandTagline extends StatelessWidget {
+  const _BrandTagline();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Text.rich(
+      TextSpan(
+        children: [
+          TextSpan(text: 'List.'),
+          TextSpan(text: 'Discover.', style: TextStyle(color: AppColors.brand)),
+          TextSpan(text: 'Connect'),
+        ],
+      ),
+      style: TextStyle(
+        color: AppColors.brandDark,
+        fontSize: 8.5,
+        fontWeight: FontWeight.w900,
+        height: 1,
+        letterSpacing: -0.2,
+      ),
     );
   }
 }

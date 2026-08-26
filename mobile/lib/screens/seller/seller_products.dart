@@ -30,7 +30,8 @@ class _SellerProductsScreenState extends State<SellerProductsScreen> {
           case 'Low stock':
             return p.isLowStock || p.isOutOfStock;
           case 'Needs changes':
-            return p.status == ListingStatus.changesRequired || p.status == ListingStatus.pendingReview;
+            return p.status == ListingStatus.changesRequired ||
+                p.status == ListingStatus.pendingReview;
           default:
             return true;
         }
@@ -57,7 +58,8 @@ class _SellerProductsScreenState extends State<SellerProductsScreen> {
                       return ChoiceChip(
                         label: Text(_filters[i]),
                         selected: selected,
-                        onSelected: (_) => setState(() => _filter = _filters[i]),
+                        onSelected: (_) =>
+                            setState(() => _filter = _filters[i]),
                       );
                     },
                   ),
@@ -100,8 +102,10 @@ class _ProductRow extends StatelessWidget {
         .where((o) => statusOf(o) == OfferStatus.live && o.seller == sellerName)
         .where((o) =>
             o.scope == SellerOfferScope.all ||
-            (o.scope == SellerOfferScope.products && o.productIds.contains(product.id)) ||
-            (o.scope == SellerOfferScope.category && o.scopeValues.contains(product.category)))
+            (o.scope == SellerOfferScope.products &&
+                o.productIds.contains(product.id)) ||
+            (o.scope == SellerOfferScope.category &&
+                o.scopeValues.contains(product.category)))
         .toList();
 
     return Container(
@@ -126,7 +130,10 @@ class _ProductRow extends StatelessWidget {
                     Text(product.name,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600, height: 1.3)),
+                        style: const TextStyle(
+                            fontSize: 13.5,
+                            fontWeight: FontWeight.w600,
+                            height: 1.3)),
                     const SizedBox(height: 3),
                     Text('${product.sku} · ${money(product.price)}',
                         style: Theme.of(context).textTheme.bodySmall),
@@ -143,7 +150,10 @@ class _ProductRow extends StatelessWidget {
                                   : '${product.available} in stock',
                           style: TextStyle(
                             fontSize: 12,
-                            fontWeight: product.isLowStock || product.isOutOfStock ? FontWeight.w700 : FontWeight.w400,
+                            fontWeight:
+                                product.isLowStock || product.isOutOfStock
+                                    ? FontWeight.w700
+                                    : FontWeight.w400,
                             color: product.isOutOfStock
                                 ? AppColors.danger
                                 : product.isLowStock
@@ -158,28 +168,31 @@ class _ProductRow extends StatelessWidget {
               ),
             ],
           ),
-
           if (product.adminNote != null) ...[
             const SizedBox(height: 10),
             Container(
               padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(color: AppColors.goldSoft, borderRadius: BorderRadius.circular(Radii.sm)),
+              decoration: BoxDecoration(
+                  color: AppColors.goldSoft,
+                  borderRadius: BorderRadius.circular(Radii.sm)),
               child: Text(product.adminNote!,
-                  style: const TextStyle(fontSize: 12, height: 1.4, color: AppColors.gold)),
+                  style: const TextStyle(
+                      fontSize: 12, height: 1.4, color: AppColors.gold)),
             ),
           ],
-
           if (sale.isNotEmpty) ...[
             const SizedBox(height: 10),
-            Align(alignment: Alignment.centerLeft, child: ReasonChip(text: sale.first.displayName)),
+            Align(
+                alignment: Alignment.centerLeft,
+                child: ReasonChip(text: sale.first.displayName)),
           ],
-
           const SizedBox(height: 10),
           Row(
             children: [
               Expanded(
                 child: OutlinedButton.icon(
-                  style: OutlinedButton.styleFrom(minimumSize: const Size(0, 38)),
+                  style:
+                      OutlinedButton.styleFrom(minimumSize: const Size(0, 38)),
                   onPressed: onAddOffer,
                   icon: const Icon(Icons.local_offer_outlined, size: 16),
                   label: const Text('Add offer'),
@@ -188,7 +201,8 @@ class _ProductRow extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: OutlinedButton.icon(
-                  style: OutlinedButton.styleFrom(minimumSize: const Size(0, 38)),
+                  style:
+                      OutlinedButton.styleFrom(minimumSize: const Size(0, 38)),
                   onPressed: () => showStockSheet(context, product),
                   icon: const Icon(Icons.inventory_2_outlined, size: 16),
                   label: const Text('Stock'),
@@ -222,16 +236,29 @@ class _AddProductChoices extends StatelessWidget {
   Widget build(BuildContext context) {
     final options = [
       (Icons.edit_outlined, 'Add manually', 'The full form, one product.'),
-      (Icons.auto_awesome, 'Add with Safal Assistant', 'Describe it and review the draft.'),
-      (Icons.photo_camera_outlined, 'Add from images', 'We suggest the category, you confirm.'),
-      (Icons.table_chart_outlined, 'Upload a spreadsheet', 'Many products at once, checked first.'),
+      (
+        Icons.auto_awesome,
+        'Add with SafalAI',
+        'Describe it and review the draft.'
+      ),
+      (
+        Icons.photo_camera_outlined,
+        'Add from images',
+        'We suggest the category, you confirm.'
+      ),
+      (
+        Icons.table_chart_outlined,
+        'Upload a spreadsheet',
+        'Many products at once, checked first.'
+      ),
     ];
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('How would you like to add products?', style: Theme.of(context).textTheme.titleLarge),
+        Text('How would you like to add products?',
+            style: Theme.of(context).textTheme.titleLarge),
         const SizedBox(height: 14),
         for (final (icon, title, body) in options)
           InkWell(
@@ -241,7 +268,8 @@ class _AddProductChoices extends StatelessWidget {
               if (title.contains('Assistant')) {
                 openSellerAssistant(context, seed: 'Add a product');
               } else {
-                showToast(context, title, detail: 'Not wired up in this mockup');
+                showToast(context, title,
+                    detail: 'Not wired up in this mockup');
               }
             },
             child: Container(
@@ -259,8 +287,11 @@ class _AddProductChoices extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
-                        Text(body, style: Theme.of(context).textTheme.bodySmall),
+                        Text(title,
+                            style: const TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.w600)),
+                        Text(body,
+                            style: Theme.of(context).textTheme.bodySmall),
                       ],
                     ),
                   ),
@@ -309,7 +340,8 @@ class _ProductOfferFormState extends State<_ProductOfferForm> {
     final insight = priceInsightFor(product);
 
     final overMax = percent > sellerOfferPolicy.maxDiscountPercent;
-    final needsApproval = percent > sellerOfferPolicy.approvalAbovePercent && !overMax;
+    final needsApproval =
+        percent > sellerOfferPolicy.approvalAbovePercent && !overMax;
 
     if (_done) {
       return Column(
@@ -318,7 +350,8 @@ class _ProductOfferFormState extends State<_ProductOfferForm> {
           Container(
             width: 44,
             height: 44,
-            decoration: const BoxDecoration(color: AppColors.tealSoft, shape: BoxShape.circle),
+            decoration: const BoxDecoration(
+                color: AppColors.tealSoft, shape: BoxShape.circle),
             child: const Icon(Icons.check, color: AppColors.teal),
           ),
           const SizedBox(height: 12),
@@ -335,7 +368,9 @@ class _ProductOfferFormState extends State<_ProductOfferForm> {
           const SizedBox(height: 18),
           SizedBox(
             width: double.infinity,
-            child: FilledButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Done')),
+            child: FilledButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Done')),
           ),
         ],
       );
@@ -348,14 +383,18 @@ class _ProductOfferFormState extends State<_ProductOfferForm> {
         Text('Add an offer', style: Theme.of(context).textTheme.titleLarge),
         Text('${product.name} · currently ${money(product.price)}',
             style: Theme.of(context).textTheme.bodySmall),
-
         const SizedBox(height: 18),
         Row(
           children: [
-            Text('$percent% off', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w700)),
+            Text('$percent% off',
+                style:
+                    const TextStyle(fontSize: 22, fontWeight: FontWeight.w700)),
             const Spacer(),
             Text('New price ${money(offerPrice)}',
-                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.teal)),
+                style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.teal)),
           ],
         ),
         Slider(
@@ -366,7 +405,6 @@ class _ProductOfferFormState extends State<_ProductOfferForm> {
           label: '$percent%',
           onChanged: (v) => setState(() => _percent = v),
         ),
-
         Row(
           children: [
             const Text('Runs for', style: TextStyle(fontSize: 13)),
@@ -382,7 +420,6 @@ class _ProductOfferFormState extends State<_ProductOfferForm> {
               ),
           ],
         ),
-
         const SizedBox(height: 14),
         Container(
           padding: const EdgeInsets.all(14),
@@ -392,21 +429,23 @@ class _ProductOfferFormState extends State<_ProductOfferForm> {
           ),
           child: Column(
             children: [
-              if (insight != null) _Line('Marketplace average', money(insight.average)),
-              _Line('SafalMarketHub fee ($commissionRate%)', '− ${money(margin.fee)}'),
+              if (insight != null)
+                _Line('Marketplace average', money(insight.average)),
+              _Line('SafalMarket fee ($commissionRate%)',
+                  '− ${money(margin.fee)}'),
               _Line('You keep per sale', money(margin.earnings), strong: true),
               _Line('Stock', '${product.available} available'),
             ],
           ),
         ),
-
         if (margin.isThin && !overMax) ...[
           const SizedBox(height: 10),
           _Banner(
             tone: AppColors.gold,
             icon: Icons.warning_amber_rounded,
             title: 'Thin margin',
-            body: 'You keep about ${money(margin.earnings)} per sale after fees.',
+            body:
+                'You keep about ${money(margin.earnings)} per sale after fees.',
           ),
         ],
         if (overMax) ...[
@@ -414,7 +453,8 @@ class _ProductOfferFormState extends State<_ProductOfferForm> {
           _Banner(
             tone: AppColors.danger,
             icon: Icons.block,
-            title: 'Above the ${sellerOfferPolicy.maxDiscountPercent}% platform maximum',
+            title:
+                'Above the ${sellerOfferPolicy.maxDiscountPercent}% platform maximum',
             body: 'Lower the discount to publish.',
           ),
         ],
@@ -424,10 +464,10 @@ class _ProductOfferFormState extends State<_ProductOfferForm> {
             tone: AppColors.gold,
             icon: Icons.gavel_outlined,
             title: 'Needs approval',
-            body: 'Above ${sellerOfferPolicy.approvalAbovePercent}% we review before it reaches customers.',
+            body:
+                'Above ${sellerOfferPolicy.approvalAbovePercent}% we review before it reaches customers.',
           ),
         ],
-
         const SizedBox(height: 16),
         SizedBox(
           width: double.infinity,
@@ -436,14 +476,18 @@ class _ProductOfferFormState extends State<_ProductOfferForm> {
                 ? null
                 : () {
                     setState(() => _done = true);
-                    showToast(context, needsApproval ? 'Sent for approval' : 'Offer published',
+                    showToast(context,
+                        needsApproval ? 'Sent for approval' : 'Offer published',
                         detail: product.name);
                   },
-            child: Text(needsApproval ? 'Submit for approval' : 'Publish $percent% off'),
+            child: Text(needsApproval
+                ? 'Submit for approval'
+                : 'Publish $percent% off'),
           ),
         ),
         const SizedBox(height: 6),
-        Text('This changes what customers pay. You can end it early at any time.',
+        Text(
+            'This changes what customers pay. You can end it early at any time.',
             style: Theme.of(context).textTheme.bodySmall),
       ],
     );
@@ -488,11 +532,14 @@ class _StockFormState extends State<_StockForm> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             IconButton.filledTonal(
-              onPressed: () => setState(() => _value = (_value - 5).clamp(0, 9999)),
+              onPressed: () =>
+                  setState(() => _value = (_value - 5).clamp(0, 9999)),
               icon: const Icon(Icons.remove),
             ),
             const SizedBox(width: 20),
-            Text('$_value', style: const TextStyle(fontSize: 34, fontWeight: FontWeight.w700)),
+            Text('$_value',
+                style:
+                    const TextStyle(fontSize: 34, fontWeight: FontWeight.w700)),
             const SizedBox(width: 20),
             IconButton.filledTonal(
               onPressed: () => setState(() => _value += 5),
@@ -505,7 +552,9 @@ class _StockFormState extends State<_StockForm> {
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(color: AppColors.ink100, borderRadius: BorderRadius.circular(Radii.md)),
+            decoration: BoxDecoration(
+                color: AppColors.ink100,
+                borderRadius: BorderRadius.circular(Radii.md)),
             child: Text(
               'Current ${widget.product.available} → New $_value',
               textAlign: TextAlign.center,
@@ -519,7 +568,8 @@ class _StockFormState extends State<_StockForm> {
             onPressed: changed
                 ? () {
                     Navigator.of(context).pop();
-                    showToast(context, 'Stock updated', detail: '${widget.product.name} → $_value');
+                    showToast(context, 'Stock updated',
+                        detail: '${widget.product.name} → $_value');
                   }
                 : null,
             child: const Text('Confirm update'),
@@ -539,7 +589,8 @@ class _SheetShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding:
+          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: Container(
         decoration: const BoxDecoration(
           color: AppColors.surface,
@@ -556,8 +607,9 @@ class _SheetShell extends StatelessWidget {
                   margin: const EdgeInsets.only(bottom: 14),
                   width: 40,
                   height: 4,
-                  decoration:
-                      BoxDecoration(color: AppColors.ink200, borderRadius: BorderRadius.circular(Radii.pill)),
+                  decoration: BoxDecoration(
+                      color: AppColors.ink200,
+                      borderRadius: BorderRadius.circular(Radii.pill)),
                 ),
                 child,
               ],
@@ -581,11 +633,13 @@ class _Line extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 3),
       child: Row(
         children: [
-          Text(label, style: const TextStyle(fontSize: 12.5, color: AppColors.ink500)),
+          Text(label,
+              style: const TextStyle(fontSize: 12.5, color: AppColors.ink500)),
           const Spacer(),
           Text(value,
               style: TextStyle(
-                  fontSize: 12.5, fontWeight: strong ? FontWeight.w800 : FontWeight.w600)),
+                  fontSize: 12.5,
+                  fontWeight: strong ? FontWeight.w800 : FontWeight.w600)),
         ],
       ),
     );
@@ -593,7 +647,11 @@ class _Line extends StatelessWidget {
 }
 
 class _Banner extends StatelessWidget {
-  const _Banner({required this.tone, required this.icon, required this.title, required this.body});
+  const _Banner(
+      {required this.tone,
+      required this.icon,
+      required this.title,
+      required this.body});
   final Color tone;
   final IconData icon;
   final String title;
@@ -618,8 +676,14 @@ class _Banner extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: tone)),
-                Text(body, style: const TextStyle(fontSize: 12, height: 1.4, color: AppColors.ink700)),
+                Text(title,
+                    style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                        color: tone)),
+                Text(body,
+                    style: const TextStyle(
+                        fontSize: 12, height: 1.4, color: AppColors.ink700)),
               ],
             ),
           ),

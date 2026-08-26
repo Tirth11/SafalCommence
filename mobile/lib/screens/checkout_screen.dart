@@ -230,7 +230,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  'Handled by our payment provider. SafalMarketHub never stores your card number.',
+                  'Handled by our payment provider. SafalMarket never stores your card number.',
                   style: TextStyle(
                       fontSize: 12, height: 1.4, color: AppColors.ink500),
                 ),

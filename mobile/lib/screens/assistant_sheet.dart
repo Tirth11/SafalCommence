@@ -344,7 +344,7 @@ class _ChatFlowState extends State<_ChatFlow> {
     if (RegExp(r'\b(preference|preferences|usual size|price drop|best offer)\b')
         .hasMatch(q)) {
       _bubbles.add(_ChatBubble.bot(
-        'These preferences let SafalAssistant ask fewer questions while staying editable by the customer.',
+        'These preferences let SafalAI ask fewer questions while staying editable by the customer.',
         note:
             'Saved preferences: show offers first, remember wishlist signals, and keep best eligible offer checks on.',
       ));
@@ -583,7 +583,7 @@ class _ChatFlowState extends State<_ChatFlow> {
                     textInputAction: TextInputAction.send,
                     onSubmitted: _send,
                     decoration: InputDecoration(
-                      hintText: 'Ask SafalAssistant…',
+                      hintText: 'Ask SafalAI…',
                       prefixIcon: IconButton(
                         tooltip: 'Search with a photo',
                         icon: const Icon(Icons.photo_camera_outlined, size: 18),
@@ -1191,7 +1191,7 @@ class _PhotoFlowState extends State<_PhotoFlow> {
       return _ResultsView(
         controller: widget.controller,
         title: 'We found products similar to your photo',
-        subtitle: 'Closest matches from sellers on SafalMarketHub',
+        subtitle: 'Closest matches from sellers on SafalMarket',
         matches: similarToPhoto(),
         onRestart: () => setState(() {
           _done = false;

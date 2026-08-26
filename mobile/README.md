@@ -1,4 +1,4 @@
-# SafalMarketHub — customer app (Flutter)
+# SafalMarket — customer app (Flutter)
 
 A UI mockup of the customer experience, mirroring the web build in
 `../src`: same design tokens, same information architecture, same

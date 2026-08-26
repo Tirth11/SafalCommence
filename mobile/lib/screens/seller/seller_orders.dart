@@ -18,14 +18,21 @@ class SellerOrdersScreen extends StatefulWidget {
 class _SellerOrdersScreenState extends State<SellerOrdersScreen> {
   String _filter = 'Needs action';
 
-  static const _filters = ['Needs action', 'All', 'Shipped', 'Delivered', 'Returned'];
+  static const _filters = [
+    'Needs action',
+    'All',
+    'Shipped',
+    'Delivered',
+    'Returned'
+  ];
 
   List<SellerOrder> get _rows => sellerOrders.where((o) {
         switch (_filter) {
           case 'Needs action':
             return o.needsAction;
           case 'Shipped':
-            return o.status == SellerOrderStatus.shipped || o.status == SellerOrderStatus.packed;
+            return o.status == SellerOrderStatus.shipped ||
+                o.status == SellerOrderStatus.packed;
           case 'Delivered':
             return o.status == SellerOrderStatus.delivered;
           case 'Returned':
@@ -108,20 +115,26 @@ class _OrderCard extends StatelessWidget {
                       children: [
                         StatusPill(label: sellerOrderLabels[order.status]!),
                         const SizedBox(width: 8),
-                        Text(order.id, style: const TextStyle(fontSize: 11.5, color: AppColors.ink500)),
+                        Text(order.id,
+                            style: const TextStyle(
+                                fontSize: 11.5, color: AppColors.ink500)),
                       ],
                     ),
                     const SizedBox(height: 6),
                     Text(product.name,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w600)),
-                    Text('${order.customer} · ${order.placedOn} · Qty ${order.qty}',
+                        style: const TextStyle(
+                            fontSize: 13.5, fontWeight: FontWeight.w600)),
+                    Text(
+                        '${order.customer} · ${order.placedOn} · Qty ${order.qty}',
                         style: Theme.of(context).textTheme.bodySmall),
                   ],
                 ),
               ),
-              Text(money(order.value), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
+              Text(money(order.value),
+                  style: const TextStyle(
+                      fontSize: 14, fontWeight: FontWeight.w700)),
             ],
           ),
           if (order.needsAction) ...[
@@ -130,27 +143,33 @@ class _OrderCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: FilledButton(
-                    style: FilledButton.styleFrom(minimumSize: const Size(0, 38)),
+                    style:
+                        FilledButton.styleFrom(minimumSize: const Size(0, 38)),
                     onPressed: () => _confirm(
                       context,
                       title: 'Mark ${order.id} as packed?',
-                      body: 'The customer is told their order is being prepared for dispatch.',
+                      body:
+                          'The customer is told their order is being prepared for dispatch.',
                       confirmLabel: 'Mark packed',
-                      onConfirm: () => showToast(context, 'Order marked packed', detail: order.id),
+                      onConfirm: () => showToast(context, 'Order marked packed',
+                          detail: order.id),
                     ),
                     child: const Text('Mark packed'),
                   ),
                 ),
                 const SizedBox(width: 8),
                 OutlinedButton(
-                  style: OutlinedButton.styleFrom(minimumSize: const Size(0, 38)),
+                  style:
+                      OutlinedButton.styleFrom(minimumSize: const Size(0, 38)),
                   onPressed: () => _confirm(
                     context,
                     title: 'Cancel ${order.id}?',
-                    body: 'The customer is refunded in full and the stock is returned.',
+                    body:
+                        'The customer is refunded in full and the stock is returned.',
                     confirmLabel: 'Cancel order',
                     destructive: true,
-                    onConfirm: () => showToast(context, 'Order cancelled', detail: order.id),
+                    onConfirm: () =>
+                        showToast(context, 'Order cancelled', detail: order.id),
                   ),
                   child: const Text('Cancel'),
                 ),
@@ -175,12 +194,17 @@ void _confirm(
   showDialog<void>(
     context: context,
     builder: (dialogContext) => AlertDialog(
-      title: Text(title, style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
+      title: Text(title,
+          style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
       content: Text(body, style: const TextStyle(fontSize: 13.5, height: 1.45)),
       actions: [
-        TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: const Text('Not now')),
+        TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text('Not now')),
         FilledButton(
-          style: destructive ? FilledButton.styleFrom(backgroundColor: AppColors.danger) : null,
+          style: destructive
+              ? FilledButton.styleFrom(backgroundColor: AppColors.danger)
+              : null,
           onPressed: () {
             Navigator.of(dialogContext).pop();
             onConfirm();

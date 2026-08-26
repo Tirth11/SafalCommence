@@ -46,7 +46,7 @@ export function AddProductMenu() {
         <DropdownMenuItem onSelect={() => assistant.open('Add a product')} className="flex items-start gap-2.5">
           <Sparkles className="mt-0.5 size-4 shrink-0 text-brand-600 dark:text-brand-300" />
           <span>
-            <span className="block text-[13px] font-medium">Add with Safal Assistant</span>
+            <span className="block text-[13px] font-medium">Add with SafalAI</span>
             <span className="block text-[11px] text-ink-500">Describe it and review the draft.</span>
           </span>
         </DropdownMenuItem>

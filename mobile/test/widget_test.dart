@@ -7,7 +7,7 @@ import 'package:safalmarkethub/main.dart';
 /// a build-breaking change without pinning the mockup's layout in place.
 void main() {
   testWidgets('opens on the shopping home', (tester) async {
-    await tester.pumpWidget(const SafalMarketHubApp());
+    await tester.pumpWidget(const SafalMarketApp());
     await tester.pump();
 
     expect(find.text('Find it. Buy it.'), findsOneWidget);
@@ -16,7 +16,7 @@ void main() {
   });
 
   testWidgets('one account switches into the seller portal', (tester) async {
-    await tester.pumpWidget(const SafalMarketHubApp());
+    await tester.pumpWidget(const SafalMarketApp());
     await tester.pump();
 
     // Sign in, then switch — never a second login.
@@ -38,7 +38,7 @@ void main() {
   });
 
   testWidgets('bottom navigation switches tabs', (tester) async {
-    await tester.pumpWidget(const SafalMarketHubApp());
+    await tester.pumpWidget(const SafalMarketApp());
     await tester.pump();
 
     await tester.tap(find.byIcon(Icons.person_outline));

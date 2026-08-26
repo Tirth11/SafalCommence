@@ -26,11 +26,15 @@ class _SellerPromotionsScreenState extends State<SellerPromotionsScreen> {
     final mine = sellerOffers.where((o) => o.seller == sellerName);
     switch (_tab) {
       case 'Product offers':
-        return mine.where((o) => !o.isCampaign && statusOf(o) == OfferStatus.live).toList();
+        return mine
+            .where((o) => !o.isCampaign && statusOf(o) == OfferStatus.live)
+            .toList();
       case 'Scheduled':
         return mine.where((o) => statusOf(o) == OfferStatus.scheduled).toList();
       default:
-        return mine.where((o) => o.isCampaign && statusOf(o) == OfferStatus.live).toList();
+        return mine
+            .where((o) => o.isCampaign && statusOf(o) == OfferStatus.live)
+            .toList();
     }
   }
 
@@ -121,7 +125,8 @@ class _OfferCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                 decoration: BoxDecoration(
-                  color: offer.isCampaign ? AppColors.brandSoft : AppColors.ink100,
+                  color:
+                      offer.isCampaign ? AppColors.brandSoft : AppColors.ink100,
                   borderRadius: BorderRadius.circular(Radii.pill),
                 ),
                 child: Text(
@@ -130,7 +135,8 @@ class _OfferCard extends StatelessWidget {
                     fontSize: 9.5,
                     fontWeight: FontWeight.w800,
                     letterSpacing: 0.5,
-                    color: offer.isCampaign ? AppColors.brand : AppColors.ink600,
+                    color:
+                        offer.isCampaign ? AppColors.brand : AppColors.ink600,
                   ),
                 ),
               ),
@@ -140,7 +146,8 @@ class _OfferCard extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text(offer.name ?? offer.displayName,
-              style: const TextStyle(fontSize: 15.5, fontWeight: FontWeight.w700)),
+              style:
+                  const TextStyle(fontSize: 15.5, fontWeight: FontWeight.w700)),
           const SizedBox(height: 3),
           Text(
             '${offer.percent}% off · ${sellerScopeLabels[offer.scope]!.toLowerCase()} · $covered products',
@@ -152,8 +159,10 @@ class _OfferCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: OutlinedButton(
-                    style: OutlinedButton.styleFrom(minimumSize: const Size(0, 36)),
-                    onPressed: () => showToast(context, 'Promotion paused', detail: offer.displayName),
+                    style: OutlinedButton.styleFrom(
+                        minimumSize: const Size(0, 36)),
+                    onPressed: () => showToast(context, 'Promotion paused',
+                        detail: offer.displayName),
                     child: const Text('Pause'),
                   ),
                 ),
@@ -161,7 +170,8 @@ class _OfferCard extends StatelessWidget {
                 Expanded(
                   child: OutlinedButton(
                     style: OutlinedButton.styleFrom(
-                        minimumSize: const Size(0, 36), foregroundColor: AppColors.danger),
+                        minimumSize: const Size(0, 36),
+                        foregroundColor: AppColors.danger),
                     onPressed: () => _confirmEnd(context, offer),
                     child: const Text('End offer'),
                   ),
@@ -180,15 +190,19 @@ void _confirmEnd(BuildContext context, SellerOffer offer) {
     builder: (dialogContext) => AlertDialog(
       title: Text('End ${offer.name ?? offer.displayName}?',
           style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
-      content: const Text('Regular prices return immediately and the storefront banner disappears.',
+      content: const Text(
+          'Regular prices return immediately and the storefront banner disappears.',
           style: TextStyle(fontSize: 13.5, height: 1.45)),
       actions: [
-        TextButton(onPressed: () => Navigator.of(dialogContext).pop(), child: const Text('Keep running')),
+        TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: const Text('Keep running')),
         FilledButton(
           style: FilledButton.styleFrom(backgroundColor: AppColors.danger),
           onPressed: () {
             Navigator.of(dialogContext).pop();
-            showToast(context, 'Promotion ended', detail: 'Regular prices are live again.');
+            showToast(context, 'Promotion ended',
+                detail: 'Regular prices are live again.');
           },
           child: const Text('End offer'),
         ),
@@ -254,18 +268,22 @@ class _CampaignSheetState extends State<_CampaignSheet> {
     final percent = _percent.round();
     final affected = _affected;
     final overMax = percent > sellerOfferPolicy.maxDiscountPercent;
-    final needsApproval = percent > sellerOfferPolicy.approvalAbovePercent && !overMax;
+    final needsApproval =
+        percent > sellerOfferPolicy.approvalAbovePercent && !overMax;
     final blocked = overMax || affected.isEmpty;
 
     final avgPrice = affected.isEmpty
         ? 0
-        : (affected.fold(0, (sum, p) => sum + p.price) / affected.length).round();
+        : (affected.fold(0, (sum, p) => sum + p.price) / affected.length)
+            .round();
     final avgDiscount = (avgPrice * percent / 100).round();
 
     return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding:
+          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: Container(
-        constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.9),
+        constraints:
+            BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.9),
         decoration: const BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.vertical(top: Radius.circular(Radii.xl)),
@@ -286,27 +304,31 @@ class _CampaignSheetState extends State<_CampaignSheet> {
                           width: 40,
                           height: 4,
                           decoration: BoxDecoration(
-                              color: AppColors.ink200, borderRadius: BorderRadius.circular(Radii.pill)),
+                              color: AppColors.ink200,
+                              borderRadius: BorderRadius.circular(Radii.pill)),
                         ),
                       ),
-                      Text('Create campaign', style: Theme.of(context).textTheme.titleLarge),
-                      Text('Customers see the name on every discounted product.',
+                      Text('Create campaign',
+                          style: Theme.of(context).textTheme.titleLarge),
+                      Text(
+                          'Customers see the name on every discounted product.',
                           style: Theme.of(context).textTheme.bodySmall),
-
                       const SizedBox(height: 16),
                       TextField(
                         controller: _nameController,
-                        decoration: const InputDecoration(labelText: 'Campaign name'),
+                        decoration:
+                            const InputDecoration(labelText: 'Campaign name'),
                         onChanged: (_) => setState(() {}),
                       ),
-
                       const SizedBox(height: 18),
                       Row(
                         children: [
                           Text('$percent% off',
-                              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+                              style: const TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.w700)),
                           const Spacer(),
-                          Text('$_days days', style: Theme.of(context).textTheme.bodySmall),
+                          Text('$_days days',
+                              style: Theme.of(context).textTheme.bodySmall),
                         ],
                       ),
                       Slider(
@@ -330,11 +352,15 @@ class _CampaignSheetState extends State<_CampaignSheet> {
                             ),
                         ],
                       ),
-
                       const SizedBox(height: 18),
-                      Text('Applies to', style: Theme.of(context).textTheme.titleMedium),
+                      Text('Applies to',
+                          style: Theme.of(context).textTheme.titleMedium),
                       const SizedBox(height: 8),
-                      for (final option in [SellerOfferScope.all, SellerOfferScope.category, SellerOfferScope.brand])
+                      for (final option in [
+                        SellerOfferScope.all,
+                        SellerOfferScope.category,
+                        SellerOfferScope.brand
+                      ])
                         RadioListTileLike(
                           label: sellerScopeLabels[option]!,
                           selected: _scope == option,
@@ -343,16 +369,16 @@ class _CampaignSheetState extends State<_CampaignSheet> {
                             _scopeValues.clear();
                           }),
                         ),
-
                       if (_scope != SellerOfferScope.all) ...[
                         const SizedBox(height: 8),
                         Wrap(
                           spacing: 8,
                           runSpacing: 8,
                           children: [
-                            for (final value in _scope == SellerOfferScope.category
-                                ? categories.map((c) => c.label)
-                                : products.map((p) => p.brand).toSet())
+                            for (final value
+                                in _scope == SellerOfferScope.category
+                                    ? categories.map((c) => c.label)
+                                    : products.map((p) => p.brand).toSet())
                               FilterChip(
                                 label: Text(value),
                                 selected: _scopeValues.contains(value),
@@ -365,10 +391,11 @@ class _CampaignSheetState extends State<_CampaignSheet> {
                           ],
                         ),
                       ],
-
                       const SizedBox(height: 18),
-                      Text('Exclusions', style: Theme.of(context).textTheme.titleMedium),
-                      Text('Optional — anything here stays at its normal price.',
+                      Text('Exclusions',
+                          style: Theme.of(context).textTheme.titleMedium),
+                      Text(
+                          'Optional — anything here stays at its normal price.',
                           style: Theme.of(context).textTheme.bodySmall),
                       const SizedBox(height: 8),
                       Wrap(
@@ -387,7 +414,6 @@ class _CampaignSheetState extends State<_CampaignSheet> {
                             ),
                         ],
                       ),
-
                       const SizedBox(height: 18),
                       Container(
                         width: double.infinity,
@@ -406,18 +432,21 @@ class _CampaignSheetState extends State<_CampaignSheet> {
                                     letterSpacing: 0.6,
                                     color: AppColors.ink400)),
                             const SizedBox(height: 8),
-                            _Line('Products affected', '${affected.length}', strong: true),
+                            _Line('Products affected', '${affected.length}',
+                                strong: true),
                             _Line('Average selling price', money(avgPrice)),
                             _Line('Average discount each', money(avgDiscount)),
                             const SizedBox(height: 6),
                             const Text(
                               'Products you add while this runs are included automatically.',
-                              style: TextStyle(fontSize: 11, height: 1.4, color: AppColors.ink500),
+                              style: TextStyle(
+                                  fontSize: 11,
+                                  height: 1.4,
+                                  color: AppColors.ink500),
                             ),
                           ],
                         ),
                       ),
-
                       if (overMax) ...[
                         const SizedBox(height: 12),
                         _Note(
@@ -431,17 +460,17 @@ class _CampaignSheetState extends State<_CampaignSheet> {
                         _Note(
                           tone: AppColors.gold,
                           text:
-                              'Above ${sellerOfferPolicy.approvalAbovePercent}%, so SafalMarketHub reviews this before it goes live.',
+                              'Above ${sellerOfferPolicy.approvalAbovePercent}%, so SafalMarket reviews this before it goes live.',
                         ),
                       ],
                       if (affected.isEmpty) ...[
                         const SizedBox(height: 12),
                         const _Note(
                           tone: AppColors.danger,
-                          text: 'Nothing matches this rule yet. Pick a scope, or loosen the exclusions.',
+                          text:
+                              'Nothing matches this rule yet. Pick a scope, or loosen the exclusions.',
                         ),
                       ],
-
                       const SizedBox(height: 18),
                       SizedBox(
                         width: double.infinity,
@@ -452,7 +481,9 @@ class _CampaignSheetState extends State<_CampaignSheet> {
                                   setState(() => _published = true);
                                   showToast(
                                     context,
-                                    needsApproval ? 'Sent for approval' : 'Campaign published',
+                                    needsApproval
+                                        ? 'Sent for approval'
+                                        : 'Campaign published',
                                     detail: _nameController.text,
                                   );
                                 },
@@ -471,7 +502,11 @@ class _CampaignSheetState extends State<_CampaignSheet> {
 }
 
 class RadioListTileLike extends StatelessWidget {
-  const RadioListTileLike({super.key, required this.label, required this.selected, required this.onTap});
+  const RadioListTileLike(
+      {super.key,
+      required this.label,
+      required this.selected,
+      required this.onTap});
 
   final String label;
   final bool selected;
@@ -488,14 +523,21 @@ class RadioListTileLike extends StatelessWidget {
         decoration: BoxDecoration(
           color: selected ? AppColors.brandSoft.withValues(alpha: 0.5) : null,
           borderRadius: BorderRadius.circular(Radii.md),
-          border: Border.all(color: selected ? AppColors.brand : AppColors.border),
+          border:
+              Border.all(color: selected ? AppColors.brand : AppColors.border),
         ),
         child: Row(
           children: [
-            Icon(selected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
-                size: 18, color: selected ? AppColors.brand : AppColors.ink400),
+            Icon(
+                selected
+                    ? Icons.radio_button_checked
+                    : Icons.radio_button_unchecked,
+                size: 18,
+                color: selected ? AppColors.brand : AppColors.ink400),
             const SizedBox(width: 10),
-            Text(label, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+            Text(label,
+                style:
+                    const TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
           ],
         ),
       ),
@@ -515,10 +557,13 @@ class _Line extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
         children: [
-          Text(label, style: const TextStyle(fontSize: 12.5, color: AppColors.ink500)),
+          Text(label,
+              style: const TextStyle(fontSize: 12.5, color: AppColors.ink500)),
           const Spacer(),
           Text(value,
-              style: TextStyle(fontSize: 12.5, fontWeight: strong ? FontWeight.w800 : FontWeight.w600)),
+              style: TextStyle(
+                  fontSize: 12.5,
+                  fontWeight: strong ? FontWeight.w800 : FontWeight.w600)),
         ],
       ),
     );
@@ -540,7 +585,8 @@ class _Note extends StatelessWidget {
         borderRadius: BorderRadius.circular(Radii.md),
         border: Border.all(color: tone.withValues(alpha: 0.3)),
       ),
-      child: Text(text, style: TextStyle(fontSize: 12.5, height: 1.4, color: tone)),
+      child: Text(text,
+          style: TextStyle(fontSize: 12.5, height: 1.4, color: tone)),
     );
   }
 }
@@ -580,7 +626,9 @@ class _Published extends StatelessWidget {
         const SizedBox(height: 20),
         SizedBox(
           width: double.infinity,
-          child: FilledButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Done')),
+          child: FilledButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Done')),
         ),
       ],
     );

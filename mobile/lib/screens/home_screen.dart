@@ -302,7 +302,8 @@ class _CampaignBanner extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.celebration_outlined, size: 20, color: Colors.white),
+                  const Icon(Icons.celebration_outlined,
+                      size: 20, color: Colors.white),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
@@ -311,16 +312,20 @@ class _CampaignBanner extends StatelessWidget {
                         Text(
                           campaign.name!,
                           style: const TextStyle(
-                              fontSize: 14.5, fontWeight: FontWeight.w700, color: Colors.white),
+                              fontSize: 14.5,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white),
                         ),
                         Text(
                           '${campaign.percent}% off · ${campaign.seller}',
-                          style: const TextStyle(fontSize: 12, color: Color(0xFFE4DEFB)),
+                          style: const TextStyle(
+                              fontSize: 12, color: Color(0xFFE4DEFB)),
                         ),
                       ],
                     ),
                   ),
-                  const Icon(Icons.chevron_right, size: 20, color: Colors.white),
+                  const Icon(Icons.chevron_right,
+                      size: 20, color: Colors.white),
                 ],
               ),
             ),
@@ -979,7 +984,7 @@ class _SellerLine extends StatelessWidget {
                         fontSize: 13.8,
                         fontWeight: FontWeight.w800,
                         color: AppColors.ink950)),
-                Text('Sell on SafalMarketHub with the same account.',
+                Text('Sell on SafalMarket with the same account.',
                     style: Theme.of(context).textTheme.bodySmall),
               ],
             ),

@@ -1,5 +1,5 @@
 name: safalmarkethub
-description: SafalMarketHub customer app — UI mockup.
+description: SafalMarket customer app — UI mockup.
 publish_to: "none"
 version: 0.1.0
 
@@ -19,3 +19,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/brand/

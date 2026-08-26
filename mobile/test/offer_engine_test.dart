@@ -36,9 +36,12 @@ void main() {
     test('two seller offers on one product resolve to one, not both', () {
       // SH-P-1042 is caught by the storewide sale AND its own 10% markdown.
       final matches = sellerOffers
-          .where((o) => sellerOfferCovers(o, headphones) && statusOf(o) == OfferStatus.live)
+          .where((o) =>
+              sellerOfferCovers(o, headphones) &&
+              statusOf(o) == OfferStatus.live)
           .toList();
-      expect(matches.length, greaterThan(1), reason: 'the fixture must overlap for this to mean anything');
+      expect(matches.length, greaterThan(1),
+          reason: 'the fixture must overlap for this to mean anything');
 
       final result = evaluate(subtotal: headphones.price, product: headphones);
       final sellerLines = result.applied.where((a) => a.fromSeller).toList();
@@ -48,7 +51,9 @@ void main() {
     test('the better discount is the one that applies', () {
       final resolved = resolveSellerOffer(headphones, headphones.price);
       final best = sellerOffers
-          .where((o) => sellerOfferCovers(o, headphones) && statusOf(o) == OfferStatus.live)
+          .where((o) =>
+              sellerOfferCovers(o, headphones) &&
+              statusOf(o) == OfferStatus.live)
           .map((o) => o.percent)
           .reduce((a, b) => a > b ? a : b);
       expect(resolved!.percent, best);

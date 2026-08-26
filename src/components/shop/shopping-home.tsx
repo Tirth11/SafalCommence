@@ -440,7 +440,7 @@ export function AssistantFab() {
               type="button"
               onClick={() => setOpen(false)}
               className="rounded-full p-1 text-ink-400 transition-colors hover:bg-muted hover:text-ink-700"
-              aria-label="Hide SafalAssistant preview"
+              aria-label="Hide SafalAI preview"
             >
               <X className="size-3.5" />
             </button>
@@ -514,7 +514,7 @@ export function AssistantFab() {
         className="inline-flex items-center gap-2 rounded-full bg-ink-950 py-3 pl-4 pr-5 text-[14px] font-semibold text-white shadow-lg transition-transform hover:-translate-y-0.5 dark:bg-white dark:text-ink-950"
       >
         <Sparkles className="size-4" />
-        SafalAssistant
+        SafalAI
       </button>
     </div>
   )

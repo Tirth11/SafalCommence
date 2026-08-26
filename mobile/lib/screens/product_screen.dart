@@ -106,7 +106,8 @@ class _ProductScreenState extends State<ProductScreen> {
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.local_offer_outlined, size: 17, color: AppColors.teal),
+                          const Icon(Icons.local_offer_outlined,
+                              size: 17, color: AppColors.teal),
                           const SizedBox(width: 10),
                           Expanded(
                             child: Text(
@@ -114,7 +115,9 @@ class _ProductScreenState extends State<ProductScreen> {
                                   ? applied.label
                                   : '${applied.label} — saves ${money(applied.amount)}',
                               style: const TextStyle(
-                                  fontSize: 12.5, fontWeight: FontWeight.w600, color: AppColors.teal),
+                                  fontSize: 12.5,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.teal),
                             ),
                           ),
                         ],
@@ -123,7 +126,8 @@ class _ProductScreenState extends State<ProductScreen> {
                   if (result.discount > 0)
                     Text(
                       'Your price today: ${money(result.finalSubtotal)}',
-                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                      style: const TextStyle(
+                          fontSize: 14, fontWeight: FontWeight.w700),
                     ),
                 ],
 
@@ -132,7 +136,8 @@ class _ProductScreenState extends State<ProductScreen> {
                   const SizedBox(height: 10),
                   Text(
                     '${result.nearMisses.first.label}: ${result.nearMisses.first.reason.toLowerCase()}.',
-                    style: const TextStyle(fontSize: 12, color: AppColors.ink500),
+                    style:
+                        const TextStyle(fontSize: 12, color: AppColors.ink500),
                   ),
                 ],
 
