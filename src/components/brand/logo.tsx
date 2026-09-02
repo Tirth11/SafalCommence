@@ -34,7 +34,7 @@ export function LogoMark({ className, onInk = false }: { className?: string; onI
 }
 
 export function Logo({ size = 'md', onInk = false, asLink = true, sub = 'List.Discover.Connect', to = '/', className }: LogoProps) {
-  const logo = { sm: 'h-12 w-[107px]', md: 'h-16 w-[142px]', lg: 'h-20 w-[178px]' }[size]
+  const logo = { sm: 'h-11 w-[98px]', md: 'h-[58px] w-[129px]', lg: 'h-[74px] w-[165px]' }[size]
   const contextLabel = sub && sub !== 'List.Discover.Connect' ? sub : ''
 
   const content = (
