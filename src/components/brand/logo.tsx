@@ -13,8 +13,8 @@ type LogoProps = {
   className?: string
 }
 
-const MARK_SRC = '/safalmarket-mark.png'
-const WORDMARK_SRC = '/safalmarket-wordmark.png'
+const LOGO_SRC = '/safalmarket-header.png?v=provided-20260902'
+const MARK_SRC = '/safalmarket-mark.png?v=provided-20260902'
 
 /**
  * SafalMarket mark from the approved brand artwork.
@@ -28,41 +28,29 @@ export function LogoMark({ className, onInk = false }: { className?: string; onI
         className
       )}
     >
-      <img src={MARK_SRC} alt="" className="h-full w-full object-contain p-[2px]" draggable={false} />
-    </span>
-  )
-}
-
-function BrandTagline({ className }: { className?: string }) {
-  return (
-    <span className={cn('mt-0.5 text-[10px] font-black leading-none tracking-[-0.02em]', className)}>
-      <span className="text-brand-900 dark:text-brand-200">List.</span>
-      <span className="text-brand-400 dark:text-brand-300">Discover.</span>
-      <span className="text-brand-900 dark:text-brand-200">Connect</span>
+      <img src={MARK_SRC} alt="" className="h-full w-full object-contain" draggable={false} />
     </span>
   )
 }
 
 export function Logo({ size = 'md', onInk = false, asLink = true, sub = 'List.Discover.Connect', to = '/', className }: LogoProps) {
-  const mark = { sm: 'size-9 rounded-[10px]', md: 'size-10 rounded-[12px]', lg: 'size-12 rounded-[15px]' }[size]
-  const wordmark = { sm: 'h-5 w-[112px]', md: 'h-6 w-[134px]', lg: 'h-7 w-[156px]' }[size]
-  const showBrandTagline = sub === 'List.Discover.Connect'
+  const logo = { sm: 'h-12 w-[107px]', md: 'h-16 w-[142px]', lg: 'h-20 w-[178px]' }[size]
+  const contextLabel = sub && sub !== 'List.Discover.Connect' ? sub : ''
 
   const content = (
-    <>
-      <LogoMark className={mark} onInk={onInk} />
-      <span className={cn('flex flex-col leading-[1.05]', onInk && 'rounded-md bg-white/95 px-1.5 py-1 shadow-sm')}>
-        <img src={WORDMARK_SRC} alt="SafalMarket" className={cn('object-contain object-left', wordmark)} draggable={false} />
-        {showBrandTagline ? (
-          <BrandTagline />
-        ) : (
-          sub && <span className="mt-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-ink-500">{sub}</span>
-        )}
-      </span>
-    </>
+    <span
+      className={cn(
+        'flex flex-col items-center justify-center leading-none',
+        (onInk || contextLabel) && 'rounded-md bg-white/95 px-1.5 py-1 shadow-sm',
+        !onInk && !contextLabel && 'dark:rounded-md dark:bg-white/95 dark:px-1.5 dark:py-1 dark:shadow-sm'
+      )}
+    >
+      <img src={LOGO_SRC} alt="SafalMarket" className={cn('object-contain', logo)} draggable={false} />
+      {contextLabel && <span className="-mt-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-ink-500">{contextLabel}</span>}
+    </span>
   )
 
-  const classes = cn('inline-flex items-center gap-2.5', className)
+  const classes = cn('inline-flex items-center', className)
 
   if (!asLink) return <span className={classes}>{content}</span>
 

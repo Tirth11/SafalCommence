@@ -161,56 +161,11 @@ class _Wordmark extends StatelessWidget {
     return Semantics(
       label: 'SafalMarket',
       image: true,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Image.asset(
-            'assets/brand/safalmarket-mark.png',
-            width: 36,
-            height: 36,
-            fit: BoxFit.contain,
-            filterQuality: FilterQuality.high,
-          ),
-          const SizedBox(width: 8),
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Image.asset(
-                'assets/brand/safalmarket-wordmark.png',
-                height: 18,
-                fit: BoxFit.contain,
-                filterQuality: FilterQuality.high,
-              ),
-              const SizedBox(height: 2),
-              const _BrandTagline(),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _BrandTagline extends StatelessWidget {
-  const _BrandTagline();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Text.rich(
-      TextSpan(
-        children: [
-          TextSpan(text: 'List.'),
-          TextSpan(text: 'Discover.', style: TextStyle(color: AppColors.brand)),
-          TextSpan(text: 'Connect'),
-        ],
-      ),
-      style: TextStyle(
-        color: AppColors.brandDark,
-        fontSize: 8.5,
-        fontWeight: FontWeight.w900,
-        height: 1,
-        letterSpacing: -0.2,
+      child: Image.asset(
+        'assets/brand/safalmarket-logo.png',
+        height: 54,
+        fit: BoxFit.contain,
+        filterQuality: FilterQuality.high,
       ),
     );
   }
